@@ -1,0 +1,34 @@
+<mvc:View controllerName="uim.eam.controller.ReportResult"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:f="sap.f"
+	xmlns="sap.m"
+	height="100%">
+	<f:DynamicPage id="reportPage" headerExpanded="true" showFooter="false" busy="{view>/busy}">
+		<f:title>
+			<f:DynamicPageTitle>
+				<f:heading><Title text="{view>/title}" wrapping="true" /></f:heading>
+				<f:expandedContent>
+					<Text text="{view>/subtitle}" />
+				</f:expandedContent>
+				<f:navigationActions>
+					<Button icon="sap-icon://decline" type="Transparent" tooltip="{i18n>close}" press=".onClose" />
+				</f:navigationActions>
+				<f:actions>
+					<MenuButton id="reportExportButton" text="{i18n>export}" icon="sap-icon://download" type="Transparent">
+						<menu>
+							<Menu itemSelected=".onExport">
+								<MenuItem key="xlsx" text="{i18n>exportXlsx}" icon="sap-icon://excel-attachment" />
+								<MenuItem key="pdf" text="{i18n>reportExportPdf}" icon="sap-icon://pdf-attachment" />
+								<MenuItem key="csv" text="{i18n>exportCsv}" icon="sap-icon://attachment-text-file" visible="{= ${view>/kind} === 'report' }" />
+							</Menu>
+						</menu>
+					</MenuButton>
+					<Button icon="sap-icon://refresh" tooltip="{i18n>refresh}" type="Transparent" press=".onRefresh" />
+				</f:actions>
+			</f:DynamicPageTitle>
+		</f:title>
+		<f:content>
+			<VBox id="reportContent" class="sapUiResponsiveContentPadding" />
+		</f:content>
+	</f:DynamicPage>
+</mvc:View>

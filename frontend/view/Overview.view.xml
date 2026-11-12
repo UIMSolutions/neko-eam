@@ -1,0 +1,87 @@
+<mvc:View controllerName="uim.eam.controller.Overview"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:f="sap.f"
+	xmlns:core="sap.ui.core"
+	xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+	xmlns="sap.m"
+	height="100%">
+	<f:DynamicPage id="overviewPage" headerExpanded="true" toggleHeaderOnTitleClick="true" class="sapUiNoContentPadding">
+		<f:title>
+			<f:DynamicPageTitle>
+				<f:heading><Title text="{i18n>mainTitle}" /></f:heading>
+				<f:snappedContent><Text text="{i18n>mainSubtitle}" /></f:snappedContent>
+				<f:expandedContent><Text text="{i18n>mainSubtitle}" /></f:expandedContent>
+				<f:actions>
+					<Button id="exportAllButton" text="{i18n>exportRepository}" icon="sap-icon://excel-attachment" press=".onExportAll" type="Transparent" />
+					<Button id="importAllButton" text="{i18n>importAll}" icon="sap-icon://upload" press=".onImportAll" type="Transparent" enabled="{user>/canEdit}" />
+					<Button text="{i18n>refresh}" icon="sap-icon://refresh" press=".onRefresh" type="Transparent" />
+				</f:actions>
+			</f:DynamicPageTitle>
+		</f:title>
+		<f:header>
+			<f:DynamicPageHeader pinnable="true">
+				<HBox id="kpiTiles" wrap="Wrap" busy="{portfolio>/busy}">
+					<GenericTile class="eamKpiTile" header="{i18n>kpiOperational}" subheader="{parts: ['i18n>kpiMissionCritical', 'portfolio>/report/missionCriticalApplications'], formatter: '.formatter.message'}" frameType="OneByOne" press=".onOpenSet" app:set="Applications">
+						<TileContent><NumericContent value="{portfolio>/report/operationalApplications}" icon="sap-icon://grid" withMargin="false" /></TileContent>
+					</GenericTile>
+					<GenericTile class="eamKpiTile" header="{i18n>kpiCost}" subheader="{i18n>kpiCostSub}" frameType="OneByOne">
+						<TileContent><NumericContent value="{path: 'portfolio>/report/totalAnnualCost', formatter: '.formatter.millionAmount'}" scale="M" icon="sap-icon://lead" withMargin="false" /></TileContent>
+					</GenericTile>
+					<GenericTile id="productAlertTile" class="eamKpiTile" header="{i18n>kpiProductAlerts}" subheader="{parts: ['i18n>kpiCritical', 'portfolio>/report/criticalProductAlerts'], formatter: '.formatter.message'}" frameType="OneByOne" press=".onShowAnalysis">
+						<TileContent><NumericContent value="{portfolio>/report/productAlertCount}" valueColor="Error" icon="sap-icon://warning" withMargin="false" /></TileContent>
+					</GenericTile>
+					<GenericTile class="eamKpiTile" header="{i18n>kpiRisks}" subheader="{i18n>kpiRisksSub}" frameType="OneByOne" press=".onShowAnalysis">
+						<TileContent><NumericContent value="{portfolio>/report/technologyRiskCount}" valueColor="Error" icon="sap-icon://alert" withMargin="false" /></TileContent>
+					</GenericTile>
+					<GenericTile class="eamKpiTile" header="{i18n>kpiGaps}" subheader="{parts: ['i18n>kpiRedundancies', 'portfolio>/report/capabilityRedundancies'], formatter: '.formatter.message'}" frameType="OneByOne" press=".onShowAnalysis">
+						<TileContent><NumericContent value="{portfolio>/report/capabilityGaps}" valueColor="Critical" icon="sap-icon://overview-chart" withMargin="false" /></TileContent>
+					</GenericTile>
+					<GenericTile class="eamKpiTile" header="{i18n>kpiDeviations}" subheader="{i18n>kpiDeviationsSub}" frameType="OneByOne" press=".onShowAnalysis">
+						<TileContent><NumericContent value="{portfolio>/report/timeDeviations}" valueColor="Critical" icon="sap-icon://compare" withMargin="false" /></TileContent>
+					</GenericTile>
+				</HBox>
+			</f:DynamicPageHeader>
+		</f:header>
+		<f:content>
+			<VBox class="sapUiSmallMargin">
+				<Title text="{i18n>overviewRepository}" level="H3" class="sapUiSmallMarginBottom" />
+				<HBox id="setTiles" wrap="Wrap" items="{path: 'meta>/sets', templateShareable: false}">
+					<GenericTile class="eamSetTile" header="{meta>label}" frameType="TwoByHalf" press=".onOpenSet" app:set="{meta>name}">
+						<TileContent>
+							<NumericContent withMargin="false" icon="{= 'sap-icon://' + ${meta>icon} }"
+								value="{parts: ['portfolio>/report/countByKind', 'meta>name'], formatter: '.formatter.setCount'}" />
+						</TileContent>
+					</GenericTile>
+				</HBox>
+				<Table id="overviewAlerts" class="sapUiMediumMarginTop" headerText="{i18n>analysisProductAlerts}"
+					items="{path: 'portfolio>/report/productAlerts', length: 8, templateShareable: false}" noDataText="{i18n>noAlerts}">
+					<headerToolbar>
+						<OverflowToolbar>
+							<Title text="{i18n>analysisProductAlerts}" level="H3" />
+							<ToolbarSpacer />
+							<Button text="{i18n>showAll}" type="Transparent" press=".onShowAnalysis" />
+						</OverflowToolbar>
+					</headerToolbar>
+					<columns>
+						<Column width="7rem"><Text text="{i18n>colSeverity}" /></Column>
+						<Column><Text text="{i18n>colProduct}" /></Column>
+						<Column minScreenWidth="Tablet" demandPopin="true"><Text text="{i18n>colAlert}" /></Column>
+						<Column minScreenWidth="Tablet" demandPopin="true"><Text text="{i18n>colDate}" /></Column>
+						<Column minScreenWidth="Desktop" demandPopin="true"><Text text="{i18n>colApplications}" /></Column>
+					</columns>
+					<items>
+						<ColumnListItem type="Navigation" press=".onOpenAlertProduct" highlight="{path: 'portfolio>severity', formatter: '.formatter.severityHighlight'}">
+							<cells>
+								<ObjectStatus text="{portfolio>severity}" state="{path: 'portfolio>severity', formatter: '.formatter.severityState'}" inverted="true" />
+								<ObjectIdentifier title="{portfolio>productName}" text="{portfolio>productVersion}" />
+								<Text text="{portfolio>message}" />
+								<Text text="{portfolio>date}" />
+								<Text text="{parts: [{path: 'portfolio>applicationIds'}, {path: 'lookup>/Applications'}], formatter: '.formatter.refNames'}" />
+							</cells>
+						</ColumnListItem>
+					</items>
+				</Table>
+			</VBox>
+		</f:content>
+	</f:DynamicPage>
+</mvc:View>

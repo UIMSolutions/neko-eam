@@ -1,0 +1,97 @@
+<mvc:View controllerName="uim.eam.controller.Analysis"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:f="sap.f"
+	xmlns="sap.m"
+	height="100%">
+	<f:DynamicPage id="analysisPage" headerExpanded="false">
+		<f:title>
+			<f:DynamicPageTitle>
+				<f:heading><Title text="{i18n>navAnalysis}" /></f:heading>
+				<f:actions>
+					<Button text="{i18n>refresh}" icon="sap-icon://refresh" press=".onRefresh" type="Transparent" />
+				</f:actions>
+			</f:DynamicPageTitle>
+		</f:title>
+		<f:content>
+			<IconTabBar id="analysisTabs" expandable="false" class="sapUiResponsiveContentPadding" busy="{portfolio>/busy}">
+				<items>
+					<IconTabFilter key="products" text="{i18n>analysisProductAlerts}" icon="sap-icon://warning" count="{portfolio>/report/productAlertCount}">
+						<Table id="productAlertsTable" items="{portfolio>/report/productAlerts}" noDataText="{i18n>noAlerts}">
+							<columns>
+								<Column width="7rem"><Text text="{i18n>colSeverity}" /></Column>
+								<Column><Text text="{i18n>colProduct}" /></Column>
+								<Column><Text text="{i18n>colKind}" /></Column>
+								<Column minScreenWidth="Tablet" demandPopin="true"><Text text="{i18n>colAlert}" /></Column>
+								<Column minScreenWidth="Tablet" demandPopin="true"><Text text="{i18n>colDate}" /></Column>
+								<Column minScreenWidth="Desktop" demandPopin="true"><Text text="{i18n>colApplications}" /></Column>
+							</columns>
+							<items>
+								<ColumnListItem type="Navigation" press=".onOpenProduct" highlight="{path: 'portfolio>severity', formatter: '.formatter.severityHighlight'}">
+									<cells>
+										<ObjectStatus text="{portfolio>severity}" state="{path: 'portfolio>severity', formatter: '.formatter.severityState'}" inverted="true" />
+										<ObjectIdentifier title="{portfolio>productName}" text="{portfolio>productVersion}" />
+										<Text text="{portfolio>kind}" />
+										<Text text="{portfolio>message}" />
+										<Text text="{portfolio>date}" />
+										<Text text="{parts: [{path: 'portfolio>applicationIds'}, {path: 'lookup>/Applications'}], formatter: '.formatter.refNames'}" />
+									</cells>
+								</ColumnListItem>
+							</items>
+						</Table>
+					</IconTabFilter>
+					<IconTabFilter key="time" text="{i18n>analysisTime}" icon="sap-icon://compare" count="{portfolio>/report/timeDeviations}">
+						<Table items="{portfolio>/report/timeAssessments}">
+							<columns>
+								<Column><Text text="{i18n>colName}" /></Column>
+								<Column><Text text="{i18n>colBusinessValue}" /></Column>
+								<Column><Text text="{i18n>colTechnicalFit}" /></Column>
+								<Column><Text text="{i18n>colCurrent}" /></Column>
+								<Column><Text text="{i18n>colRecommended}" /></Column>
+							</columns>
+							<items><ColumnListItem highlight="{= ${portfolio>deviates} ? 'Warning' : 'None'}" type="Navigation" press=".onOpenApplication"><cells>
+								<Text text="{portfolio>applicationName}" />
+								<RatingIndicator maxValue="5" editable="false" iconSize="1rem" value="{path: 'portfolio>businessValue', formatter: '.formatter.score'}" />
+								<RatingIndicator maxValue="5" editable="false" iconSize="1rem" value="{path: 'portfolio>technicalFit', formatter: '.formatter.score'}" />
+								<ObjectStatus text="{portfolio>current}" state="{path: 'portfolio>current', formatter: '.formatter.timeState'}" />
+								<ObjectStatus text="{portfolio>recommended}" state="{path: 'portfolio>recommended', formatter: '.formatter.timeState'}" inverted="true" />
+							</cells></ColumnListItem></items>
+						</Table>
+					</IconTabFilter>
+					<IconTabFilter key="risks" text="{i18n>analysisRisks}" icon="sap-icon://alert" count="{portfolio>/report/technologyRiskCount}">
+						<Table items="{portfolio>/report/technologyRisks}">
+							<columns>
+								<Column><Text text="{i18n>colName}" /></Column>
+								<Column><Text text="{i18n>colComponent}" /></Column>
+								<Column><Text text="{i18n>colEndOfSupport}" /></Column>
+								<Column><Text text="{i18n>colReason}" /></Column>
+							</columns>
+							<items><ColumnListItem highlight="Error" type="Navigation" press=".onOpenApplication"><cells>
+								<Text text="{portfolio>applicationName}" />
+								<Text text="{portfolio>componentName}" />
+								<Text text="{portfolio>endOfSupportDate}" />
+								<ObjectStatus text="{portfolio>reason}" state="Error" />
+							</cells></ColumnListItem></items>
+						</Table>
+					</IconTabFilter>
+					<IconTabFilter key="coverage" text="{i18n>analysisCoverage}" icon="sap-icon://overview-chart" count="{portfolio>/report/capabilityGaps}">
+						<Table items="{portfolio>/coverage}">
+							<columns>
+								<Column><Text text="{i18n>colName}" /></Column>
+								<Column><Text text="{i18n>colLevel}" /></Column>
+								<Column><Text text="{i18n>colSupporting}" /></Column>
+								<Column><Text text="{i18n>colCoverage}" /></Column>
+							</columns>
+							<items><ColumnListItem><cells>
+								<Text text="{portfolio>capabilityName}" />
+								<Text text="L{portfolio>level}" />
+								<Text text="{parts: [{path: 'portfolio>supportingApplicationIds'}, {path: 'lookup>/Applications'}], formatter: '.formatter.refNames'}" />
+								<ObjectStatus text="{parts: ['portfolio>gap', 'portfolio>redundant'], formatter: '.formatter.coverageText'}"
+									state="{parts: ['portfolio>gap', 'portfolio>redundant'], formatter: '.formatter.coverageState'}" />
+							</cells></ColumnListItem></items>
+						</Table>
+					</IconTabFilter>
+				</items>
+			</IconTabBar>
+		</f:content>
+	</f:DynamicPage>
+</mvc:View>

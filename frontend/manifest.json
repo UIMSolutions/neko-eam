@@ -1,0 +1,81 @@
+{
+	"_version": "1.58.0",
+	"sap.app": {
+		"id": "uim.eam",
+		"type": "application",
+		"i18n": "i18n/i18n.properties",
+		"title": "{{appTitle}}",
+		"description": "{{appDescription}}",
+		"applicationVersion": { "version": "2.0.0" },
+		"dataSources": {
+			"mainService": {
+				"uri": "odata/v4/eam/",
+				"type": "OData",
+				"settings": {
+					"odataVersion": "4.0",
+					"localUri": "localService/metadata.xml"
+				}
+			}
+		}
+	},
+	"sap.ui": {
+		"technology": "UI5",
+		"deviceTypes": { "desktop": true, "tablet": true, "phone": true }
+	},
+	"sap.ui5": {
+		"rootView": { "viewName": "uim.eam.view.App", "type": "XML", "id": "app" },
+		"dependencies": {
+			"minUI5Version": "1.120.0",
+			"libs": { "sap.m": {}, "sap.f": {}, "sap.tnt": {}, "sap.uxap": {}, "sap.ui.layout": {}, "sap.ui.unified": {} }
+		},
+		"contentDensities": { "compact": true, "cozy": true },
+		"models": {
+			"i18n": {
+				"type": "sap.ui.model.resource.ResourceModel",
+				"settings": { "bundleName": "uim.eam.i18n.i18n", "supportedLocales": ["", "de"], "fallbackLocale": "" }
+			},
+			"": {
+				"dataSource": "mainService",
+				"preload": true,
+				"settings": {
+					"operationMode": "Server",
+					"autoExpandSelect": false,
+					"groupId": "$direct",
+					"updateGroupId": "$direct"
+				}
+			}
+		},
+		"resources": { "css": [{ "uri": "css/style.css" }] },
+		"routing": {
+			"config": {
+				"routerClass": "sap.m.routing.Router",
+				"type": "View",
+				"viewType": "XML",
+				"path": "uim.eam.view",
+				"controlId": "app",
+				"controlAggregation": "pages",
+				"async": true
+			},
+			"routes": [
+				{ "pattern": "", "name": "overview", "target": "overview" },
+				{ "pattern": "analysis", "name": "analysis", "target": "analysis" },
+				{ "pattern": "backups", "name": "backups", "target": "backups" },
+				{ "pattern": "tenants", "name": "tenants", "target": "tenants" },
+				{ "pattern": "report/{kind}/{id}", "name": "report", "target": "report" },
+				{ "pattern": "search/{query}", "name": "search", "target": "search" },
+				{ "pattern": "sets/{set}", "name": "list", "target": "list" },
+				{ "pattern": "sets/{set}/{id}", "name": "detail", "target": "detail" }
+			],
+			"targets": {
+				"overview": { "id": "overview", "name": "Overview", "level": 1 },
+				"analysis": { "id": "analysis", "name": "Analysis", "level": 1 },
+				"backups": { "id": "backups", "name": "Backups", "level": 1 },
+				"tenants": { "id": "tenants", "name": "Tenants", "level": 1 },
+				"report": { "id": "report", "name": "ReportResult", "level": 4 },
+				"search": { "id": "search", "name": "Search", "level": 2 },
+				"list": { "id": "list", "name": "ElementList", "level": 2 },
+				"detail": { "id": "detail", "name": "ElementDetail", "level": 3 }
+			}
+		}
+	}
+}

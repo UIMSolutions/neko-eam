@@ -1,0 +1,98 @@
+[
+ {
+  "validUntil": null,
+  "rationale": "Lower total cost of ownership and fewer technologies to operate",
+  "validFrom": "2025-01-01",
+  "id": "ap-reuse",
+  "modifiedBy": "seed",
+  "specVersion": "1.2",
+  "modifiedAt": "2026-11-12T13:18:33.6446922Z",
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T13:18:33.6446922Z",
+  "name": "Reuse before buy before build",
+  "strategicGuidelineIds": [
+   "sg-standard"
+  ],
+  "priority": "High",
+  "shortName": "AP-01",
+  "implications": "Every new solution documents the evaluated reuse and buy options",
+  "domain": "Application",
+  "principleOwner": "Chief Architect",
+  "description": "",
+  "ownerOrganizationId": "org-it",
+  "statement": "Existing platforms are reused first, standard software is bought second, custom software is built last.",
+  "status": "Approved"
+ },
+ {
+  "validUntil": null,
+  "rationale": "Loose coupling, reuse and faster integration",
+  "validFrom": "2026-01-01",
+  "id": "ap-api",
+  "modifiedBy": "seed",
+  "specVersion": "1.0",
+  "modifiedAt": "2026-11-12T13:18:33.6452641Z",
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T13:18:33.6452641Z",
+  "name": "API first",
+  "strategicGuidelineIds": [
+   "sg-cloud"
+  ],
+  "priority": "High",
+  "shortName": "AP-02",
+  "implications": "",
+  "domain": "Integration",
+  "principleOwner": "Integration Architect",
+  "description": "",
+  "ownerOrganizationId": "org-it",
+  "statement": "Functions and data are offered through documented, versioned APIs.",
+  "status": "Approved"
+ },
+ {
+  "validUntil": null,
+  "rationale": "Fixing security late is expensive and risky",
+  "validFrom": "2025-01-01",
+  "id": "ap-security",
+  "modifiedBy": "seed",
+  "specVersion": "1.0",
+  "modifiedAt": "2026-11-12T13:18:33.645874Z",
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T13:18:33.645874Z",
+  "name": "Secure by design",
+  "strategicGuidelineIds": [
+   "sg-eol"
+  ],
+  "priority": "Critical",
+  "shortName": "AP-03",
+  "implications": "",
+  "domain": "Security",
+  "principleOwner": "CISO",
+  "description": "",
+  "ownerOrganizationId": "org-it",
+  "statement": "Security requirements are part of every architecture from the start.",
+  "status": "Approved"
+ },
+ {
+  "validUntil": null,
+  "rationale": "",
+  "validFrom": null,
+  "id": "ap-data-owner",
+  "modifiedBy": "seed",
+  "specVersion": "",
+  "modifiedAt": "2026-11-12T13:18:33.6464674Z",
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T13:18:33.6464674Z",
+  "name": "Data has an owner",
+  "strategicGuidelineIds": [
+   "sg-data"
+  ],
+  "priority": "Medium",
+  "shortName": "AP-04",
+  "implications": "",
+  "domain": "Data",
+  "principleOwner": "Data Architect",
+  "description": "",
+  "ownerOrganizationId": "",
+  "statement": "Every business data object has exactly one accountable owner.",
+  "status": "InReview"
+ }
+]

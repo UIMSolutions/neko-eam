@@ -1,0 +1,113 @@
+[
+ {
+  "validUntil": null,
+  "validFrom": "2026-01-01",
+  "id": "ag-openapi",
+  "applicability": "All new and changed REST interfaces",
+  "modifiedBy": "seed",
+  "specVersion": "1.1",
+  "modifiedAt": "2026-11-12T13:18:33.6473652Z",
+  "componentIds": [],
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T13:18:33.6473652Z",
+  "name": "REST APIs are described with OpenAPI 3",
+  "verification": "API specification in the API catalogue before go-live",
+  "standardProductIds": [],
+  "shortName": "AG-01",
+  "guidelineOwner": "Integration Architect",
+  "domain": "Integration",
+  "description": "",
+  "ownerOrganizationId": "org-it",
+  "principleIds": [
+   "ap-api"
+  ],
+  "obligation": "Mandatory",
+  "status": "Approved"
+ },
+ {
+  "validUntil": null,
+  "validFrom": "2026-01-01",
+  "id": "ag-java-lts",
+  "applicability": "",
+  "modifiedBy": "seed",
+  "specVersion": "2.0",
+  "modifiedAt": "2026-11-12T13:18:33.6479941Z",
+  "componentIds": [
+   "tc-java8"
+  ],
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T13:18:33.6479941Z",
+  "name": "Java workloads run on a supported LTS runtime",
+  "verification": "Monthly product lifecycle report",
+  "standardProductIds": [
+   "prd-temurin-21"
+  ],
+  "shortName": "AG-02",
+  "guidelineOwner": "Platform Owner",
+  "domain": "Technology",
+  "description": "",
+  "ownerOrganizationId": "org-it-ops",
+  "principleIds": [
+   "ap-security",
+   "ap-reuse"
+  ],
+  "obligation": "Mandatory",
+  "status": "Approved"
+ },
+ {
+  "validUntil": null,
+  "validFrom": null,
+  "id": "ag-containers",
+  "applicability": "",
+  "modifiedBy": "seed",
+  "specVersion": "1.0",
+  "modifiedAt": "2026-11-12T13:18:33.6486217Z",
+  "componentIds": [
+   "tc-k8s"
+  ],
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T13:18:33.6486217Z",
+  "name": "Container workloads on the central Kubernetes platform",
+  "verification": "",
+  "standardProductIds": [
+   "prd-k8s-131"
+  ],
+  "shortName": "AG-03",
+  "guidelineOwner": "Platform Owner",
+  "domain": "Technology",
+  "description": "",
+  "ownerOrganizationId": "org-it-ops",
+  "principleIds": [
+   "ap-reuse"
+  ],
+  "obligation": "Recommended",
+  "status": "Approved"
+ },
+ {
+  "validUntil": null,
+  "validFrom": null,
+  "id": "ag-hana",
+  "applicability": "",
+  "modifiedBy": "seed",
+  "specVersion": "",
+  "modifiedAt": "2026-11-12T13:18:33.649273Z",
+  "componentIds": [
+   "tc-hana"
+  ],
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T13:18:33.649273Z",
+  "name": "Analytical databases on SAP HANA",
+  "verification": "",
+  "standardProductIds": [
+   "prd-hana-20"
+  ],
+  "shortName": "AG-04",
+  "guidelineOwner": "Data Architect",
+  "domain": "Data",
+  "description": "",
+  "ownerOrganizationId": "",
+  "principleIds": [],
+  "obligation": "Optional",
+  "status": "Draft"
+ }
+]

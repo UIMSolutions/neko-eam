@@ -1,0 +1,130 @@
+[
+ {
+  "email": "eam.admin@acme.example",
+  "validUntil": null,
+  "id": "usr-admin",
+  "effectiveRights": "All: RCUD; Permissions: RCUD; Roles: RCUD; Users: RCUD",
+  "modifiedBy": "seed",
+  "organizationId": "org-it",
+  "modifiedAt": "2026-11-12T13:48:36.6503152Z",
+  "userName": "eam.admin",
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T13:48:36.6503152Z",
+  "name": "EAM Administrator",
+  "active": true,
+  "roleIds": [
+   "role-admin"
+  ],
+  "description": ""
+ },
+ {
+  "email": "m.weber@acme.example",
+  "validUntil": null,
+  "id": "usr-weber",
+  "effectiveRights": "All: RCUD",
+  "modifiedBy": "seed",
+  "organizationId": "org-it",
+  "modifiedAt": "2026-11-12T13:48:36.6512388Z",
+  "userName": "m.weber",
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T13:48:36.6512388Z",
+  "name": "Markus Weber",
+  "active": true,
+  "roleIds": [
+   "role-architect"
+  ],
+  "description": ""
+ },
+ {
+  "email": "j.becker@acme.example",
+  "validUntil": null,
+  "id": "usr-becker",
+  "effectiveRights": "All: R; ApplicationGroups: RCUD; Applications: RCUD; InformationFlows: RCUD; Projects: RCUD; SubProjects: RCUD; WorkPackages: RCUD",
+  "modifiedBy": "seed",
+  "organizationId": "org-sales",
+  "modifiedAt": "2026-11-12T13:48:36.6521401Z",
+  "userName": "j.becker",
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T13:48:36.6521401Z",
+  "name": "Julia Becker",
+  "active": true,
+  "roleIds": [
+   "role-project-manager",
+   "role-app-owner"
+  ],
+  "description": ""
+ },
+ {
+  "email": "s.yilmaz@acme.example",
+  "validUntil": null,
+  "id": "usr-yilmaz",
+  "effectiveRights": "All: R",
+  "modifiedBy": "seed",
+  "organizationId": "org-fin",
+  "modifiedAt": "2026-11-12T13:48:36.6530213Z",
+  "userName": "s.yilmaz",
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T13:48:36.6530213Z",
+  "name": "Selin Yilmaz",
+  "active": true,
+  "roleIds": [
+   "role-viewer"
+  ],
+  "description": ""
+ },
+ {
+  "email": "r.neumann@acme.example",
+  "validUntil": null,
+  "id": "usr-neumann",
+  "effectiveRights": "All: R; ArchitectureDocuments: RCUD; ArchitectureGuidelines: RCUD; ArchitecturePrinciples: RCUD; ITComponents: RCUD; MeasureGroups: RCUD; Measures: RCUD; ProductGroups: RCUD; Products: RCUD; ReferenceArchitectures: RCUD; ServiceCapabilities: RCUD; StrategicGuidelines: RCUD",
+  "modifiedBy": "seed",
+  "organizationId": "org-it-ops",
+  "modifiedAt": "2026-11-12T13:48:36.6538816Z",
+  "userName": "r.neumann",
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T13:48:36.6538816Z",
+  "name": "Ralf Neumann",
+  "active": true,
+  "roleIds": [
+   "role-product-manager",
+   "role-planner"
+  ],
+  "description": ""
+ },
+ {
+  "email": "a.krueger@acme.example",
+  "validUntil": null,
+  "id": "usr-krueger",
+  "effectiveRights": "WorkPackages: RU",
+  "modifiedBy": "seed",
+  "organizationId": "org-it",
+  "modifiedAt": "2026-11-12T13:48:36.654788Z",
+  "userName": "a.krueger",
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T13:48:36.654788Z",
+  "name": "Anna Kr\u00fcger",
+  "active": true,
+  "roleIds": [
+   "role-team-member"
+  ],
+  "description": ""
+ },
+ {
+  "email": "f.employee@acme.example",
+  "validUntil": "2025-12-31",
+  "id": "usr-former",
+  "effectiveRights": "No access",
+  "modifiedBy": "seed",
+  "organizationId": "",
+  "modifiedAt": "2026-11-12T13:48:36.6556932Z",
+  "userName": "f.employee",
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T13:48:36.6556932Z",
+  "name": "Former Employee",
+  "active": false,
+  "roleIds": [
+   "role-architect"
+  ],
+  "description": "Left the company - account disabled"
+ }
+]

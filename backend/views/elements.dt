@@ -1,0 +1,21 @@
+extends layout
+
+block content
+	.card.bg-base-100.shadow
+		.card-body.overflow-x-auto
+			p.text-sm.opacity-70 #{table.rows.length} elements · OData:
+				a.link(href="/odata/v4/eam/#{table.setName}") /odata/v4/eam/#{table.setName}
+				|  · Export:
+				a.link(href="/api/v1/transfer/#{table.setName}?format=xlsx") Excel
+				|  ·
+				a.link(href="/api/v1/transfer/#{table.setName}?format=csv") CSV
+			table.table.table-zebra.table-xs
+				thead
+					tr
+						- foreach (h; table.headers)
+							th #{h}
+				tbody
+					- foreach (row; table.rows)
+						tr
+							- foreach (cell; row)
+								td #{cell}

@@ -1,0 +1,23 @@
+{
+	"xsappname": "neko-eam",
+	"tenant-mode": "dedicated",
+	"description": "Neko EAM - Enterprise Architecture Management",
+	"scopes": [
+		{ "name": "$XSAPPNAME.Display", "description": "Sign in to Neko EAM - what may be read or changed is defined by the EAM users, roles and permissions" },
+		{ "name": "$XSAPPNAME.Admin", "description": "EAM administrator - bypasses the EAM permissions (initial set-up, break-glass)" },
+		{ "name": "$XSAPPNAME.SystemAdmin", "description": "Platform operator - manages tenants, enters every tenant, backup and restore of all tenants" }
+	],
+	"role-templates": [
+		{ "name": "EAMViewer", "description": "EAM user (rights from the EAM user / role / permission management)", "scope-references": ["$XSAPPNAME.Display"] },
+		{ "name": "EAMArchitect", "description": "EAM administrator (unrestricted, incl. user / role / permission management)", "scope-references": ["$XSAPPNAME.Display", "$XSAPPNAME.Admin"] },
+		{ "name": "EAMSystemAdministrator", "description": "EAM platform operator (tenants, backup and restore)", "scope-references": ["$XSAPPNAME.Display", "$XSAPPNAME.SystemAdmin"] }
+	],
+	"role-collections": [
+		{ "name": "EAM_Viewer", "role-template-references": ["$XSAPPNAME.EAMViewer"] },
+		{ "name": "EAM_Architect", "role-template-references": ["$XSAPPNAME.EAMArchitect"] },
+		{ "name": "EAM_SystemAdministrator", "role-template-references": ["$XSAPPNAME.EAMSystemAdministrator"] }
+	],
+	"oauth2-configuration": {
+		"redirect-uris": ["https://*.cfapps.*.hana.ondemand.com/**", "http://localhost:5000/**"]
+	}
+}

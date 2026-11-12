@@ -1,0 +1,676 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="4.0" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+  <edmx:DataServices>
+    <Schema Namespace="EamService" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+      <EntityType Name="Application">
+        <Key><PropertyRef Name="id"/></Key>
+        <Property Name="id" Type="Edm.String" Nullable="false"/>
+        <Property Name="name" Type="Edm.String" Nullable="false"/>
+        <Property Name="description" Type="Edm.String"/>
+        <Property Name="createdAt" Type="Edm.String"/>
+        <Property Name="createdBy" Type="Edm.String"/>
+        <Property Name="modifiedAt" Type="Edm.String"/>
+        <Property Name="modifiedBy" Type="Edm.String"/>
+        <Property Name="release" Type="Edm.String"/>
+        <Property Name="status" Type="Edm.String"/>
+        <Property Name="levelId" Type="Edm.String"/>
+        <Property Name="objectState" Type="Edm.String"/>
+        <Property Name="applicationGroupId" Type="Edm.String"/>
+        <Property Name="stakeholder" Type="Edm.String"/>
+        <Property Name="criticality" Type="Edm.String"/>
+        <Property Name="timeCategory" Type="Edm.String"/>
+        <Property Name="businessValue" Type="Edm.Int32"/>
+        <Property Name="technicalFit" Type="Edm.Int32"/>
+        <Property Name="annualCost" Type="Edm.Double"/>
+        <Property Name="goLiveDate" Type="Edm.Date"/>
+        <Property Name="retirementDate" Type="Edm.Date"/>
+        <Property Name="ownerOrganizationId" Type="Edm.String"/>
+        <Property Name="capabilityIds" Type="Collection(Edm.String)"/>
+        <Property Name="componentIds" Type="Collection(Edm.String)"/>
+        <Property Name="usedProductIds" Type="Collection(Edm.String)"/>
+        <Property Name="assignedProductIds" Type="Collection(Edm.String)"/>
+        <Property Name="totalUsedProducts" Type="Edm.Int32"/>
+        <Property Name="totalAssignedProducts" Type="Edm.Int32"/>
+      </EntityType>
+      <EntityType Name="BusinessCapability">
+        <Key><PropertyRef Name="id"/></Key>
+        <Property Name="id" Type="Edm.String" Nullable="false"/>
+        <Property Name="name" Type="Edm.String" Nullable="false"/>
+        <Property Name="description" Type="Edm.String"/>
+        <Property Name="createdAt" Type="Edm.String"/>
+        <Property Name="createdBy" Type="Edm.String"/>
+        <Property Name="modifiedAt" Type="Edm.String"/>
+        <Property Name="modifiedBy" Type="Edm.String"/>
+        <Property Name="hierarchyPath" Type="Edm.String"/>
+        <Property Name="levelId" Type="Edm.String"/>
+        <Property Name="level" Type="Edm.Int32"/>
+        <Property Name="missionCriticality" Type="Edm.String"/>
+        <Property Name="strategicImportance" Type="Edm.Int32"/>
+        <Property Name="stakeholder" Type="Edm.String"/>
+        <Property Name="parentId" Type="Edm.String"/>
+        <Property Name="ownerOrganizationId" Type="Edm.String"/>
+      </EntityType>
+      <EntityType Name="ITComponent">
+        <Key><PropertyRef Name="id"/></Key>
+        <Property Name="id" Type="Edm.String" Nullable="false"/>
+        <Property Name="name" Type="Edm.String" Nullable="false"/>
+        <Property Name="description" Type="Edm.String"/>
+        <Property Name="createdAt" Type="Edm.String"/>
+        <Property Name="createdBy" Type="Edm.String"/>
+        <Property Name="modifiedAt" Type="Edm.String"/>
+        <Property Name="modifiedBy" Type="Edm.String"/>
+        <Property Name="vendor" Type="Edm.String"/>
+        <Property Name="release" Type="Edm.String"/>
+        <Property Name="category" Type="Edm.String"/>
+        <Property Name="status" Type="Edm.String"/>
+        <Property Name="endOfSupportDate" Type="Edm.Date"/>
+        <Property Name="licenseCost" Type="Edm.Double"/>
+      </EntityType>
+      <EntityType Name="InformationFlow">
+        <Key><PropertyRef Name="id"/></Key>
+        <Property Name="id" Type="Edm.String" Nullable="false"/>
+        <Property Name="name" Type="Edm.String" Nullable="false"/>
+        <Property Name="description" Type="Edm.String"/>
+        <Property Name="createdAt" Type="Edm.String"/>
+        <Property Name="createdBy" Type="Edm.String"/>
+        <Property Name="modifiedAt" Type="Edm.String"/>
+        <Property Name="modifiedBy" Type="Edm.String"/>
+        <Property Name="sourceApplicationId" Type="Edm.String" Nullable="false"/>
+        <Property Name="targetApplicationId" Type="Edm.String" Nullable="false"/>
+        <Property Name="flowType" Type="Edm.String"/>
+        <Property Name="dataObject" Type="Edm.String"/>
+        <Property Name="frequency" Type="Edm.String"/>
+      </EntityType>
+      <EntityType Name="Organization">
+        <Key><PropertyRef Name="id"/></Key>
+        <Property Name="id" Type="Edm.String" Nullable="false"/>
+        <Property Name="name" Type="Edm.String" Nullable="false"/>
+        <Property Name="description" Type="Edm.String"/>
+        <Property Name="createdAt" Type="Edm.String"/>
+        <Property Name="createdBy" Type="Edm.String"/>
+        <Property Name="modifiedAt" Type="Edm.String"/>
+        <Property Name="modifiedBy" Type="Edm.String"/>
+        <Property Name="hierarchyPath" Type="Edm.String"/>
+        <Property Name="shortName" Type="Edm.String"/>
+        <Property Name="status" Type="Edm.String"/>
+        <Property Name="orgType" Type="Edm.String"/>
+        <Property Name="location" Type="Edm.String"/>
+        <Property Name="parentId" Type="Edm.String"/>
+        <Property Name="startDate" Type="Edm.Date"/>
+        <Property Name="endDate" Type="Edm.Date"/>
+        <Property Name="architect" Type="Edm.String"/>
+        <Property Name="contact" Type="Edm.String"/>
+        <Property Name="stakeholder" Type="Edm.String"/>
+        <Property Name="totalConsumedBusinessServices" Type="Edm.Int32"/>
+        <Property Name="totalProvidedBusinessServices" Type="Edm.Int32"/>
+        <Property Name="totalProvidedSupportServices" Type="Edm.Int32"/>
+        <Property Name="enterpriseId" Type="Edm.String"/>
+        <Property Name="costCenter" Type="Edm.String"/>
+        <Property Name="headOfUnit" Type="Edm.String"/>
+        <Property Name="totalMembers" Type="Edm.Int32"/>
+        <Property Name="totalCapacity" Type="Edm.Double"/>
+      </EntityType>
+      <EntityType Name="Project">
+        <Key><PropertyRef Name="id"/></Key>
+        <Property Name="id" Type="Edm.String" Nullable="false"/>
+        <Property Name="name" Type="Edm.String" Nullable="false"/>
+        <Property Name="description" Type="Edm.String"/>
+        <Property Name="createdAt" Type="Edm.String"/>
+        <Property Name="createdBy" Type="Edm.String"/>
+        <Property Name="modifiedAt" Type="Edm.String"/>
+        <Property Name="modifiedBy" Type="Edm.String"/>
+        <Property Name="projectNumber" Type="Edm.String"/>
+        <Property Name="status" Type="Edm.String"/>
+        <Property Name="phase" Type="Edm.String"/>
+        <Property Name="priority" Type="Edm.String"/>
+        <Property Name="projectManager" Type="Edm.String"/>
+        <Property Name="startDate" Type="Edm.Date"/>
+        <Property Name="endDate" Type="Edm.Date"/>
+        <Property Name="budget" Type="Edm.Double"/>
+        <Property Name="actualCost" Type="Edm.Double"/>
+        <Property Name="totalSubProjects" Type="Edm.Int32"/>
+        <Property Name="totalWorkPackages" Type="Edm.Int32"/>
+        <Property Name="plannedEffortDays" Type="Edm.Double"/>
+        <Property Name="progress" Type="Edm.Int32"/>
+        <Property Name="sponsorOrganizationId" Type="Edm.String"/>
+        <Property Name="affectedApplicationIds" Type="Collection(Edm.String)"/>
+      </EntityType>
+      <EntityType Name="Product">
+        <Key><PropertyRef Name="id"/></Key>
+        <Property Name="id" Type="Edm.String" Nullable="false"/>
+        <Property Name="name" Type="Edm.String" Nullable="false"/>
+        <Property Name="description" Type="Edm.String"/>
+        <Property Name="createdAt" Type="Edm.String"/>
+        <Property Name="createdBy" Type="Edm.String"/>
+        <Property Name="modifiedAt" Type="Edm.String"/>
+        <Property Name="modifiedBy" Type="Edm.String"/>
+        <Property Name="componentId" Type="Edm.String"/>
+        <Property Name="productVersion" Type="Edm.String"/>
+        <Property Name="majorVersion" Type="Edm.String"/>
+        <Property Name="versionType" Type="Edm.String"/>
+        <Property Name="productEdition" Type="Edm.String"/>
+        <Property Name="productGroupId" Type="Edm.String"/>
+        <Property Name="productType" Type="Edm.String"/>
+        <Property Name="vendor" Type="Edm.String"/>
+        <Property Name="vendorWeblink" Type="Edm.String"/>
+        <Property Name="downloadLink" Type="Edm.String"/>
+        <Property Name="status" Type="Edm.String"/>
+        <Property Name="lifecycleStatus" Type="Edm.String"/>
+        <Property Name="approvalStatus" Type="Edm.String"/>
+        <Property Name="softwareCategory" Type="Edm.String"/>
+        <Property Name="softwareClass" Type="Edm.String"/>
+        <Property Name="standardClassification" Type="Edm.String"/>
+        <Property Name="maximoClassificationPath" Type="Edm.String"/>
+        <Property Name="cpeId" Type="Edm.String"/>
+        <Property Name="certlichId" Type="Edm.String"/>
+        <Property Name="pulsId" Type="Edm.String"/>
+        <Property Name="source" Type="Edm.String"/>
+        <Property Name="appliance" Type="Edm.Boolean"/>
+        <Property Name="startDate" Type="Edm.Date"/>
+        <Property Name="endDate" Type="Edm.Date"/>
+        <Property Name="endOfSupport" Type="Edm.Date"/>
+        <Property Name="endOfSecurity" Type="Edm.Date"/>
+        <Property Name="endOfLife" Type="Edm.Date"/>
+        <Property Name="endOfSupportContract" Type="Edm.Date"/>
+        <Property Name="bsiPermissionEndDate" Type="Edm.Date"/>
+        <Property Name="dueDateNextValidation" Type="Edm.Date"/>
+        <Property Name="updateCycleWeeks" Type="Edm.Int32"/>
+        <Property Name="eolReminderDays" Type="Edm.Int32"/>
+        <Property Name="milestoneReminderDays" Type="Edm.Int32"/>
+        <Property Name="eolReminderDate" Type="Edm.Date"/>
+        <Property Name="eosuReminderDays" Type="Edm.Int32"/>
+        <Property Name="eosuReminderDate" Type="Edm.Date"/>
+        <Property Name="licenceCategory" Type="Edm.String"/>
+        <Property Name="licensingModel" Type="Edm.String"/>
+        <Property Name="licenseCosts" Type="Edm.Double"/>
+        <Property Name="licenseOwner" Type="Edm.String"/>
+        <Property Name="purchasableLicenseRequired" Type="Edm.Boolean"/>
+        <Property Name="numberOfInstallations" Type="Edm.Int32"/>
+        <Property Name="modifyOssSourcecode" Type="Edm.Boolean"/>
+        <Property Name="isBlacklisted" Type="Edm.Boolean"/>
+        <Property Name="riskEvaluation" Type="Edm.String"/>
+        <Property Name="protection" Type="Edm.String"/>
+        <Property Name="dataProtectionRequirements" Type="Edm.String"/>
+        <Property Name="ipv6Communication" Type="Edm.Boolean"/>
+        <Property Name="sendsDataToPublicCloud" Type="Edm.Boolean"/>
+        <Property Name="onboardingDutySlcRelevant" Type="Edm.Boolean"/>
+        <Property Name="customerApprovalForUsage" Type="Edm.Boolean"/>
+        <Property Name="customerContext" Type="Edm.String"/>
+        <Property Name="customerContextComment" Type="Edm.String"/>
+        <Property Name="dataQualityIndex" Type="Edm.Double"/>
+        <Property Name="totalErrors" Type="Edm.Int32"/>
+        <Property Name="totalWarnings" Type="Edm.Int32"/>
+        <Property Name="totalHints" Type="Edm.Int32"/>
+        <Property Name="usage" Type="Edm.String"/>
+        <Property Name="targetUsage" Type="Edm.String"/>
+        <Property Name="usageEnvironment" Type="Edm.String"/>
+        <Property Name="softwareOperationEnvironment" Type="Edm.String"/>
+        <Property Name="userBase" Type="Edm.String"/>
+        <Property Name="reasonForUsage" Type="Edm.String"/>
+        <Property Name="requester" Type="Edm.String"/>
+        <Property Name="requesterComments" Type="Edm.String"/>
+        <Property Name="productContact" Type="Edm.String"/>
+        <Property Name="serviceManager" Type="Edm.String"/>
+        <Property Name="technicalOrganizationId" Type="Edm.String"/>
+        <Property Name="supportingCompany" Type="Edm.String"/>
+        <Property Name="supportModel" Type="Edm.String"/>
+        <Property Name="manufacturerSupport" Type="Edm.Boolean"/>
+      </EntityType>
+      <EntityType Name="ProductGroup">
+        <Key><PropertyRef Name="id"/></Key>
+        <Property Name="id" Type="Edm.String" Nullable="false"/>
+        <Property Name="name" Type="Edm.String" Nullable="false"/>
+        <Property Name="description" Type="Edm.String"/>
+        <Property Name="createdAt" Type="Edm.String"/>
+        <Property Name="createdBy" Type="Edm.String"/>
+        <Property Name="modifiedAt" Type="Edm.String"/>
+        <Property Name="modifiedBy" Type="Edm.String"/>
+        <Property Name="capabilityId" Type="Edm.String"/>
+        <Property Name="levelId" Type="Edm.String"/>
+        <Property Name="objectState" Type="Edm.String"/>
+        <Property Name="parentGroupId" Type="Edm.String"/>
+      </EntityType>
+      <EntityType Name="ApplicationGroup">
+        <Key><PropertyRef Name="id"/></Key>
+        <Property Name="id" Type="Edm.String" Nullable="false"/>
+        <Property Name="name" Type="Edm.String" Nullable="false"/>
+        <Property Name="description" Type="Edm.String"/>
+        <Property Name="createdAt" Type="Edm.String"/>
+        <Property Name="createdBy" Type="Edm.String"/>
+        <Property Name="modifiedAt" Type="Edm.String"/>
+        <Property Name="modifiedBy" Type="Edm.String"/>
+        <Property Name="capabilityId" Type="Edm.String"/>
+        <Property Name="levelId" Type="Edm.String"/>
+        <Property Name="objectState" Type="Edm.String"/>
+        <Property Name="parentGroupId" Type="Edm.String"/>
+        <Property Name="stakeholder" Type="Edm.String"/>
+        <Property Name="totalUsedProducts" Type="Edm.Int32"/>
+        <Property Name="totalAssignedProducts" Type="Edm.Int32"/>
+      </EntityType>
+      <EntityType Name="BusinessProcess">
+        <Key><PropertyRef Name="id"/></Key>
+        <Property Name="id" Type="Edm.String" Nullable="false"/>
+        <Property Name="name" Type="Edm.String" Nullable="false"/>
+        <Property Name="description" Type="Edm.String"/>
+        <Property Name="createdAt" Type="Edm.String"/>
+        <Property Name="createdBy" Type="Edm.String"/>
+        <Property Name="modifiedAt" Type="Edm.String"/>
+        <Property Name="modifiedBy" Type="Edm.String"/>
+        <Property Name="hierarchyPath" Type="Edm.String"/>
+        <Property Name="levelId" Type="Edm.String"/>
+        <Property Name="status" Type="Edm.String"/>
+        <Property Name="parentProcessId" Type="Edm.String"/>
+        <Property Name="processOwner" Type="Edm.String"/>
+        <Property Name="processManager" Type="Edm.String"/>
+      </EntityType>
+      <EntityType Name="BusinessData">
+        <Key><PropertyRef Name="id"/></Key>
+        <Property Name="id" Type="Edm.String" Nullable="false"/>
+        <Property Name="name" Type="Edm.String" Nullable="false"/>
+        <Property Name="description" Type="Edm.String"/>
+        <Property Name="createdAt" Type="Edm.String"/>
+        <Property Name="createdBy" Type="Edm.String"/>
+        <Property Name="modifiedAt" Type="Edm.String"/>
+        <Property Name="modifiedBy" Type="Edm.String"/>
+        <Property Name="dataVersion" Type="Edm.String"/>
+        <Property Name="businessObject" Type="Edm.String"/>
+        <Property Name="dpiaRating" Type="Edm.String"/>
+        <Property Name="ownerOrganizationId" Type="Edm.String"/>
+        <Property Name="capabilityId" Type="Edm.String"/>
+        <Property Name="informationFlowIds" Type="Collection(Edm.String)"/>
+      </EntityType>
+      <EntityType Name="ServiceProductGroup">
+        <Key><PropertyRef Name="id"/></Key>
+        <Property Name="id" Type="Edm.String" Nullable="false"/>
+        <Property Name="name" Type="Edm.String" Nullable="false"/>
+        <Property Name="description" Type="Edm.String"/>
+        <Property Name="createdAt" Type="Edm.String"/>
+        <Property Name="createdBy" Type="Edm.String"/>
+        <Property Name="modifiedAt" Type="Edm.String"/>
+        <Property Name="modifiedBy" Type="Edm.String"/>
+        <Property Name="hierarchyPath" Type="Edm.String"/>
+        <Property Name="shortName" Type="Edm.String"/>
+        <Property Name="catalogType" Type="Edm.String"/>
+        <Property Name="catalogVersion" Type="Edm.String"/>
+        <Property Name="status" Type="Edm.String"/>
+        <Property Name="parentId" Type="Edm.String"/>
+        <Property Name="catalogueManager" Type="Edm.String"/>
+        <Property Name="releaseDate" Type="Edm.Date"/>
+      </EntityType>
+      <EntityType Name="StrategicGuideline">
+        <Key><PropertyRef Name="id"/></Key>
+        <Property Name="id" Type="Edm.String" Nullable="false"/>
+        <Property Name="name" Type="Edm.String" Nullable="false"/>
+        <Property Name="description" Type="Edm.String"/>
+        <Property Name="createdAt" Type="Edm.String"/>
+        <Property Name="createdBy" Type="Edm.String"/>
+        <Property Name="modifiedAt" Type="Edm.String"/>
+        <Property Name="modifiedBy" Type="Edm.String"/>
+        <Property Name="hierarchyPath" Type="Edm.String"/>
+        <Property Name="shortName" Type="Edm.String"/>
+        <Property Name="category" Type="Edm.String"/>
+        <Property Name="priority" Type="Edm.String"/>
+        <Property Name="status" Type="Edm.String"/>
+        <Property Name="parentId" Type="Edm.String"/>
+        <Property Name="rationale" Type="Edm.String"/>
+        <Property Name="implications" Type="Edm.String"/>
+        <Property Name="guidelineOwner" Type="Edm.String"/>
+        <Property Name="ownerOrganizationId" Type="Edm.String"/>
+        <Property Name="validFrom" Type="Edm.Date"/>
+        <Property Name="validUntil" Type="Edm.Date"/>
+        <Property Name="capabilityIds" Type="Collection(Edm.String)"/>
+      </EntityType>
+      <EntityType Name="ServiceCapability">
+        <Key><PropertyRef Name="id"/></Key>
+        <Property Name="id" Type="Edm.String" Nullable="false"/>
+        <Property Name="name" Type="Edm.String" Nullable="false"/>
+        <Property Name="description" Type="Edm.String"/>
+        <Property Name="createdAt" Type="Edm.String"/>
+        <Property Name="createdBy" Type="Edm.String"/>
+        <Property Name="modifiedAt" Type="Edm.String"/>
+        <Property Name="modifiedBy" Type="Edm.String"/>
+        <Property Name="hierarchyPath" Type="Edm.String"/>
+        <Property Name="shortName" Type="Edm.String"/>
+        <Property Name="levelId" Type="Edm.String"/>
+        <Property Name="status" Type="Edm.String"/>
+        <Property Name="missionCriticality" Type="Edm.String"/>
+        <Property Name="parentId" Type="Edm.String"/>
+        <Property Name="currentMaturity" Type="Edm.Int32"/>
+        <Property Name="targetMaturity" Type="Edm.Int32"/>
+        <Property Name="maturityGap" Type="Edm.Int32"/>
+        <Property Name="stakeholder" Type="Edm.String"/>
+        <Property Name="ownerOrganizationId" Type="Edm.String"/>
+        <Property Name="businessCapabilityId" Type="Edm.String"/>
+        <Property Name="serviceProductGroupIds" Type="Collection(Edm.String)"/>
+        <Property Name="applicationIds" Type="Collection(Edm.String)"/>
+      </EntityType>
+      <EntityType Name="MeasureGroup">
+        <Key><PropertyRef Name="id"/></Key>
+        <Property Name="id" Type="Edm.String" Nullable="false"/>
+        <Property Name="name" Type="Edm.String" Nullable="false"/>
+        <Property Name="description" Type="Edm.String"/>
+        <Property Name="createdAt" Type="Edm.String"/>
+        <Property Name="createdBy" Type="Edm.String"/>
+        <Property Name="modifiedAt" Type="Edm.String"/>
+        <Property Name="modifiedBy" Type="Edm.String"/>
+        <Property Name="hierarchyPath" Type="Edm.String"/>
+        <Property Name="shortName" Type="Edm.String"/>
+        <Property Name="status" Type="Edm.String"/>
+        <Property Name="parentGroupId" Type="Edm.String"/>
+        <Property Name="responsible" Type="Edm.String"/>
+        <Property Name="ownerOrganizationId" Type="Edm.String"/>
+        <Property Name="startDate" Type="Edm.Date"/>
+        <Property Name="endDate" Type="Edm.Date"/>
+        <Property Name="budget" Type="Edm.Double"/>
+        <Property Name="totalMeasures" Type="Edm.Int32"/>
+        <Property Name="totalEstimatedCost" Type="Edm.Double"/>
+        <Property Name="strategicGuidelineIds" Type="Collection(Edm.String)"/>
+      </EntityType>
+      <EntityType Name="Measure">
+        <Key><PropertyRef Name="id"/></Key>
+        <Property Name="id" Type="Edm.String" Nullable="false"/>
+        <Property Name="name" Type="Edm.String" Nullable="false"/>
+        <Property Name="description" Type="Edm.String"/>
+        <Property Name="createdAt" Type="Edm.String"/>
+        <Property Name="createdBy" Type="Edm.String"/>
+        <Property Name="modifiedAt" Type="Edm.String"/>
+        <Property Name="modifiedBy" Type="Edm.String"/>
+        <Property Name="shortName" Type="Edm.String"/>
+        <Property Name="measureGroupId" Type="Edm.String"/>
+        <Property Name="measureType" Type="Edm.String"/>
+        <Property Name="priority" Type="Edm.String"/>
+        <Property Name="status" Type="Edm.String"/>
+        <Property Name="progress" Type="Edm.Int32"/>
+        <Property Name="responsible" Type="Edm.String"/>
+        <Property Name="ownerOrganizationId" Type="Edm.String"/>
+        <Property Name="startDate" Type="Edm.Date"/>
+        <Property Name="endDate" Type="Edm.Date"/>
+        <Property Name="estimatedCost" Type="Edm.Double"/>
+        <Property Name="expectedBenefit" Type="Edm.String"/>
+        <Property Name="projectId" Type="Edm.String"/>
+        <Property Name="strategicGuidelineIds" Type="Collection(Edm.String)"/>
+        <Property Name="serviceCapabilityIds" Type="Collection(Edm.String)"/>
+        <Property Name="affectedApplicationIds" Type="Collection(Edm.String)"/>
+        <Property Name="affectedComponentIds" Type="Collection(Edm.String)"/>
+      </EntityType>
+      <EntityType Name="ArchitecturePrinciple">
+        <Key><PropertyRef Name="id"/></Key>
+        <Property Name="id" Type="Edm.String" Nullable="false"/>
+        <Property Name="name" Type="Edm.String" Nullable="false"/>
+        <Property Name="description" Type="Edm.String"/>
+        <Property Name="createdAt" Type="Edm.String"/>
+        <Property Name="createdBy" Type="Edm.String"/>
+        <Property Name="modifiedAt" Type="Edm.String"/>
+        <Property Name="modifiedBy" Type="Edm.String"/>
+        <Property Name="shortName" Type="Edm.String"/>
+        <Property Name="domain" Type="Edm.String"/>
+        <Property Name="priority" Type="Edm.String"/>
+        <Property Name="status" Type="Edm.String"/>
+        <Property Name="specVersion" Type="Edm.String"/>
+        <Property Name="statement" Type="Edm.String"/>
+        <Property Name="rationale" Type="Edm.String"/>
+        <Property Name="implications" Type="Edm.String"/>
+        <Property Name="principleOwner" Type="Edm.String"/>
+        <Property Name="ownerOrganizationId" Type="Edm.String"/>
+        <Property Name="validFrom" Type="Edm.Date"/>
+        <Property Name="validUntil" Type="Edm.Date"/>
+        <Property Name="strategicGuidelineIds" Type="Collection(Edm.String)"/>
+      </EntityType>
+      <EntityType Name="ArchitectureGuideline">
+        <Key><PropertyRef Name="id"/></Key>
+        <Property Name="id" Type="Edm.String" Nullable="false"/>
+        <Property Name="name" Type="Edm.String" Nullable="false"/>
+        <Property Name="description" Type="Edm.String"/>
+        <Property Name="createdAt" Type="Edm.String"/>
+        <Property Name="createdBy" Type="Edm.String"/>
+        <Property Name="modifiedAt" Type="Edm.String"/>
+        <Property Name="modifiedBy" Type="Edm.String"/>
+        <Property Name="shortName" Type="Edm.String"/>
+        <Property Name="domain" Type="Edm.String"/>
+        <Property Name="obligation" Type="Edm.String"/>
+        <Property Name="status" Type="Edm.String"/>
+        <Property Name="specVersion" Type="Edm.String"/>
+        <Property Name="applicability" Type="Edm.String"/>
+        <Property Name="verification" Type="Edm.String"/>
+        <Property Name="guidelineOwner" Type="Edm.String"/>
+        <Property Name="ownerOrganizationId" Type="Edm.String"/>
+        <Property Name="validFrom" Type="Edm.Date"/>
+        <Property Name="validUntil" Type="Edm.Date"/>
+        <Property Name="principleIds" Type="Collection(Edm.String)"/>
+        <Property Name="standardProductIds" Type="Collection(Edm.String)"/>
+        <Property Name="componentIds" Type="Collection(Edm.String)"/>
+      </EntityType>
+      <EntityType Name="ReferenceArchitecture">
+        <Key><PropertyRef Name="id"/></Key>
+        <Property Name="id" Type="Edm.String" Nullable="false"/>
+        <Property Name="name" Type="Edm.String" Nullable="false"/>
+        <Property Name="description" Type="Edm.String"/>
+        <Property Name="createdAt" Type="Edm.String"/>
+        <Property Name="createdBy" Type="Edm.String"/>
+        <Property Name="modifiedAt" Type="Edm.String"/>
+        <Property Name="modifiedBy" Type="Edm.String"/>
+        <Property Name="hierarchyPath" Type="Edm.String"/>
+        <Property Name="shortName" Type="Edm.String"/>
+        <Property Name="domain" Type="Edm.String"/>
+        <Property Name="status" Type="Edm.String"/>
+        <Property Name="specVersion" Type="Edm.String"/>
+        <Property Name="parentId" Type="Edm.String"/>
+        <Property Name="scopeDescription" Type="Edm.String"/>
+        <Property Name="architect" Type="Edm.String"/>
+        <Property Name="ownerOrganizationId" Type="Edm.String"/>
+        <Property Name="validFrom" Type="Edm.Date"/>
+        <Property Name="validUntil" Type="Edm.Date"/>
+        <Property Name="totalDocuments" Type="Edm.Int32"/>
+        <Property Name="principleIds" Type="Collection(Edm.String)"/>
+        <Property Name="guidelineIds" Type="Collection(Edm.String)"/>
+        <Property Name="capabilityIds" Type="Collection(Edm.String)"/>
+        <Property Name="componentIds" Type="Collection(Edm.String)"/>
+        <Property Name="standardProductIds" Type="Collection(Edm.String)"/>
+        <Property Name="applicationIds" Type="Collection(Edm.String)"/>
+      </EntityType>
+      <EntityType Name="ArchitectureDocument">
+        <Key><PropertyRef Name="id"/></Key>
+        <Property Name="id" Type="Edm.String" Nullable="false"/>
+        <Property Name="name" Type="Edm.String" Nullable="false"/>
+        <Property Name="description" Type="Edm.String"/>
+        <Property Name="createdAt" Type="Edm.String"/>
+        <Property Name="createdBy" Type="Edm.String"/>
+        <Property Name="modifiedAt" Type="Edm.String"/>
+        <Property Name="modifiedBy" Type="Edm.String"/>
+        <Property Name="documentNumber" Type="Edm.String"/>
+        <Property Name="documentType" Type="Edm.String"/>
+        <Property Name="status" Type="Edm.String"/>
+        <Property Name="docVersion" Type="Edm.String"/>
+        <Property Name="confidentiality" Type="Edm.String"/>
+        <Property Name="documentLink" Type="Edm.String"/>
+        <Property Name="author" Type="Edm.String"/>
+        <Property Name="approver" Type="Edm.String"/>
+        <Property Name="approvalDate" Type="Edm.Date"/>
+        <Property Name="nextReviewDate" Type="Edm.Date"/>
+        <Property Name="reviewOverdue" Type="Edm.Boolean"/>
+        <Property Name="ownerOrganizationId" Type="Edm.String"/>
+        <Property Name="referenceArchitectureIds" Type="Collection(Edm.String)"/>
+        <Property Name="principleIds" Type="Collection(Edm.String)"/>
+        <Property Name="guidelineIds" Type="Collection(Edm.String)"/>
+        <Property Name="applicationIds" Type="Collection(Edm.String)"/>
+      </EntityType>
+      <EntityType Name="SubProject">
+        <Key><PropertyRef Name="id"/></Key>
+        <Property Name="id" Type="Edm.String" Nullable="false"/>
+        <Property Name="name" Type="Edm.String" Nullable="false"/>
+        <Property Name="description" Type="Edm.String"/>
+        <Property Name="createdAt" Type="Edm.String"/>
+        <Property Name="createdBy" Type="Edm.String"/>
+        <Property Name="modifiedAt" Type="Edm.String"/>
+        <Property Name="modifiedBy" Type="Edm.String"/>
+        <Property Name="hierarchyPath" Type="Edm.String"/>
+        <Property Name="shortName" Type="Edm.String"/>
+        <Property Name="projectId" Type="Edm.String" Nullable="false"/>
+        <Property Name="parentSubProjectId" Type="Edm.String"/>
+        <Property Name="status" Type="Edm.String"/>
+        <Property Name="subProjectManager" Type="Edm.String"/>
+        <Property Name="startDate" Type="Edm.Date"/>
+        <Property Name="endDate" Type="Edm.Date"/>
+        <Property Name="budget" Type="Edm.Double"/>
+        <Property Name="ownerOrganizationId" Type="Edm.String"/>
+        <Property Name="totalWorkPackages" Type="Edm.Int32"/>
+        <Property Name="plannedEffortDays" Type="Edm.Double"/>
+        <Property Name="progress" Type="Edm.Int32"/>
+        <Property Name="affectedApplicationIds" Type="Collection(Edm.String)"/>
+      </EntityType>
+      <EntityType Name="WorkPackage">
+        <Key><PropertyRef Name="id"/></Key>
+        <Property Name="id" Type="Edm.String" Nullable="false"/>
+        <Property Name="name" Type="Edm.String" Nullable="false"/>
+        <Property Name="description" Type="Edm.String"/>
+        <Property Name="createdAt" Type="Edm.String"/>
+        <Property Name="createdBy" Type="Edm.String"/>
+        <Property Name="modifiedAt" Type="Edm.String"/>
+        <Property Name="modifiedBy" Type="Edm.String"/>
+        <Property Name="wbsCode" Type="Edm.String"/>
+        <Property Name="projectId" Type="Edm.String" Nullable="false"/>
+        <Property Name="subProjectId" Type="Edm.String"/>
+        <Property Name="status" Type="Edm.String"/>
+        <Property Name="responsible" Type="Edm.String"/>
+        <Property Name="startDate" Type="Edm.Date"/>
+        <Property Name="endDate" Type="Edm.Date"/>
+        <Property Name="plannedEffortDays" Type="Edm.Double"/>
+        <Property Name="actualEffortDays" Type="Edm.Double"/>
+        <Property Name="plannedCost" Type="Edm.Double"/>
+        <Property Name="actualCost" Type="Edm.Double"/>
+        <Property Name="deliverables" Type="Edm.String"/>
+        <Property Name="progress" Type="Edm.Int32"/>
+        <Property Name="delayed" Type="Edm.Boolean"/>
+        <Property Name="predecessorIds" Type="Collection(Edm.String)"/>
+        <Property Name="measureIds" Type="Collection(Edm.String)"/>
+        <Property Name="affectedApplicationIds" Type="Collection(Edm.String)"/>
+      </EntityType>
+      <EntityType Name="Enterprise">
+        <Key><PropertyRef Name="id"/></Key>
+        <Property Name="id" Type="Edm.String" Nullable="false"/>
+        <Property Name="name" Type="Edm.String" Nullable="false"/>
+        <Property Name="description" Type="Edm.String"/>
+        <Property Name="createdAt" Type="Edm.String"/>
+        <Property Name="createdBy" Type="Edm.String"/>
+        <Property Name="modifiedAt" Type="Edm.String"/>
+        <Property Name="modifiedBy" Type="Edm.String"/>
+        <Property Name="hierarchyPath" Type="Edm.String"/>
+        <Property Name="shortName" Type="Edm.String"/>
+        <Property Name="legalForm" Type="Edm.String"/>
+        <Property Name="status" Type="Edm.String"/>
+        <Property Name="industry" Type="Edm.String"/>
+        <Property Name="website" Type="Edm.String"/>
+        <Property Name="foundingDate" Type="Edm.Date"/>
+        <Property Name="registrationNumber" Type="Edm.String"/>
+        <Property Name="vatId" Type="Edm.String"/>
+        <Property Name="headquarters" Type="Edm.String"/>
+        <Property Name="country" Type="Edm.String"/>
+        <Property Name="parentEnterpriseId" Type="Edm.String"/>
+        <Property Name="ownershipShare" Type="Edm.Double"/>
+        <Property Name="managingDirector" Type="Edm.String"/>
+        <Property Name="totalUnits" Type="Edm.Int32"/>
+        <Property Name="totalMembers" Type="Edm.Int32"/>
+      </EntityType>
+      <EntityType Name="Member">
+        <Key><PropertyRef Name="id"/></Key>
+        <Property Name="id" Type="Edm.String" Nullable="false"/>
+        <Property Name="name" Type="Edm.String" Nullable="false"/>
+        <Property Name="description" Type="Edm.String"/>
+        <Property Name="createdAt" Type="Edm.String"/>
+        <Property Name="createdBy" Type="Edm.String"/>
+        <Property Name="modifiedAt" Type="Edm.String"/>
+        <Property Name="modifiedBy" Type="Edm.String"/>
+        <Property Name="personnelNumber" Type="Edm.String"/>
+        <Property Name="jobTitle" Type="Edm.String"/>
+        <Property Name="organizationId" Type="Edm.String" Nullable="false"/>
+        <Property Name="memberFunction" Type="Edm.String"/>
+        <Property Name="employmentType" Type="Edm.String"/>
+        <Property Name="capacity" Type="Edm.Int32"/>
+        <Property Name="current" Type="Edm.Boolean"/>
+        <Property Name="email" Type="Edm.String"/>
+        <Property Name="phone" Type="Edm.String"/>
+        <Property Name="location" Type="Edm.String"/>
+        <Property Name="startDate" Type="Edm.Date"/>
+        <Property Name="endDate" Type="Edm.Date"/>
+        <Property Name="managerId" Type="Edm.String"/>
+        <Property Name="userId" Type="Edm.String"/>
+      </EntityType>
+      <EntityType Name="User">
+        <Key><PropertyRef Name="id"/></Key>
+        <Property Name="id" Type="Edm.String" Nullable="false"/>
+        <Property Name="name" Type="Edm.String" Nullable="false"/>
+        <Property Name="description" Type="Edm.String"/>
+        <Property Name="createdAt" Type="Edm.String"/>
+        <Property Name="createdBy" Type="Edm.String"/>
+        <Property Name="modifiedAt" Type="Edm.String"/>
+        <Property Name="modifiedBy" Type="Edm.String"/>
+        <Property Name="userName" Type="Edm.String" Nullable="false"/>
+        <Property Name="email" Type="Edm.String"/>
+        <Property Name="active" Type="Edm.Boolean"/>
+        <Property Name="validUntil" Type="Edm.Date"/>
+        <Property Name="organizationId" Type="Edm.String"/>
+        <Property Name="roleIds" Type="Collection(Edm.String)"/>
+        <Property Name="effectiveRights" Type="Edm.String"/>
+      </EntityType>
+      <EntityType Name="Role">
+        <Key><PropertyRef Name="id"/></Key>
+        <Property Name="id" Type="Edm.String" Nullable="false"/>
+        <Property Name="name" Type="Edm.String" Nullable="false"/>
+        <Property Name="description" Type="Edm.String"/>
+        <Property Name="createdAt" Type="Edm.String"/>
+        <Property Name="createdBy" Type="Edm.String"/>
+        <Property Name="modifiedAt" Type="Edm.String"/>
+        <Property Name="modifiedBy" Type="Edm.String"/>
+        <Property Name="roleKey" Type="Edm.String"/>
+        <Property Name="status" Type="Edm.String"/>
+        <Property Name="totalUsers" Type="Edm.Int32"/>
+        <Property Name="permissionIds" Type="Collection(Edm.String)"/>
+      </EntityType>
+      <EntityType Name="Permission">
+        <Key><PropertyRef Name="id"/></Key>
+        <Property Name="id" Type="Edm.String" Nullable="false"/>
+        <Property Name="name" Type="Edm.String" Nullable="false"/>
+        <Property Name="description" Type="Edm.String"/>
+        <Property Name="createdAt" Type="Edm.String"/>
+        <Property Name="createdBy" Type="Edm.String"/>
+        <Property Name="modifiedAt" Type="Edm.String"/>
+        <Property Name="modifiedBy" Type="Edm.String"/>
+        <Property Name="entitySet" Type="Edm.String"/>
+        <Property Name="canRead" Type="Edm.Boolean"/>
+        <Property Name="canCreate" Type="Edm.Boolean"/>
+        <Property Name="canUpdate" Type="Edm.Boolean"/>
+        <Property Name="canDelete" Type="Edm.Boolean"/>
+        <Property Name="totalRoles" Type="Edm.Int32"/>
+      </EntityType>
+      <EntityContainer Name="Container">
+        <EntitySet Name="Applications" EntityType="EamService.Application"/>
+        <EntitySet Name="BusinessCapabilities" EntityType="EamService.BusinessCapability"/>
+        <EntitySet Name="ITComponents" EntityType="EamService.ITComponent"/>
+        <EntitySet Name="InformationFlows" EntityType="EamService.InformationFlow"/>
+        <EntitySet Name="Organizations" EntityType="EamService.Organization"/>
+        <EntitySet Name="Projects" EntityType="EamService.Project"/>
+        <EntitySet Name="Products" EntityType="EamService.Product"/>
+        <EntitySet Name="ProductGroups" EntityType="EamService.ProductGroup"/>
+        <EntitySet Name="ApplicationGroups" EntityType="EamService.ApplicationGroup"/>
+        <EntitySet Name="BusinessProcesses" EntityType="EamService.BusinessProcess"/>
+        <EntitySet Name="BusinessData" EntityType="EamService.BusinessData"/>
+        <EntitySet Name="ServiceProductGroups" EntityType="EamService.ServiceProductGroup"/>
+        <EntitySet Name="StrategicGuidelines" EntityType="EamService.StrategicGuideline"/>
+        <EntitySet Name="ServiceCapabilities" EntityType="EamService.ServiceCapability"/>
+        <EntitySet Name="MeasureGroups" EntityType="EamService.MeasureGroup"/>
+        <EntitySet Name="Measures" EntityType="EamService.Measure"/>
+        <EntitySet Name="ArchitecturePrinciples" EntityType="EamService.ArchitecturePrinciple"/>
+        <EntitySet Name="ArchitectureGuidelines" EntityType="EamService.ArchitectureGuideline"/>
+        <EntitySet Name="ReferenceArchitectures" EntityType="EamService.ReferenceArchitecture"/>
+        <EntitySet Name="ArchitectureDocuments" EntityType="EamService.ArchitectureDocument"/>
+        <EntitySet Name="SubProjects" EntityType="EamService.SubProject"/>
+        <EntitySet Name="WorkPackages" EntityType="EamService.WorkPackage"/>
+        <EntitySet Name="Enterprises" EntityType="EamService.Enterprise"/>
+        <EntitySet Name="Members" EntityType="EamService.Member"/>
+        <EntitySet Name="Users" EntityType="EamService.User"/>
+        <EntitySet Name="Roles" EntityType="EamService.Role"/>
+        <EntitySet Name="Permissions" EntityType="EamService.Permission"/>
+      </EntityContainer>
+    </Schema>
+  </edmx:DataServices>
+</edmx:Edmx>

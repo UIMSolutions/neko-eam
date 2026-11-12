@@ -1,0 +1,47 @@
+<mvc:View controllerName="uim.eam.controller.ElementList"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:f="sap.f"
+	xmlns="sap.m"
+	height="100%">
+	<f:DynamicPage id="listPage" headerExpanded="true" toggleHeaderOnTitleClick="false" fitContent="false">
+		<f:title>
+			<f:DynamicPageTitle>
+				<f:heading><Title id="listTitle" text="{view>/title}" /></f:heading>
+				<f:expandedContent><Text text="{view>/subtitle}" /></f:expandedContent>
+				<f:actions>
+					<Button id="createButton" text="{i18n>create}" icon="sap-icon://add" type="Emphasized" press=".onCreate" enabled="{ui>/canCreate}" />
+					<Button id="deleteButton" text="{i18n>delete}" icon="sap-icon://delete" press=".onDelete" enabled="{= ${ui>/canDelete} &amp;&amp; ${view>/hasSelection} }" />
+					<MenuButton id="exportButton" text="{i18n>export}" icon="sap-icon://download" type="Transparent">
+						<menu>
+							<Menu itemSelected=".onExport">
+								<MenuItem text="{i18n>exportXlsx}" icon="sap-icon://excel-attachment" key="xlsx" />
+								<MenuItem text="{i18n>exportCsv}" icon="sap-icon://attachment-text-file" key="csv" />
+								<MenuItem text="{i18n>exportCsvSemicolon}" icon="sap-icon://attachment-text-file" key="csv;" />
+							</Menu>
+						</menu>
+					</MenuButton>
+					<Button id="importButton" text="{i18n>import}" icon="sap-icon://upload" type="Transparent" press=".onImport" enabled="{ui>/canImport}" />
+					<Button tooltip="{i18n>refresh}" icon="sap-icon://refresh" press=".onRefresh" type="Transparent" />
+				</f:actions>
+			</f:DynamicPageTitle>
+		</f:title>
+		<f:header>
+			<f:DynamicPageHeader pinnable="false">
+				<OverflowToolbar style="Clear">
+					<SearchField id="listSearch" width="22rem" placeholder="{i18n>search}" search=".onSearch" value="{view>/query}" />
+				</OverflowToolbar>
+			</f:DynamicPageHeader>
+		</f:header>
+		<f:content>
+			<Table id="elementTable" mode="SingleSelectLeft" growing="true" growingThreshold="50" growingScrollToLoad="true"
+				sticky="ColumnHeaders,HeaderToolbar" selectionChange=".onSelectionChange" popinLayout="GridSmall"
+				noDataText="{i18n>noData}">
+				<headerToolbar>
+					<OverflowToolbar>
+						<Title id="tableTitle" text="{view>/tableTitle}" level="H3" />
+					</OverflowToolbar>
+				</headerToolbar>
+			</Table>
+		</f:content>
+	</f:DynamicPage>
+</mvc:View>

@@ -1,0 +1,186 @@
+[
+ {
+  "id": "app-s4",
+  "modifiedAt": "2026-11-12T12:20:29.0009271Z",
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T12:20:29.0009271Z",
+  "name": "SAP S/4HANA Finance",
+  "applicationGroupId": "ag-finance",
+  "annualCost": 850000,
+  "usedProductIds": [
+   "prd-hana-20"
+  ],
+  "stakeholder": "CFO Office",
+  "objectState": "Active",
+  "businessValue": 5,
+  "totalUsedProducts": 1,
+  "timeCategory": "Invest",
+  "release": "2023",
+  "levelId": "AG-2",
+  "modifiedBy": "seed",
+  "retirementDate": null,
+  "ownerOrganizationId": "org-fin",
+  "technicalFit": 4,
+  "status": "Active",
+  "goLiveDate": "2023-04-01",
+  "componentIds": [
+   "tc-hana"
+  ],
+  "capabilityIds": [
+   "cap-ap",
+   "cap-reporting"
+  ],
+  "totalAssignedProducts": 0,
+  "description": "",
+  "assignedProductIds": [],
+  "criticality": "MissionCritical"
+ },
+ {
+  "id": "app-crm",
+  "modifiedAt": "2026-11-12T12:20:29.001354Z",
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T12:20:29.001354Z",
+  "name": "Sales Cloud CRM",
+  "applicationGroupId": "ag-crm",
+  "annualCost": 310000,
+  "usedProductIds": [],
+  "stakeholder": "CRM Product Owner",
+  "objectState": "Active",
+  "businessValue": 5,
+  "totalUsedProducts": 0,
+  "timeCategory": "Invest",
+  "release": "2511",
+  "levelId": "AG-1.1",
+  "modifiedBy": "seed",
+  "retirementDate": null,
+  "ownerOrganizationId": "org-sales",
+  "technicalFit": 5,
+  "status": "Active",
+  "goLiveDate": "2021-09-01",
+  "componentIds": [
+   "tc-btp"
+  ],
+  "capabilityIds": [
+   "cap-crm"
+  ],
+  "totalAssignedProducts": 1,
+  "description": "",
+  "assignedProductIds": [
+   "prd-temurin-21"
+  ],
+  "criticality": "High"
+ },
+ {
+  "id": "app-legacycrm",
+  "modifiedAt": "2026-11-12T12:20:29.0021218Z",
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T12:20:29.0021218Z",
+  "name": "Legacy Customer DB",
+  "applicationGroupId": "ag-crm",
+  "annualCost": 95000,
+  "usedProductIds": [
+   "prd-oracle-11",
+   "prd-java-8",
+   "prd-winrar-6"
+  ],
+  "stakeholder": "",
+  "objectState": "Active",
+  "businessValue": 3,
+  "totalUsedProducts": 3,
+  "timeCategory": "Tolerate",
+  "release": "4.2",
+  "levelId": "AG-1.1",
+  "modifiedBy": "seed",
+  "retirementDate": null,
+  "ownerOrganizationId": "org-it",
+  "technicalFit": 1,
+  "status": "PhaseOut",
+  "goLiveDate": "2009-01-15",
+  "componentIds": [
+   "tc-oracle11",
+   "tc-java8"
+  ],
+  "capabilityIds": [
+   "cap-crm",
+   "cap-campaign"
+  ],
+  "totalAssignedProducts": 0,
+  "description": "",
+  "assignedProductIds": [],
+  "criticality": "Medium"
+ },
+ {
+  "id": "app-bi",
+  "modifiedAt": "2026-11-12T12:20:29.0026129Z",
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T12:20:29.0026129Z",
+  "name": "Corporate BI",
+  "applicationGroupId": "ag-finance",
+  "annualCost": 180000,
+  "usedProductIds": [
+   "prd-oracle-11"
+  ],
+  "stakeholder": "",
+  "objectState": "Active",
+  "businessValue": 4,
+  "totalUsedProducts": 1,
+  "timeCategory": "Migrate",
+  "release": "11",
+  "levelId": "AG-2",
+  "modifiedBy": "seed",
+  "retirementDate": null,
+  "ownerOrganizationId": "org-fin",
+  "technicalFit": 2,
+  "status": "Active",
+  "goLiveDate": "2015-06-01",
+  "componentIds": [
+   "tc-oracle11"
+  ],
+  "capabilityIds": [
+   "cap-reporting"
+  ],
+  "totalAssignedProducts": 1,
+  "description": "",
+  "assignedProductIds": [
+   "prd-hana-20"
+  ],
+  "criticality": "High"
+ },
+ {
+  "id": "app-portal",
+  "modifiedAt": "2026-11-12T12:20:29.0031187Z",
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T12:20:29.0031187Z",
+  "name": "Customer Portal",
+  "applicationGroupId": "ag-customer",
+  "annualCost": 70000,
+  "usedProductIds": [
+   "prd-k8s-131",
+   "prd-temurin-21"
+  ],
+  "stakeholder": "",
+  "objectState": "Draft",
+  "businessValue": 4,
+  "totalUsedProducts": 2,
+  "timeCategory": "Invest",
+  "release": "3.1",
+  "levelId": "AG-1",
+  "modifiedBy": "seed",
+  "retirementDate": null,
+  "ownerOrganizationId": "org-sales",
+  "technicalFit": 4,
+  "status": "Build",
+  "goLiveDate": "2027-03-01",
+  "componentIds": [
+   "tc-k8s",
+   "tc-btp"
+  ],
+  "capabilityIds": [
+   "cap-customer"
+  ],
+  "totalAssignedProducts": 0,
+  "description": "",
+  "assignedProductIds": [],
+  "criticality": "Medium"
+ }
+]

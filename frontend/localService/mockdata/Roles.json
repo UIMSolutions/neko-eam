@@ -1,0 +1,175 @@
+[
+ {
+  "id": "role-admin",
+  "modifiedBy": "seed",
+  "modifiedAt": "2026-11-12T14:19:51.4442795Z",
+  "permissionIds": [
+   "perm-edit-all",
+   "perm-admin-users",
+   "perm-admin-roles",
+   "perm-admin-permissions"
+  ],
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T14:19:51.4442795Z",
+  "name": "EAM Administrator",
+  "roleKey": "ADMIN",
+  "description": "Full access incl. user, role and permission management",
+  "totalUsers": 1,
+  "status": "Active"
+ },
+ {
+  "id": "role-architect",
+  "modifiedBy": "seed",
+  "modifiedAt": "2026-11-12T14:19:51.4451564Z",
+  "permissionIds": [
+   "perm-edit-all"
+  ],
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T14:19:51.4451564Z",
+  "name": "Enterprise Architect",
+  "roleKey": "ARCHITECT",
+  "description": "Maintains all architecture data",
+  "totalUsers": 2,
+  "status": "Active"
+ },
+ {
+  "id": "role-viewer",
+  "modifiedBy": "seed",
+  "modifiedAt": "2026-11-12T14:19:51.4459952Z",
+  "permissionIds": [
+   "perm-read-all"
+  ],
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T14:19:51.4459952Z",
+  "name": "Viewer",
+  "roleKey": "VIEWER",
+  "description": "Reads all architecture data",
+  "totalUsers": 1,
+  "status": "Active"
+ },
+ {
+  "id": "role-app-owner",
+  "modifiedBy": "seed",
+  "modifiedAt": "2026-11-12T14:19:51.4468021Z",
+  "permissionIds": [
+   "perm-read-all",
+   "perm-edit-applications",
+   "perm-edit-applicationgroups",
+   "perm-edit-informationflows"
+  ],
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T14:19:51.4468021Z",
+  "name": "Application Owner",
+  "roleKey": "APP_OWNER",
+  "description": "",
+  "totalUsers": 1,
+  "status": "Active"
+ },
+ {
+  "id": "role-product-manager",
+  "modifiedBy": "seed",
+  "modifiedAt": "2026-11-12T14:19:51.44771Z",
+  "permissionIds": [
+   "perm-read-all",
+   "perm-edit-products",
+   "perm-edit-productgroups",
+   "perm-edit-itcomponents"
+  ],
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T14:19:51.44771Z",
+  "name": "Product Manager",
+  "roleKey": "PRODUCT_MGR",
+  "description": "",
+  "totalUsers": 1,
+  "status": "Active"
+ },
+ {
+  "id": "role-planner",
+  "modifiedBy": "seed",
+  "modifiedAt": "2026-11-12T14:19:51.4486135Z",
+  "permissionIds": [
+   "perm-read-all",
+   "perm-edit-strategicguidelines",
+   "perm-edit-servicecapabilities",
+   "perm-edit-measuregroups",
+   "perm-edit-measures",
+   "perm-edit-architectureprinciples",
+   "perm-edit-architectureguidelines",
+   "perm-edit-referencearchitectures",
+   "perm-edit-architecturedocuments"
+  ],
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T14:19:51.4486135Z",
+  "name": "IT Planner",
+  "roleKey": "PLANNER",
+  "description": "",
+  "totalUsers": 1,
+  "status": "Active"
+ },
+ {
+  "id": "role-project-manager",
+  "modifiedBy": "seed",
+  "modifiedAt": "2026-11-12T14:19:51.4495294Z",
+  "permissionIds": [
+   "perm-read-all",
+   "perm-edit-projects",
+   "perm-edit-subprojects",
+   "perm-edit-workpackages"
+  ],
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T14:19:51.4495294Z",
+  "name": "Project Manager",
+  "roleKey": "PM",
+  "description": "",
+  "totalUsers": 1,
+  "status": "Active"
+ },
+ {
+  "id": "role-org-manager",
+  "modifiedBy": "seed",
+  "modifiedAt": "2026-11-12T14:19:51.450434Z",
+  "permissionIds": [
+   "perm-read-all",
+   "perm-edit-enterprises",
+   "perm-edit-organizations",
+   "perm-edit-members"
+  ],
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T14:19:51.450434Z",
+  "name": "Organisation Manager",
+  "roleKey": "ORG_MGR",
+  "description": "Maintains organisations, organisational units and members",
+  "totalUsers": 0,
+  "status": "Active"
+ },
+ {
+  "id": "role-team-member",
+  "modifiedBy": "seed",
+  "modifiedAt": "2026-11-12T14:19:51.4513424Z",
+  "permissionIds": [
+   "perm-update-workpackages"
+  ],
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T14:19:51.4513424Z",
+  "name": "Project Team Member",
+  "roleKey": "TEAM",
+  "description": "Sees and updates work packages only",
+  "totalUsers": 1,
+  "status": "Active"
+ },
+ {
+  "id": "role-legacy",
+  "modifiedBy": "seed",
+  "modifiedAt": "2026-11-12T14:19:51.4522318Z",
+  "permissionIds": [
+   "perm-edit-all"
+  ],
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T14:19:51.4522318Z",
+  "name": "Legacy Editor",
+  "roleKey": "LEGACY",
+  "description": "Switched off - grants nothing",
+  "totalUsers": 0,
+  "status": "Inactive"
+ }
+]

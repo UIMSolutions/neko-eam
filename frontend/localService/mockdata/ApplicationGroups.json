@@ -1,0 +1,50 @@
+[
+ {
+  "levelId": "AG-1",
+  "id": "ag-customer",
+  "modifiedBy": "seed",
+  "modifiedAt": "2026-11-12T12:20:28.9997102Z",
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T12:20:28.9997102Z",
+  "name": "Customer Applications",
+  "objectState": "Active",
+  "parentGroupId": "",
+  "stakeholder": "Head of Sales",
+  "totalAssignedProducts": 1,
+  "totalUsedProducts": 5,
+  "capabilityId": "cap-customer",
+  "description": ""
+ },
+ {
+  "levelId": "AG-1.1",
+  "id": "ag-crm",
+  "modifiedBy": "seed",
+  "modifiedAt": "2026-11-12T12:20:29.000081Z",
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T12:20:29.000081Z",
+  "name": "CRM Landscape",
+  "objectState": "Active",
+  "parentGroupId": "ag-customer",
+  "stakeholder": "CRM Product Owner",
+  "totalAssignedProducts": 1,
+  "totalUsedProducts": 3,
+  "capabilityId": "cap-crm",
+  "description": ""
+ },
+ {
+  "levelId": "AG-2",
+  "id": "ag-finance",
+  "modifiedBy": "seed",
+  "modifiedAt": "2026-11-12T12:20:29.0004528Z",
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T12:20:29.0004528Z",
+  "name": "Finance Applications",
+  "objectState": "Active",
+  "parentGroupId": "",
+  "stakeholder": "CFO Office",
+  "totalAssignedProducts": 1,
+  "totalUsedProducts": 2,
+  "capabilityId": "cap-finance",
+  "description": ""
+ }
+]

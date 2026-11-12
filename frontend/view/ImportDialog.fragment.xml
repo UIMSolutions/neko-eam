@@ -1,0 +1,71 @@
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core"
+	xmlns:u="sap.ui.unified">
+	<Dialog id="importDialog" title="{import>/title}" contentWidth="52rem" resizable="true" draggable="true"
+		busy="{import>/busy}" busyIndicatorDelay="0" afterClose=".onImportAfterClose">
+		<content>
+			<VBox class="sapUiSmallMargin">
+				<MessageStrip text="{i18n>importHelp}" type="Information" showIcon="true" class="sapUiSmallMarginBottom" />
+				<HBox alignItems="Center">
+					<u:FileUploader id="importFile" fileType="csv,xlsx" mimeType="text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+						buttonText="{i18n>importBrowse}" placeholder="{i18n>importChooseFile}" width="28rem" sameFilenameAllowed="true"
+						change=".onImportFileChange" typeMissmatch=".onImportTypeMismatch" />
+					<Link text="{i18n>importTemplate}" press=".onDownloadTemplate" class="sapUiSmallMarginBegin" visible="{= !!${import>/set} }" />
+				</HBox>
+				<MessageStrip text="{import>/status}" type="{import>/statusType}" showIcon="true" visible="{= !!${import>/status} }" class="sapUiSmallMarginTop" />
+				<Table id="importResults" items="{import>/results}" visible="{= ${import>/results}.length > 0 }" class="sapUiSmallMarginTop">
+					<columns>
+						<Column><Text text="{i18n>importColSet}" /></Column>
+						<Column hAlign="End"><Text text="{i18n>importColRows}" /></Column>
+						<Column hAlign="End"><Text text="{i18n>importColCreated}" /></Column>
+						<Column hAlign="End"><Text text="{i18n>importColUpdated}" /></Column>
+						<Column hAlign="End"><Text text="{i18n>importColUnchanged}" /></Column>
+						<Column hAlign="End"><Text text="{i18n>importColFailed}" /></Column>
+					</columns>
+					<items>
+						<ColumnListItem>
+							<cells>
+								<Text text="{import>setLabel}" />
+								<ObjectNumber number="{import>rows}" />
+								<ObjectNumber number="{import>created}" state="{= ${import>created} > 0 ? 'Success' : 'None' }" />
+								<ObjectNumber number="{import>updated}" state="{= ${import>updated} > 0 ? 'Information' : 'None' }" />
+								<ObjectNumber number="{import>unchanged}" />
+								<ObjectNumber number="{import>failed}" state="{= ${import>failed} > 0 ? 'Error' : 'None' }" />
+							</cells>
+						</ColumnListItem>
+					</items>
+				</Table>
+				<Table id="importIssues" items="{import>/issues}" visible="{= ${import>/issues}.length > 0 }" growing="true" growingThreshold="20"
+					class="sapUiSmallMarginTop" headerText="{i18n>importIssues}">
+					<columns>
+						<Column width="9rem"><Text text="{i18n>importColSet}" /></Column>
+						<Column width="4rem" hAlign="End"><Text text="{i18n>importColRow}" /></Column>
+						<Column width="9rem"><Text text="ID" /></Column>
+						<Column width="10rem"><Text text="{i18n>importColField}" /></Column>
+						<Column><Text text="{i18n>importColMessage}" /></Column>
+					</columns>
+					<items>
+						<ColumnListItem highlight="{= ${import>severity} === 'Error' ? 'Error' : 'Warning' }">
+							<cells>
+								<Text text="{import>setLabel}" />
+								<Text text="{import>row}" />
+								<Text text="{import>id}" />
+								<Text text="{import>fieldLabel}" />
+								<Text text="{import>message}" />
+							</cells>
+						</ColumnListItem>
+					</items>
+				</Table>
+			</VBox>
+		</content>
+		<beginButton>
+			<Button id="importCheckButton" text="{= ${import>/step} === 'checked' ? ${i18n>importRun} : ${i18n>importCheck} }"
+				type="Emphasized" enabled="{= !!${import>/fileName} &amp;&amp; ${import>/step} !== 'done' &amp;&amp; !(${import>/step} === 'checked' &amp;&amp; !${import>/canImport}) }"
+				press=".onImportNext" />
+		</beginButton>
+		<endButton>
+			<Button text="{i18n>close}" press=".onImportClose" />
+		</endButton>
+	</Dialog>
+</core:FragmentDefinition>

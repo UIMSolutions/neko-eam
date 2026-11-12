@@ -1,0 +1,50 @@
+<mvc:View controllerName="uim.eam.controller.Tenants"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:f="sap.f"
+	xmlns="sap.m"
+	height="100%">
+	<f:DynamicPage id="tenantsPage" headerExpanded="true" showFooter="false">
+		<f:title>
+			<f:DynamicPageTitle>
+				<f:heading><Title text="{i18n>tenantsTitle}" /></f:heading>
+				<f:expandedContent>
+					<Text text="{i18n>tenantsSubtitle}" />
+				</f:expandedContent>
+				<f:actions>
+					<Button id="createTenantButton" text="{i18n>tenantCreate}" icon="sap-icon://add" type="Emphasized" press=".onCreate" />
+					<Button icon="sap-icon://refresh" tooltip="{i18n>refresh}" type="Transparent" press=".onRefresh" />
+				</f:actions>
+			</f:DynamicPageTitle>
+		</f:title>
+		<f:content>
+			<Table id="tenantTable" items="{view>/tenants}" busy="{view>/busy}" noDataText="{view>/noData}">
+				<columns>
+					<Column><Text text="{i18n>tenantName}" /></Column>
+					<Column><Text text="{i18n>tenantStatus}" /></Column>
+					<Column minScreenWidth="Tablet" demandPopin="true"><Text text="{i18n>tenantZone}" /></Column>
+					<Column hAlign="End"><Text text="{i18n>backupElements}" /></Column>
+					<Column hAlign="End" minScreenWidth="Tablet" demandPopin="true"><Text text="{i18n>tenantBackups}" /></Column>
+					<Column minScreenWidth="Desktop" demandPopin="true"><Text text="{i18n>tenantData}" /></Column>
+					<Column hAlign="End" width="12rem"><Text text="" /></Column>
+				</columns>
+				<items>
+					<ColumnListItem>
+						<ObjectIdentifier title="{view>name}" text="{view>id}" />
+						<ObjectStatus text="{view>status}" state="{= ${view>status} === 'Active' ? 'Success' : 'Warning' }" />
+						<Text text="{view>zoneId}" />
+						<ObjectNumber number="{view>elements}" />
+						<ObjectNumber number="{view>backups}" />
+						<Text text="{path: 'view>dataLocation', formatter: '.shortPath'}" tooltip="{view>dataLocation}" wrapping="false" />
+						<HBox justifyContent="End">
+							<Button icon="sap-icon://journey-arrive" tooltip="{i18n>tenantSwitch}" type="Transparent" press=".onSwitch"
+								enabled="{= ${view>status} === 'Active' }" />
+							<Button icon="sap-icon://edit" tooltip="{i18n>edit}" type="Transparent" press=".onEdit" />
+							<Button icon="sap-icon://delete" tooltip="{i18n>delete}" type="Transparent" press=".onDelete"
+								enabled="{= ${view>id} !== 'default' }" />
+						</HBox>
+					</ColumnListItem>
+				</items>
+			</Table>
+		</f:content>
+	</f:DynamicPage>
+</mvc:View>

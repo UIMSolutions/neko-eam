@@ -1,0 +1,80 @@
+_schema-version: "3.1"
+ID: neko-eam
+version: 1.0.0
+description: Neko-like Enterprise Architecture Management (vibe.d backend, SAP Fiori 3 frontend, approuter)
+
+parameters:
+  enable-parallel-deployments: true
+
+build-parameters:
+  before-all:
+    - builder: custom
+      commands:
+        - bash -c "cd backend && dub build -c headless -b release"
+
+modules:
+  # ---------------------------------------------------------------- D / vibe.d backend
+  - name: eam-backend
+    type: custom
+    path: backend
+    build-parameters:
+      builder: custom
+      commands: []
+      ignore: [".dub/", "source/", "tests/", "data/"]
+    parameters:
+      buildpack: binary_buildpack
+      command: ./build/eam-headless serve
+      memory: 256M
+      disk-quota: 512M
+      health-check-type: http
+      health-check-http-endpoint: /health
+    properties:
+      EAM_LOG_LEVEL: info
+      EAM_AUTH_MODE: xsuaa
+      EAM_DATA_FILE: data/eam.json
+      EAM_FRONTEND_PATH: does-not-exist   # static UI is served by the approuter
+    requires:
+      - name: eam-xsuaa
+    provides:
+      - name: eam-backend-api
+        properties:
+          url: ${default-url}
+
+  # ---------------------------------------------------------------- Fiori 3 UI (static content)
+  - name: eam-frontend
+    type: html5
+    path: frontend
+    build-parameters:
+      builder: custom
+      commands: []
+      supported-platforms: []
+
+  # ---------------------------------------------------------------- approuter (single entry point)
+  - name: eam-approuter
+    type: approuter.nodejs
+    path: approuter
+    build-parameters:
+      ignore: ["default-env.json", "node_modules/"]
+      requires:
+        - name: eam-frontend
+          artifacts: ["./*"]
+          target-path: resources/
+    parameters:
+      memory: 256M
+      disk-quota: 512M
+    requires:
+      - name: eam-xsuaa
+      - name: eam-backend-api
+        group: destinations
+        properties:
+          name: eam-backend
+          url: ~{url}
+          forwardAuthToken: true
+
+resources:
+  - name: eam-xsuaa
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: xsuaa
+      service-plan: application
+      path: ./approuter/xs-security.json

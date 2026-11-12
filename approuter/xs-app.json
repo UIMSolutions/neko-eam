@@ -1,0 +1,12 @@
+{
+	"welcomeFile": "/index.html",
+	"authenticationMethod": "route",
+	"logout": { "logoutEndpoint": "/do/logout", "logoutPage": "/index.html" },
+	"routes": [
+		{ "source": "^/health$", "destination": "eam-backend", "authenticationType": "none" },
+		{ "source": "^/odata/v4/eam/(.*)$", "target": "/odata/v4/eam/$1", "destination": "eam-backend", "authenticationType": "xsuaa", "csrfProtection": true, "scope": "$XSAPPNAME.Display" },
+		{ "source": "^/api/(.*)$", "target": "/api/$1", "destination": "eam-backend", "authenticationType": "xsuaa", "csrfProtection": true, "scope": "$XSAPPNAME.Display" },
+		{ "source": "^/web(.*)$", "target": "/web$1", "destination": "eam-backend", "authenticationType": "xsuaa", "scope": "$XSAPPNAME.Display" },
+		{ "source": "^/(.*)$", "target": "$1", "localDir": "resources", "authenticationType": "xsuaa", "scope": "$XSAPPNAME.Display" }
+	]
+}

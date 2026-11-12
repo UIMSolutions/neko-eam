@@ -1,0 +1,115 @@
+[
+ {
+  "validUntil": null,
+  "guidelineIds": [
+   "ag-openapi",
+   "ag-java-lts",
+   "ag-containers"
+  ],
+  "componentIds": [
+   "tc-k8s",
+   "tc-btp"
+  ],
+  "validFrom": "2026-01-01",
+  "parentId": "",
+  "id": "ra-cloud-native",
+  "architect": "M. Weber",
+  "modifiedBy": "seed",
+  "specVersion": "2.0",
+  "modifiedAt": "2026-11-12T13:18:33.6498775Z",
+  "capabilityIds": [
+   "cap-it-runtime"
+  ],
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T13:18:33.6498775Z",
+  "name": "Cloud-native Application",
+  "hierarchyPath": "Cloud-native Application",
+  "shortName": "RA-CN",
+  "totalDocuments": 2,
+  "domain": "Application",
+  "description": "",
+  "scopeDescription": "Customer-facing web applications and APIs",
+  "ownerOrganizationId": "org-it",
+  "principleIds": [
+   "ap-api",
+   "ap-security",
+   "ap-reuse"
+  ],
+  "applicationIds": [
+   "app-portal",
+   "app-crm"
+  ],
+  "standardProductIds": [
+   "prd-k8s-131",
+   "prd-temurin-21"
+  ],
+  "status": "Approved"
+ },
+ {
+  "validUntil": null,
+  "guidelineIds": [
+   "ag-openapi"
+  ],
+  "componentIds": [
+   "tc-k8s"
+  ],
+  "validFrom": null,
+  "parentId": "ra-cloud-native",
+  "id": "ra-cloud-native-api",
+  "architect": "Integration Architect",
+  "modifiedBy": "seed",
+  "specVersion": "1.0",
+  "modifiedAt": "2026-11-12T13:18:33.650517Z",
+  "capabilityIds": [],
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T13:18:33.650517Z",
+  "name": "API Microservice",
+  "hierarchyPath": "Cloud-native Application / API Microservice",
+  "shortName": "RA-CN-API",
+  "totalDocuments": 1,
+  "domain": "Integration",
+  "description": "",
+  "scopeDescription": "",
+  "ownerOrganizationId": "org-it",
+  "principleIds": [],
+  "applicationIds": [],
+  "standardProductIds": [],
+  "status": "Approved"
+ },
+ {
+  "validUntil": null,
+  "guidelineIds": [
+   "ag-hana"
+  ],
+  "componentIds": [
+   "tc-hana"
+  ],
+  "validFrom": null,
+  "parentId": "",
+  "id": "ra-analytics",
+  "architect": "Data Architect",
+  "modifiedBy": "seed",
+  "specVersion": "0.9",
+  "modifiedAt": "2026-11-12T13:18:33.6510832Z",
+  "capabilityIds": [
+   "cap-it-data",
+   "cap-reporting"
+  ],
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T13:18:33.6510832Z",
+  "name": "Analytics Platform",
+  "hierarchyPath": "Analytics Platform",
+  "shortName": "RA-DA",
+  "totalDocuments": 1,
+  "domain": "Data",
+  "description": "",
+  "scopeDescription": "Reporting, planning and data science workloads",
+  "ownerOrganizationId": "org-it",
+  "principleIds": [],
+  "applicationIds": [],
+  "standardProductIds": [
+   "prd-hana-20"
+  ],
+  "status": "InReview"
+ }
+]

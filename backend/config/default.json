@@ -1,0 +1,20 @@
+{
+	"bindAddress": "127.0.0.1",
+	"port": 8989,
+	"logLevel": "info",
+	"dataFile": "data/eam.json",
+	"seedOnEmpty": true,
+	"frontendPath": "../frontend",
+	"odataBasePath": "/odata/v4/eam",
+	"authMode": "none",
+	"xsuaa": {
+		"xsappname": "neko-eam",
+		"clientid": "",
+		"url": "",
+		"verificationkey": ""
+	},
+	"tlsCertificateFile": "",
+	"tlsPrivateKeyFile": "",
+	"healthCheckIntervalSeconds": 300,
+	"webviewUrl": ""
+}

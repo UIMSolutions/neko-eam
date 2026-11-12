@@ -1,0 +1,68 @@
+[
+ {
+  "informationFlowIds": [
+   "if-crm-s4",
+   "if-legacy-crm",
+   "if-crm-portal"
+  ],
+  "id": "bd-customer",
+  "dpiaRating": "High",
+  "modifiedBy": "seed",
+  "modifiedAt": "2026-11-12T12:20:29.0099417Z",
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T12:20:29.0099417Z",
+  "name": "Customer",
+  "businessObject": "Business Partner",
+  "capabilityId": "cap-crm",
+  "description": "Customer master data incl. contact persons and consents",
+  "ownerOrganizationId": "org-sales",
+  "dataVersion": "2.1"
+ },
+ {
+  "informationFlowIds": [
+   "if-s4-bi"
+  ],
+  "id": "bd-journal",
+  "dpiaRating": "NotRequired",
+  "modifiedBy": "seed",
+  "modifiedAt": "2026-11-12T12:20:29.010328Z",
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T12:20:29.010328Z",
+  "name": "Journal Entry",
+  "businessObject": "Accounting Document",
+  "capabilityId": "cap-reporting",
+  "description": "",
+  "ownerOrganizationId": "org-fin",
+  "dataVersion": "1.0"
+ },
+ {
+  "informationFlowIds": [],
+  "id": "bd-invoice",
+  "dpiaRating": "Low",
+  "modifiedBy": "seed",
+  "modifiedAt": "2026-11-12T12:20:29.0107335Z",
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T12:20:29.0107335Z",
+  "name": "Supplier Invoice",
+  "businessObject": "Invoice",
+  "capabilityId": "cap-ap",
+  "description": "",
+  "ownerOrganizationId": "org-fin",
+  "dataVersion": "1.3"
+ },
+ {
+  "informationFlowIds": [],
+  "id": "bd-employee",
+  "dpiaRating": "NotAssessed",
+  "modifiedBy": "seed",
+  "modifiedAt": "2026-11-12T12:20:29.0111353Z",
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T12:20:29.0111353Z",
+  "name": "Employee",
+  "businessObject": "Personnel Record",
+  "capabilityId": "cap-hr",
+  "description": "DPIA pending - owner to be nominated",
+  "ownerOrganizationId": "",
+  "dataVersion": "0.9"
+ }
+]

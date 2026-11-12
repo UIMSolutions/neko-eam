@@ -1,0 +1,38 @@
+<mvc:View controllerName="uim.eam.controller.Search"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:f="sap.f"
+	xmlns="sap.m"
+	height="100%">
+	<f:DynamicPage id="searchPage" headerExpanded="true" showFooter="false">
+		<f:title>
+			<f:DynamicPageTitle>
+				<f:heading><Title text="{i18n>searchTitle}" /></f:heading>
+				<f:expandedContent>
+					<Text text="{view>/subtitle}" />
+				</f:expandedContent>
+			</f:DynamicPageTitle>
+		</f:title>
+		<f:header>
+			<f:DynamicPageHeader pinnable="false">
+				<FlexBox wrap="Wrap" alignItems="Center">
+					<SearchField id="searchField" value="{view>/query}" search=".onSearch" width="28rem" class="sapUiSmallMarginEnd" />
+					<Select id="typeFilter" selectedKey="{view>/type}" change=".onTypeChange" items="{view>/facets}">
+						<core:Item xmlns:core="sap.ui.core" key="{view>key}" text="{view>text}" />
+					</Select>
+				</FlexBox>
+			</f:DynamicPageHeader>
+		</f:header>
+		<f:content>
+			<List id="resultList" busy="{view>/busy}" items="{path: 'view>/visible'}" noDataText="{view>/noData}"
+				growing="true" growingThreshold="25" class="sapUiResponsiveContentPadding">
+				<StandardListItem
+					title="{view>name}"
+					description="{view>details}"
+					icon="{= 'sap-icon://' + ${view>icon} }"
+					info="{view>typeText}"
+					type="Navigation"
+					press=".onOpen" />
+			</List>
+		</f:content>
+	</f:DynamicPage>
+</mvc:View>

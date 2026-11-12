@@ -1,0 +1,110 @@
+extends layout
+
+block content
+	- import std.format : format;
+	- import std.array : join;
+	.stats.shadow.w-full.mb-6
+		.stat
+			.stat-title Operational applications
+			.stat-value #{report.operationalApplications}
+			.stat-desc #{report.missionCriticalApplications} mission critical
+		.stat
+			.stat-title Annual cost (operational)
+			.stat-value #{format("%.0f", report.totalAnnualCost)}
+			.stat-desc total cost of ownership
+		.stat
+			.stat-title Technology risks
+			.stat-value.text-error #{report.technologyRiskCount}
+			.stat-desc outdated IT components in use
+		.stat
+			.stat-title Capability gaps
+			.stat-value.text-warning #{report.capabilityGaps}
+			.stat-desc #{report.capabilityRedundancies} redundancies
+	.grid.grid-cols-1.gap-6(class="lg:grid-cols-2")
+		.card.bg-base-100.shadow
+			.card-body
+				h2.card-title TIME portfolio assessment
+				table.table.table-sm
+					thead
+						tr
+							th Application
+							th BV
+							th TF
+							th Current
+							th Recommended
+					tbody
+						- foreach (t; report.timeAssessments)
+							tr
+								td #{t.applicationName}
+								td #{t.businessValue}
+								td #{t.technicalFit}
+								td #{t.current}
+								td
+									- if (t.deviates)
+										span.badge.badge-warning #{t.recommended}
+									- else
+										span.badge.badge-success #{t.recommended}
+		.card.bg-base-100.shadow
+			.card-body
+				h2.card-title Technology risks
+				- if (report.technologyRisks.length == 0)
+					p No risks found.
+				table.table.table-sm
+					tbody
+						- foreach (r; report.technologyRisks)
+							tr
+								td #{r.applicationName}
+								td #{r.componentName}
+								td #{r.endOfSupportDate}
+								td
+									span.badge.badge-error #{r.reason}
+		.card.bg-base-100.shadow(class="lg:col-span-2")
+			.card-body
+				h2.card-title Capability coverage
+				table.table.table-sm
+					thead
+						tr
+							th Capability
+							th Level
+							th Supporting applications
+							th Status
+					tbody
+						- foreach (c; coverage)
+							tr
+								td #{c.capabilityName}
+								td #{c.level}
+								td #{c.supportingApplicationIds.length}
+								td
+									- if (c.gap)
+										span.badge.badge-error Gap
+									- else if (c.redundant)
+										span.badge.badge-warning Redundant
+									- else
+										span.badge.badge-success Covered
+		.card.bg-base-100.shadow(class="lg:col-span-2")
+			.card-body
+				h2.card-title Product lifecycle alerts
+				table.table.table-sm
+					thead
+						tr
+							th Severity
+							th Alert
+							th Product
+							th Date
+							th Message
+							th Applications
+					tbody
+						- foreach (a; report.productAlerts)
+							tr
+								td
+									- if (a.severity == "Critical")
+										span.badge.badge-error #{a.severity}
+									- else if (a.severity == "High")
+										span.badge.badge-warning #{a.severity}
+									- else
+										span.badge #{a.severity}
+								td #{a.kind}
+								td #{a.productName} #{a.productVersion}
+								td #{a.date}
+								td #{a.message}
+								td #{a.applicationIds.join(", ")}

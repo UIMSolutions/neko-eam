@@ -1,0 +1,42 @@
+<mvc:View controllerName="uim.eam.controller.ElementDetail"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:uxap="sap.uxap"
+	xmlns="sap.m"
+	height="100%">
+	<uxap:ObjectPageLayout id="objectPage" showTitleInHeaderContent="true" upperCaseAnchorBar="false"
+		showFooter="{ui>/editable}" busy="{ui>/busy}" useIconTabBar="false" subSectionLayout="TitleOnTop">
+		<uxap:headerTitle>
+			<uxap:ObjectPageDynamicHeaderTitle>
+				<uxap:breadcrumbs>
+					<Breadcrumbs currentLocationText="{= ${ui>/isNew} ? ${i18n>newElement} : ${obj>/name} }">
+						<Link text="{view>/setLabel}" press=".onNavToList" />
+					</Breadcrumbs>
+				</uxap:breadcrumbs>
+				<uxap:navigationActions>
+					<Button icon="sap-icon://decline" type="Transparent" press=".onClose" tooltip="{i18n>close}" />
+				</uxap:navigationActions>
+				<uxap:expandedHeading><Title text="{= ${ui>/isNew} ? ${i18n>newElement} : ${obj>/name} }" wrapping="true" /></uxap:expandedHeading>
+				<uxap:snappedHeading><Title text="{= ${ui>/isNew} ? ${i18n>newElement} : ${obj>/name} }" /></uxap:snappedHeading>
+				<uxap:expandedContent><Text text="{view>/typeLabel}" /></uxap:expandedContent>
+				<uxap:snappedContent><Text text="{view>/typeLabel}" /></uxap:snappedContent>
+				<uxap:actions>
+					<Button id="runReportButton" text="{i18n>reportRun}" icon="sap-icon://media-play" press=".onRunReport"
+						visible="{= ${view>/runnable} &amp;&amp; !${ui>/editable} }" />
+					<Button id="editButton" text="{i18n>edit}" type="Emphasized" press=".onEdit" visible="{= !${ui>/editable} &amp;&amp; ${ui>/canUpdate} }" />
+					<Button id="detailDeleteButton" text="{i18n>delete}" press=".onDelete" visible="{= !${ui>/editable} &amp;&amp; ${ui>/canDelete} }" />
+				</uxap:actions>
+			</uxap:ObjectPageDynamicHeaderTitle>
+		</uxap:headerTitle>
+		<uxap:headerContent>
+			<FlexBox id="headerFacets" wrap="Wrap" fitContainer="true" alignItems="Start" />
+		</uxap:headerContent>
+		<uxap:footer>
+			<OverflowToolbar>
+				<Button icon="sap-icon://message-error" type="Negative" text="{view>/errorCount}" visible="{= !!${view>/error} }" press=".onShowError" />
+				<ToolbarSpacer />
+				<Button id="saveButton" text="{i18n>save}" type="Emphasized" press=".onSave" />
+				<Button text="{i18n>cancel}" press=".onCancel" />
+			</OverflowToolbar>
+		</uxap:footer>
+	</uxap:ObjectPageLayout>
+</mvc:View>

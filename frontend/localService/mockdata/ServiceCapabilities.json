@@ -1,0 +1,130 @@
+[
+ {
+  "levelId": "SC-1",
+  "missionCriticality": "High",
+  "id": "sc-hosting",
+  "parentId": "",
+  "modifiedBy": "seed",
+  "businessCapabilityId": "cap-it",
+  "modifiedAt": "2026-11-12T12:20:29.0160797Z",
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T12:20:29.0160797Z",
+  "name": "Hosting & Operations",
+  "stakeholder": "CIO",
+  "hierarchyPath": "Hosting & Operations",
+  "shortName": "HOST",
+  "serviceProductGroupIds": [
+   "spg-hosting"
+  ],
+  "maturityGap": 1,
+  "description": "",
+  "applicationIds": [],
+  "ownerOrganizationId": "org-it-ops",
+  "currentMaturity": 3,
+  "targetMaturity": 4,
+  "status": "Active"
+ },
+ {
+  "levelId": "SC-1.1",
+  "missionCriticality": "Medium",
+  "id": "sc-container",
+  "parentId": "sc-hosting",
+  "modifiedBy": "seed",
+  "businessCapabilityId": "cap-it-runtime",
+  "modifiedAt": "2026-11-12T12:20:29.0165985Z",
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T12:20:29.0165985Z",
+  "name": "Container Platform",
+  "stakeholder": "Platform Owner",
+  "hierarchyPath": "Hosting & Operations / Container Platform",
+  "shortName": "CNT",
+  "serviceProductGroupIds": [
+   "spg-hosting"
+  ],
+  "maturityGap": 2,
+  "description": "",
+  "applicationIds": [
+   "app-portal"
+  ],
+  "ownerOrganizationId": "org-it-ops",
+  "currentMaturity": 2,
+  "targetMaturity": 4,
+  "status": "Active"
+ },
+ {
+  "levelId": "SC-2",
+  "missionCriticality": "High",
+  "id": "sc-data",
+  "parentId": "",
+  "modifiedBy": "seed",
+  "businessCapabilityId": "cap-it-data",
+  "modifiedAt": "2026-11-12T12:20:29.0171715Z",
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T12:20:29.0171715Z",
+  "name": "Data & Analytics Services",
+  "stakeholder": "Data Architect",
+  "hierarchyPath": "Data & Analytics Services",
+  "shortName": "DATA",
+  "serviceProductGroupIds": [],
+  "maturityGap": 2,
+  "description": "",
+  "applicationIds": [
+   "app-bi",
+   "app-s4"
+  ],
+  "ownerOrganizationId": "org-it",
+  "currentMaturity": 2,
+  "targetMaturity": 4,
+  "status": "Active"
+ },
+ {
+  "levelId": "SC-3",
+  "missionCriticality": "Medium",
+  "id": "sc-workplace",
+  "parentId": "",
+  "modifiedBy": "seed",
+  "businessCapabilityId": "",
+  "modifiedAt": "2026-11-12T12:20:29.0177507Z",
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T12:20:29.0177507Z",
+  "name": "Digital Workplace",
+  "stakeholder": "R. Neumann",
+  "hierarchyPath": "Digital Workplace",
+  "shortName": "DWP",
+  "serviceProductGroupIds": [
+   "spg-workplace"
+  ],
+  "maturityGap": 0,
+  "description": "",
+  "applicationIds": [],
+  "ownerOrganizationId": "org-it",
+  "currentMaturity": 3,
+  "targetMaturity": 3,
+  "status": "Active"
+ },
+ {
+  "levelId": "SC-4",
+  "missionCriticality": "High",
+  "id": "sc-support",
+  "parentId": "",
+  "modifiedBy": "seed",
+  "businessCapabilityId": "",
+  "modifiedAt": "2026-11-12T12:20:29.0182959Z",
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T12:20:29.0182959Z",
+  "name": "Service Desk",
+  "stakeholder": "IT Operations",
+  "hierarchyPath": "Service Desk",
+  "shortName": "SD",
+  "serviceProductGroupIds": [
+   "spg-support"
+  ],
+  "maturityGap": 1,
+  "description": "",
+  "applicationIds": [],
+  "ownerOrganizationId": "org-it-ops",
+  "currentMaturity": 4,
+  "targetMaturity": 5,
+  "status": "Active"
+ }
+]

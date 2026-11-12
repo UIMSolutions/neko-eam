@@ -1,0 +1,35 @@
+{
+	"name": "neko-eam",
+	"description": "Enterprise Architecture Management (Neko-like) - vibe.d backend with OData v4, REST, Web, CLI, GtkD GUI and WebView",
+	"license": "Apache-2.0",
+	"authors": ["UIM 2026"],
+	"targetName": "eam",
+	"targetType": "executable",
+	"targetPath": "build",
+	"sourcePaths": ["source"],
+	"importPaths": ["source"],
+	"stringImportPaths": ["views"],
+	"dependencies": {
+		"vibe-d": "~>0.10.3",
+		"openssl": "~>3.4"
+	},
+	"configurations": [
+		{
+			"name": "desktop",
+			"versions": ["EamGui"],
+			"dependencies": {
+				"gtk-d:gtkd": "~>3.11.0"
+			}
+		},
+		{
+			"name": "headless",
+			"targetName": "eam-headless"
+		},
+		{
+			"name": "unittest",
+			"targetName": "eam-test",
+			"sourcePaths": ["tests"],
+			"importPaths": ["tests"]
+		}
+	]
+}

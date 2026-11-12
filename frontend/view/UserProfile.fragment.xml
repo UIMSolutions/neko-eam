@@ -1,0 +1,58 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+	<ResponsivePopover id="userProfilePopover" placement="Bottom" showHeader="false" contentWidth="20rem" class="sapUiContentPadding">
+		<VBox alignItems="Center" class="sapUiSmallMarginTop">
+			<Avatar initials="{user>/initials}" displaySize="L" />
+			<Title text="{user>/displayName}" level="H3" class="sapUiSmallMarginTop" />
+			<Text text="{user>/email}" visible="{= !!${user>/email} }" />
+			<Text text="{user>/name}" visible="{= ${user>/name} !== ${user>/displayName} }" />
+			<HBox class="sapUiTinyMarginTop" items="{user>/roles}">
+				<ObjectStatus text="{user>}" state="{= ${user>} === 'Architect' ? 'Success' : 'Information' }" inverted="true" class="sapUiTinyMarginEnd" />
+			</HBox>
+		</VBox>
+		<List id="userProfileActions" class="sapUiSmallMarginTop" showSeparators="Inner">
+			<CustomListItem>
+				<HBox justifyContent="SpaceBetween" alignItems="Center" class="sapUiSmallMarginBeginEnd sapUiTinyMarginTopBottom">
+					<Label text="{i18n>profileLanguage}" />
+					<SegmentedButton id="languageSelector" width="7rem" selectedKey="{ui>/language}" selectionChange=".onLanguageChange">
+						<items>
+							<SegmentedButtonItem key="en" text="EN" />
+							<SegmentedButtonItem key="de" text="DE" />
+						</items>
+					</SegmentedButton>
+				</HBox>
+			</CustomListItem>
+			<CustomListItem>
+				<HBox justifyContent="SpaceBetween" alignItems="Center" class="sapUiSmallMarginBeginEnd sapUiTinyMarginTopBottom">
+					<Label text="{i18n>profileTheme}" />
+					<Select id="themeSelector" selectedKey="{ui>/theme}" change=".onThemeChange" width="11rem">
+						<core:Item key="sap_fiori_3" text="SAP Fiori 3" />
+						<core:Item key="sap_fiori_3_dark" text="SAP Fiori 3 Dark" />
+						<core:Item key="sap_fiori_3_hcb" text="High Contrast Black" />
+						<core:Item key="sap_fiori_3_hcw" text="High Contrast White" />
+					</Select>
+				</HBox>
+			</CustomListItem>
+			<CustomListItem id="tenantItem" visible="{= ${user>/tenants}.length > 1 }">
+				<HBox justifyContent="SpaceBetween" alignItems="Center" class="sapUiSmallMarginBeginEnd sapUiTinyMarginTopBottom">
+					<Label text="{i18n>profileTenant}" />
+					<Select id="tenantSelector" selectedKey="{user>/tenant/id}" change=".onTenantChange" width="11rem"
+						items="{ path: 'user>/tenants', templateShareable: false }">
+						<core:Item key="{user>id}" text="{user>name}" />
+					</Select>
+				</HBox>
+			</CustomListItem>
+			<CustomListItem id="actAsItem" visible="{= ${user>/devUsers}.length > 0 }">
+				<HBox justifyContent="SpaceBetween" alignItems="Center" class="sapUiSmallMarginBeginEnd sapUiTinyMarginTopBottom">
+					<Label text="{i18n>profileActAs}" tooltip="{i18n>profileActAsHint}" />
+					<Select id="actAsSelector" selectedKey="{user>/actingAs}" change=".onActAs" width="11rem"
+						items="{ path: 'user>/devUsers', templateShareable: false }">
+						<core:Item key="{user>userName}" text="{user>name}" />
+					</Select>
+				</HBox>
+			</CustomListItem>
+			<StandardListItem title="{i18n>profileRights}" description="{user>/access/summary}" icon="sap-icon://locked" wrapping="true" />
+			<StandardListItem title="{i18n>profileAuth}" info="{= ${user>/authMode} === 'xsuaa' ? 'SAP XSUAA' : ${i18n>profileLocal} }" icon="sap-icon://shield" />
+			<StandardListItem id="signOutItem" title="{i18n>profileSignOut}" icon="sap-icon://log" type="Active" press=".onSignOut" visible="{= ${user>/authMode} === 'xsuaa' }" />
+		</List>
+	</ResponsivePopover>
+</core:FragmentDefinition>

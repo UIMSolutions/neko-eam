@@ -1,0 +1,126 @@
+<mvc:View controllerName="uim.eam.controller.App"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:f="sap.f"
+	xmlns:tnt="sap.tnt"
+	xmlns="sap.m"
+	displayBlock="true"
+	height="100%">
+	<tnt:ToolPage id="toolPage" sideExpanded="{= !${device>/system/phone} }">
+		<!-- SAP Fiori 3 shell bar with menu toggle, notifications and user profile -->
+		<tnt:header>
+			<f:ShellBar id="shellBar"
+				title="{i18n>appTitle}"
+				secondTitle="{= ${user>/tenant/id} &amp;&amp; (${user>/tenant/id} !== 'default' || ${user>/tenants}.length > 1) ? ${user>/tenant/name} + ' · ' + ${i18n>appDescription} : ${i18n>appDescription} }"
+				homeIcon="img/logo.svg"
+				homeIconTooltip="{i18n>navOverview}"
+				showMenuButton="true"
+				showNotifications="true"
+				notificationsNumber="{= ${portfolio>/report/criticalProductAlerts} > 0 ? String(${portfolio>/report/criticalProductAlerts}) : '' }"
+				menuButtonPressed=".onToggleSideNavigation"
+				homeIconPressed=".onHome"
+				notificationsPressed=".onNotifications"
+				avatarPressed=".onAvatarPressed">
+				<f:searchManager>
+					<f:SearchManager id="searchManager"
+						placeholder="{i18n>searchPlaceholder}"
+						enableSuggestions="true"
+						search=".onSearch"
+						suggest=".onSuggest"
+						suggestionItems="{path: 'search>/suggestions', templateShareable: false}">
+						<f:suggestionItems>
+							<SuggestionItem key="{search>key}" text="{search>name}" description="{search>description}" icon="{search>icon}" />
+						</f:suggestionItems>
+					</f:SearchManager>
+				</f:searchManager>
+				<f:additionalContent>
+					<OverflowToolbarButton icon="sap-icon://download" text="{i18n>exportArchimate}" tooltip="{i18n>exportArchimate}" press=".onExportArchiMate" />
+				</f:additionalContent>
+				<f:profile>
+					<Avatar id="userAvatar" initials="{user>/initials}" tooltip="{user>/displayName}" />
+				</f:profile>
+			</f:ShellBar>
+		</tnt:header>
+		<tnt:sideContent>
+			<tnt:SideNavigation id="sideNavigation" selectedKey="{ui>/navKey}" itemSelect=".onNavItemSelect">
+				<tnt:NavigationList>
+					<tnt:NavigationListItem key="overview" text="{i18n>navOverview}" icon="sap-icon://home" />
+					<tnt:NavigationListItem key="grpApplications" text="{i18n>navApplicationPortfolio}" icon="sap-icon://grid" expanded="true" selectable="false">
+						<tnt:NavigationListItem key="Applications" text="{i18n>setApplications}" />
+						<tnt:NavigationListItem key="ApplicationGroups" text="{i18n>setApplicationGroups}" />
+					</tnt:NavigationListItem>
+					<tnt:NavigationListItem key="grpProducts" text="{i18n>navProductCatalogue}" icon="sap-icon://product" expanded="true" selectable="false">
+						<tnt:NavigationListItem key="Products" text="{i18n>setProducts}" />
+						<tnt:NavigationListItem key="ProductGroups" text="{i18n>setProductGroups}" />
+						<tnt:NavigationListItem key="ITComponents" text="{i18n>setITComponents}" />
+					</tnt:NavigationListItem>
+					<tnt:NavigationListItem key="grpBusiness" text="{i18n>navBusinessArchitecture}" icon="sap-icon://org-chart" expanded="true" selectable="false">
+						<tnt:NavigationListItem key="BusinessCapabilities" text="{i18n>setBusinessCapabilities}" />
+						<tnt:NavigationListItem key="BusinessData" text="{i18n>setBusinessData}" />
+					</tnt:NavigationListItem>
+					<tnt:NavigationListItem key="grpOrgStructure" text="{i18n>navOrgStructure}" icon="sap-icon://manager" expanded="true" selectable="false">
+						<tnt:NavigationListItem key="Enterprises" text="{i18n>setEnterprises}" />
+						<tnt:NavigationListItem key="Organizations" text="{i18n>setOrganizations}" />
+						<tnt:NavigationListItem key="Members" text="{i18n>setMembers}" />
+					</tnt:NavigationListItem>
+					<tnt:NavigationListItem key="grpServices" text="{i18n>navServiceCatalogue}" icon="sap-icon://course-book" expanded="true" selectable="false">
+						<tnt:NavigationListItem key="ServiceProductGroups" text="{i18n>setServiceProductGroups}" />
+					</tnt:NavigationListItem>
+					<tnt:NavigationListItem key="grpPlanning" text="{i18n>navLandscapePlanning}" icon="sap-icon://compass" expanded="true" selectable="false">
+						<tnt:NavigationListItem key="StrategicGuidelines" text="{i18n>setStrategicGuidelines}" />
+						<tnt:NavigationListItem key="ServiceCapabilities" text="{i18n>setServiceCapabilities}" />
+						<tnt:NavigationListItem key="MeasureGroups" text="{i18n>setMeasureGroups}" />
+						<tnt:NavigationListItem key="Measures" text="{i18n>setMeasures}" />
+					</tnt:NavigationListItem>
+					<tnt:NavigationListItem key="grpSpecifications" text="{i18n>navSpecifications}" icon="sap-icon://document-text" expanded="true" selectable="false">
+						<tnt:NavigationListItem key="ArchitecturePrinciples" text="{i18n>setArchitecturePrinciples}" />
+						<tnt:NavigationListItem key="ArchitectureGuidelines" text="{i18n>setArchitectureGuidelines}" />
+						<tnt:NavigationListItem key="ReferenceArchitectures" text="{i18n>setReferenceArchitectures}" />
+						<tnt:NavigationListItem key="ArchitectureDocuments" text="{i18n>setArchitectureDocuments}" />
+					</tnt:NavigationListItem>
+					<tnt:NavigationListItem key="grpProjects" text="{i18n>navProjectManagement}" icon="sap-icon://project-definition-triangle-2" expanded="true" selectable="false">
+						<tnt:NavigationListItem key="Projects" text="{i18n>setProjects}" />
+						<tnt:NavigationListItem key="SubProjects" text="{i18n>setSubProjects}" />
+						<tnt:NavigationListItem key="WorkPackages" text="{i18n>setWorkPackages}" />
+					</tnt:NavigationListItem>
+					<tnt:NavigationListItem key="grpTransformation" text="{i18n>navIntegration}" icon="sap-icon://chain-link" expanded="true" selectable="false">
+						<tnt:NavigationListItem key="InformationFlows" text="{i18n>setInformationFlows}" />
+					</tnt:NavigationListItem>
+					<tnt:NavigationListItem key="grpAccess" text="{i18n>navAccessManagement}" icon="sap-icon://locked" expanded="true" selectable="false">
+						<tnt:NavigationListItem key="Users" text="{i18n>setUsers}" />
+						<tnt:NavigationListItem key="Roles" text="{i18n>setRoles}" />
+						<tnt:NavigationListItem key="Permissions" text="{i18n>setPermissions}" />
+					</tnt:NavigationListItem>
+					<tnt:NavigationListItem key="grpProcesses" text="{i18n>navProcesses}" icon="sap-icon://process" expanded="true" selectable="false">
+						<tnt:NavigationListItem key="BusinessProcesses" text="{i18n>setBusinessProcesses}" />
+						<tnt:NavigationListItem key="ITProcesses" text="{i18n>setITProcesses}" />
+						<tnt:NavigationListItem key="ProcessSteps" text="{i18n>setProcessSteps}" />
+						<tnt:NavigationListItem key="ProcessKpis" text="{i18n>setProcessKpis}" />
+					</tnt:NavigationListItem>
+					<tnt:NavigationListItem key="grpSecurity" text="{i18n>navSecurity}" icon="sap-icon://shield" expanded="true" selectable="false">
+						<tnt:NavigationListItem key="ProtectionRequirements" text="{i18n>setProtectionRequirements}" />
+						<tnt:NavigationListItem key="SecurityRisks" text="{i18n>setSecurityRisks}" />
+						<tnt:NavigationListItem key="SecurityControls" text="{i18n>setSecurityControls}" />
+					</tnt:NavigationListItem>
+					<tnt:NavigationListItem key="grpReporting" text="{i18n>navReporting}" icon="sap-icon://table-view" expanded="true" selectable="false">
+						<tnt:NavigationListItem key="Reports" text="{i18n>setReports}" />
+						<tnt:NavigationListItem key="ReportBooks" text="{i18n>setReportBooks}" />
+					</tnt:NavigationListItem>
+					<tnt:NavigationListItem key="grpSystem" text="{i18n>navSystem}" icon="sap-icon://action-settings" expanded="true" selectable="false">
+						<tnt:NavigationListItem key="backups" text="{i18n>navBackups}" />
+						<tnt:NavigationListItem key="tenants" text="{i18n>navTenants}" />
+					</tnt:NavigationListItem>
+					<tnt:NavigationListItem key="analysis" text="{i18n>navAnalysis}" icon="sap-icon://business-objects-experience" />
+				</tnt:NavigationList>
+				<tnt:fixedItem>
+					<tnt:NavigationList>
+						<tnt:NavigationListItem key="extCockpit" text="{i18n>openCockpit}" icon="sap-icon://browse-folder" selectable="false" />
+						<tnt:NavigationListItem key="extMetadata" text="{i18n>navMetadata}" icon="sap-icon://source-code" selectable="false" />
+					</tnt:NavigationList>
+				</tnt:fixedItem>
+			</tnt:SideNavigation>
+		</tnt:sideContent>
+		<tnt:mainContents>
+			<App id="app" />
+		</tnt:mainContents>
+	</tnt:ToolPage>
+</mvc:View>

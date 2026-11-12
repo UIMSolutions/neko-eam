@@ -1,0 +1,121 @@
+[
+ {
+  "nextReviewDate": "2027-01-20",
+  "docVersion": "2.0",
+  "guidelineIds": [
+   "ag-openapi",
+   "ag-containers"
+  ],
+  "approver": "Architecture Board",
+  "id": "doc-ra-cn",
+  "documentNumber": "ARC-SPEC-001",
+  "confidentiality": "Internal",
+  "modifiedBy": "seed",
+  "modifiedAt": "2026-11-12T13:18:33.6517037Z",
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T13:18:33.6517037Z",
+  "name": "Reference Architecture Cloud-native Application",
+  "documentLink": "https://wiki.acme.example/architecture/ra-cloud-native",
+  "documentType": "Specification",
+  "reviewOverdue": false,
+  "referenceArchitectureIds": [
+   "ra-cloud-native",
+   "ra-cloud-native-api"
+  ],
+  "description": "",
+  "approvalDate": "2026-01-20",
+  "ownerOrganizationId": "org-it",
+  "principleIds": [],
+  "applicationIds": [],
+  "author": "M. Weber",
+  "status": "Approved"
+ },
+ {
+  "nextReviewDate": "2026-05-15",
+  "docVersion": "1.0",
+  "guidelineIds": [],
+  "approver": "Architecture Board",
+  "id": "doc-adr-k8s",
+  "documentNumber": "ADR-012",
+  "confidentiality": "Internal",
+  "modifiedBy": "seed",
+  "modifiedAt": "2026-11-12T13:18:33.6523212Z",
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T13:18:33.6523212Z",
+  "name": "ADR-012 Kubernetes as the container platform",
+  "documentLink": "https://wiki.acme.example/adr/012",
+  "documentType": "Decision",
+  "reviewOverdue": true,
+  "referenceArchitectureIds": [
+   "ra-cloud-native"
+  ],
+  "description": "Review is overdue",
+  "approvalDate": "2025-05-15",
+  "ownerOrganizationId": "org-it-ops",
+  "principleIds": [
+   "ap-reuse"
+  ],
+  "applicationIds": [],
+  "author": "Platform Owner",
+  "status": "Approved"
+ },
+ {
+  "nextReviewDate": "2027-01-10",
+  "docVersion": "3.1",
+  "guidelineIds": [],
+  "approver": "CIO",
+  "id": "doc-principles",
+  "documentNumber": "ARC-POL-001",
+  "confidentiality": "Public",
+  "modifiedBy": "seed",
+  "modifiedAt": "2026-11-12T13:18:33.652925Z",
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T13:18:33.652925Z",
+  "name": "IT Architecture Principles",
+  "documentLink": "https://wiki.acme.example/architecture/principles",
+  "documentType": "Policy",
+  "reviewOverdue": false,
+  "referenceArchitectureIds": [],
+  "description": "",
+  "approvalDate": "2026-01-10",
+  "ownerOrganizationId": "org-it",
+  "principleIds": [
+   "ap-reuse",
+   "ap-api",
+   "ap-security",
+   "ap-data-owner"
+  ],
+  "applicationIds": [],
+  "author": "Chief Architect",
+  "status": "Approved"
+ },
+ {
+  "nextReviewDate": null,
+  "docVersion": "0.9",
+  "guidelineIds": [],
+  "approver": "",
+  "id": "doc-analytics-concept",
+  "documentNumber": "ARC-CON-007",
+  "confidentiality": "Confidential",
+  "modifiedBy": "seed",
+  "modifiedAt": "2026-11-12T13:18:33.6535307Z",
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T13:18:33.6535307Z",
+  "name": "Analytics Platform Concept",
+  "documentLink": "",
+  "documentType": "Concept",
+  "reviewOverdue": false,
+  "referenceArchitectureIds": [
+   "ra-analytics"
+  ],
+  "description": "",
+  "approvalDate": null,
+  "ownerOrganizationId": "org-it",
+  "principleIds": [],
+  "applicationIds": [
+   "app-bi"
+  ],
+  "author": "Data Architect",
+  "status": "InReview"
+ }
+]

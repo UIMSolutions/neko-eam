@@ -1,0 +1,57 @@
+<mvc:View controllerName="uim.eam.controller.Backups"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:f="sap.f"
+	xmlns:core="sap.ui.core"
+	xmlns:u="sap.ui.unified"
+	xmlns="sap.m"
+	height="100%">
+	<f:DynamicPage id="backupsPage" headerExpanded="true" showFooter="false">
+		<f:title>
+			<f:DynamicPageTitle>
+				<f:heading><Title text="{i18n>backupsTitle}" /></f:heading>
+				<f:expandedContent>
+					<Text text="{i18n>backupsSubtitle} {user>/tenant/name} ({user>/tenant/id})" />
+				</f:expandedContent>
+				<f:actions>
+					<Button id="createBackupButton" text="{i18n>backupCreate}" icon="sap-icon://save" type="Emphasized" press=".onCreate" />
+					<Button id="uploadBackupButton" text="{i18n>backupUpload}" icon="sap-icon://upload" type="Transparent" press=".onUpload" />
+					<Button icon="sap-icon://refresh" tooltip="{i18n>refresh}" type="Transparent" press=".onRefresh" />
+				</f:actions>
+			</f:DynamicPageTitle>
+		</f:title>
+		<f:header>
+			<f:DynamicPageHeader pinnable="false">
+				<MessageStrip text="{i18n>backupsHelp}" type="Information" showIcon="true" />
+			</f:DynamicPageHeader>
+		</f:header>
+		<f:content>
+			<Table id="backupTable" items="{view>/backups}" busy="{view>/busy}" noDataText="{view>/noData}" growing="true" growingThreshold="30">
+				<columns>
+					<Column><Text text="{i18n>backupCreatedAt}" /></Column>
+					<Column><Text text="{i18n>backupKind}" /></Column>
+					<Column minScreenWidth="Tablet" demandPopin="true"><Text text="{i18n>backupComment}" /></Column>
+					<Column minScreenWidth="Tablet" demandPopin="true"><Text text="{i18n>backupBy}" /></Column>
+					<Column hAlign="End"><Text text="{i18n>backupElements}" /></Column>
+					<Column hAlign="End" minScreenWidth="Desktop" demandPopin="true"><Text text="{i18n>backupSize}" /></Column>
+					<Column hAlign="End" width="17rem"><Text text="" /></Column>
+				</columns>
+				<items>
+					<ColumnListItem>
+						<ObjectIdentifier title="{path: 'view>createdAt', formatter: '.formatDate'}" text="{view>id}" />
+						<ObjectStatus text="{path: 'view>kind', formatter: '.kindText'}" state="{= ${view>kind} === 'Manual' ? 'Information' : ${view>kind} === 'Scheduled' ? 'None' : 'Warning' }" />
+						<Text text="{view>comment}" />
+						<Text text="{view>createdBy}" />
+						<ObjectNumber number="{view>elements}" />
+						<Text text="{path: 'view>sizeBytes', formatter: '.formatSize'}" />
+						<HBox justifyContent="End">
+							<Button icon="sap-icon://download" tooltip="{i18n>backupDownload}" type="Transparent" press=".onDownload" />
+							<Button icon="sap-icon://inspect" tooltip="{i18n>backupCheck}" type="Transparent" press=".onCheck" />
+							<Button icon="sap-icon://undo" text="{i18n>backupRestore}" type="Transparent" press=".onRestore" />
+							<Button icon="sap-icon://delete" tooltip="{i18n>delete}" type="Transparent" press=".onDelete" />
+						</HBox>
+					</ColumnListItem>
+				</items>
+			</Table>
+		</f:content>
+	</f:DynamicPage>
+</mvc:View>

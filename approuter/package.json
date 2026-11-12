@@ -1,0 +1,13 @@
+{
+	"name": "neko-eam-approuter",
+	"version": "1.0.0",
+	"description": "SAP approuter for Neko EAM (XSUAA authentication, routing to the vibe.d backend)",
+	"private": true,
+	"engines": { "node": ">=20" },
+	"scripts": {
+		"start": "node node_modules/@sap/approuter/approuter.js"
+	},
+	"dependencies": {
+		"@sap/approuter": "^20.0.0"
+	}
+}

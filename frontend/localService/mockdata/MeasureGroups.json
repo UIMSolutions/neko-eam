@@ -1,0 +1,97 @@
+[
+ {
+  "totalEstimatedCost": 1500000,
+  "budget": 3500000,
+  "id": "mg-roadmap",
+  "modifiedBy": "seed",
+  "strategicGuidelineIds": [
+   "sg-cloud",
+   "sg-standard",
+   "sg-eol"
+  ],
+  "modifiedAt": "2026-11-12T12:20:29.0188835Z",
+  "responsible": "M. Weber",
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T12:20:29.0188835Z",
+  "name": "IT Roadmap 2026-2028",
+  "parentGroupId": "",
+  "hierarchyPath": "IT Roadmap 2026-2028",
+  "shortName": "RM-28",
+  "endDate": "2028-12-31",
+  "startDate": "2026-01-01",
+  "totalMeasures": 5,
+  "description": "",
+  "ownerOrganizationId": "org-it",
+  "status": "Approved"
+ },
+ {
+  "totalEstimatedCost": 1050000,
+  "budget": 1800000,
+  "id": "mg-cloud",
+  "modifiedBy": "seed",
+  "strategicGuidelineIds": [
+   "sg-cloud",
+   "sg-cloud-paas"
+  ],
+  "modifiedAt": "2026-11-12T12:20:29.0194872Z",
+  "responsible": "Platform Owner",
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T12:20:29.0194872Z",
+  "name": "Cloud Transformation",
+  "parentGroupId": "mg-roadmap",
+  "hierarchyPath": "IT Roadmap 2026-2028 / Cloud Transformation",
+  "shortName": "CLOUD",
+  "endDate": "2027-12-31",
+  "startDate": "2026-01-01",
+  "totalMeasures": 2,
+  "description": "",
+  "ownerOrganizationId": "org-it-ops",
+  "status": "Approved"
+ },
+ {
+  "totalEstimatedCost": 450000,
+  "budget": 900000,
+  "id": "mg-legacy",
+  "modifiedBy": "seed",
+  "strategicGuidelineIds": [
+   "sg-eol"
+  ],
+  "modifiedAt": "2026-11-12T12:20:29.0201105Z",
+  "responsible": "M. Weber",
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T12:20:29.0201105Z",
+  "name": "Legacy Decommissioning",
+  "parentGroupId": "mg-roadmap",
+  "hierarchyPath": "IT Roadmap 2026-2028 / Legacy Decommissioning",
+  "shortName": "LEGACY",
+  "endDate": "2027-06-30",
+  "startDate": "2026-01-01",
+  "totalMeasures": 3,
+  "description": "",
+  "ownerOrganizationId": "org-it",
+  "status": "InProgress"
+ },
+ {
+  "totalEstimatedCost": 500000,
+  "budget": 0,
+  "id": "mg-data",
+  "modifiedBy": "seed",
+  "strategicGuidelineIds": [
+   "sg-data"
+  ],
+  "modifiedAt": "2026-11-12T12:20:29.0207586Z",
+  "responsible": "Data Architect",
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T12:20:29.0207586Z",
+  "name": "Data Strategy",
+  "parentGroupId": "",
+  "hierarchyPath": "Data Strategy",
+  "shortName": "DATA",
+  "endDate": null,
+  "startDate": null,
+  "totalMeasures": 1,
+  "description": "",
+  "ownerOrganizationId": "",
+  "status": "Draft"
+ }
+]

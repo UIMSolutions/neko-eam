@@ -1,0 +1,55 @@
+[
+ {
+  "totalSubProjects": 3,
+  "sponsorOrganizationId": "org-sales",
+  "budget": 1200000,
+  "id": "prj-crm-consolidation",
+  "projectManager": "J. Becker",
+  "modifiedBy": "seed",
+  "totalWorkPackages": 5,
+  "modifiedAt": "2026-11-12T13:31:30.4930969Z",
+  "plannedEffortDays": 200,
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T13:31:30.4930969Z",
+  "name": "CRM Consolidation",
+  "startDate": "2026-01-01",
+  "priority": "High",
+  "endDate": "2027-06-30",
+  "actualCost": 380000,
+  "progress": 43,
+  "phase": "Execution",
+  "description": "",
+  "affectedApplicationIds": [
+   "app-crm",
+   "app-legacycrm"
+  ],
+  "status": "InProgress",
+  "projectNumber": "P-2026-001"
+ },
+ {
+  "totalSubProjects": 1,
+  "sponsorOrganizationId": "org-fin",
+  "budget": 650000,
+  "id": "prj-bi-cloud",
+  "projectManager": "Head of Controlling",
+  "modifiedBy": "seed",
+  "totalWorkPackages": 2,
+  "modifiedAt": "2026-11-12T13:31:30.4934707Z",
+  "plannedEffortDays": 105,
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T13:31:30.4934707Z",
+  "name": "BI Cloud Migration",
+  "startDate": "2027-01-01",
+  "priority": "Medium",
+  "endDate": "2027-12-31",
+  "actualCost": 0,
+  "progress": 0,
+  "phase": "Planning",
+  "description": "",
+  "affectedApplicationIds": [
+   "app-bi"
+  ],
+  "status": "Approved",
+  "projectNumber": "P-2027-004"
+ }
+]

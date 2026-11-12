@@ -1,0 +1,29 @@
+doctype html
+html(lang="en", data-theme="corporate")
+	head
+		meta(charset="utf-8")
+		meta(name="viewport", content="width=device-width, initial-scale=1")
+		title #{title} · Neko EAM
+		link(href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css", rel="stylesheet", type="text/css")
+		script(src="https://cdn.tailwindcss.com/3.4.10")
+	body.min-h-screen.bg-base-200
+		.navbar.bg-primary.text-primary-content.shadow
+			.flex-1
+				a.btn.btn-ghost.text-xl(href="/web") Neko EAM
+			.flex-none.gap-2
+				a.btn.btn-sm.btn-ghost(href="/index.html") Fiori App
+				a.btn.btn-sm.btn-ghost(href="/odata/v4/eam/$metadata") $metadata
+				a.btn.btn-sm.btn-ghost(href="/api/v1/export/archimate") ArchiMate
+		.flex
+			ul.menu.bg-base-100.w-64.min-h-screen.p-4
+				li
+					a(href="/web") Dashboard
+				li.menu-title Repository
+				- foreach (n; nav)
+					li
+						a(href="/web/sets/#{n.setName}")
+							| #{n.title}
+							span.badge.badge-neutral #{n.count}
+			main.flex-1.p-6
+				h1.text-2xl.font-bold.mb-4 #{title}
+				block content

@@ -1,0 +1,221 @@
+[
+ {
+  "endDate": "2027-06-30",
+  "affectedComponentIds": [
+   "tc-oracle11"
+  ],
+  "id": "ms-retire-oracle",
+  "projectId": "prj-crm-consolidation",
+  "affectedApplicationIds": [
+   "app-legacycrm",
+   "app-bi"
+  ],
+  "serviceCapabilityIds": [],
+  "modifiedBy": "seed",
+  "estimatedCost": 250000,
+  "modifiedAt": "2026-11-12T12:20:29.0213701Z",
+  "responsible": "M. Weber",
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T12:20:29.0213701Z",
+  "name": "Retire Oracle Database 11g",
+  "startDate": "2026-03-01",
+  "measureGroupId": "mg-legacy",
+  "shortName": "M-101",
+  "priority": "Critical",
+  "expectedBenefit": "Closes a critical security risk; saves 45k license cost p.a.",
+  "measureType": "Retire",
+  "description": "",
+  "strategicGuidelineIds": [
+   "sg-eol"
+  ],
+  "ownerOrganizationId": "org-it",
+  "progress": 40,
+  "status": "InProgress"
+ },
+ {
+  "endDate": "2027-06-30",
+  "affectedComponentIds": [],
+  "id": "ms-retire-legacycrm",
+  "projectId": "prj-crm-consolidation",
+  "affectedApplicationIds": [
+   "app-legacycrm"
+  ],
+  "serviceCapabilityIds": [],
+  "modifiedBy": "seed",
+  "estimatedCost": 120000,
+  "modifiedAt": "2026-11-12T12:20:29.0219973Z",
+  "responsible": "CRM Product Owner",
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T12:20:29.0219973Z",
+  "name": "Decommission Legacy Customer DB",
+  "startDate": "2027-01-01",
+  "measureGroupId": "mg-legacy",
+  "shortName": "M-102",
+  "priority": "High",
+  "expectedBenefit": "",
+  "measureType": "Retire",
+  "description": "",
+  "strategicGuidelineIds": [
+   "sg-standard",
+   "sg-eol"
+  ],
+  "ownerOrganizationId": "org-sales",
+  "progress": 0,
+  "status": "Approved"
+ },
+ {
+  "endDate": "2026-12-31",
+  "affectedComponentIds": [
+   "tc-java8"
+  ],
+  "id": "ms-java",
+  "projectId": "",
+  "affectedApplicationIds": [],
+  "serviceCapabilityIds": [],
+  "modifiedBy": "seed",
+  "estimatedCost": 80000,
+  "modifiedAt": "2026-11-12T12:20:29.0226719Z",
+  "responsible": "Platform Owner",
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T12:20:29.0226719Z",
+  "name": "Upgrade Java SE 8 to Temurin 21",
+  "startDate": "2026-02-01",
+  "measureGroupId": "mg-legacy",
+  "shortName": "M-103",
+  "priority": "High",
+  "expectedBenefit": "",
+  "measureType": "Modernize",
+  "description": "",
+  "strategicGuidelineIds": [
+   "sg-eol"
+  ],
+  "ownerOrganizationId": "org-it-ops",
+  "progress": 60,
+  "status": "InProgress"
+ },
+ {
+  "endDate": "2027-12-31",
+  "affectedComponentIds": [],
+  "id": "ms-bi-cloud",
+  "projectId": "prj-bi-cloud",
+  "affectedApplicationIds": [
+   "app-bi"
+  ],
+  "serviceCapabilityIds": [
+   "sc-data"
+  ],
+  "modifiedBy": "seed",
+  "estimatedCost": 650000,
+  "modifiedAt": "2026-11-12T12:20:29.0233168Z",
+  "responsible": "Head of Controlling",
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T12:20:29.0233168Z",
+  "name": "Migrate Corporate BI to the cloud",
+  "startDate": "2027-01-01",
+  "measureGroupId": "mg-cloud",
+  "shortName": "M-201",
+  "priority": "Medium",
+  "expectedBenefit": "",
+  "measureType": "Migrate",
+  "description": "",
+  "strategicGuidelineIds": [
+   "sg-cloud",
+   "sg-cloud-paas"
+  ],
+  "ownerOrganizationId": "org-fin",
+  "progress": 0,
+  "status": "Approved"
+ },
+ {
+  "endDate": "2026-03-31",
+  "affectedComponentIds": [
+   "tc-k8s"
+  ],
+  "id": "ms-k8s",
+  "projectId": "",
+  "affectedApplicationIds": [
+   "app-portal"
+  ],
+  "serviceCapabilityIds": [
+   "sc-container"
+  ],
+  "modifiedBy": "seed",
+  "estimatedCost": 400000,
+  "modifiedAt": "2026-11-12T12:20:29.0240112Z",
+  "responsible": "Platform Owner",
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T12:20:29.0240112Z",
+  "name": "Build container platform",
+  "startDate": "2025-06-01",
+  "measureGroupId": "mg-cloud",
+  "shortName": "M-202",
+  "priority": "High",
+  "expectedBenefit": "",
+  "measureType": "Introduce",
+  "description": "",
+  "strategicGuidelineIds": [
+   "sg-cloud-paas"
+  ],
+  "ownerOrganizationId": "org-it-ops",
+  "progress": 100,
+  "status": "Completed"
+ },
+ {
+  "endDate": null,
+  "affectedComponentIds": [],
+  "id": "ms-mdm",
+  "projectId": "",
+  "affectedApplicationIds": [],
+  "serviceCapabilityIds": [
+   "sc-data"
+  ],
+  "modifiedBy": "seed",
+  "estimatedCost": 500000,
+  "modifiedAt": "2026-11-12T12:20:29.0247003Z",
+  "responsible": "Data Architect",
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T12:20:29.0247003Z",
+  "name": "Introduce master data management",
+  "startDate": null,
+  "measureGroupId": "mg-data",
+  "shortName": "M-301",
+  "priority": "Medium",
+  "expectedBenefit": "",
+  "measureType": "Introduce",
+  "description": "",
+  "strategicGuidelineIds": [
+   "sg-data"
+  ],
+  "ownerOrganizationId": "",
+  "progress": 0,
+  "status": "Proposed"
+ },
+ {
+  "endDate": null,
+  "affectedComponentIds": [],
+  "id": "ms-archive",
+  "projectId": "",
+  "affectedApplicationIds": [],
+  "serviceCapabilityIds": [],
+  "modifiedBy": "seed",
+  "estimatedCost": 200000,
+  "modifiedAt": "2026-11-12T12:20:29.0254149Z",
+  "responsible": "",
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T12:20:29.0254149Z",
+  "name": "Custom document archive",
+  "startDate": null,
+  "measureGroupId": "mg-cloud",
+  "shortName": "M-203",
+  "priority": "Low",
+  "expectedBenefit": "",
+  "measureType": "Introduce",
+  "description": "Rejected by the architecture board: violates 'Standard software before custom development'",
+  "strategicGuidelineIds": [
+   "sg-standard"
+  ],
+  "ownerOrganizationId": "",
+  "progress": 0,
+  "status": "Rejected"
+ }
+]

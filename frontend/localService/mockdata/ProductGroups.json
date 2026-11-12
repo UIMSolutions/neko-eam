@@ -1,0 +1,54 @@
+[
+ {
+  "levelId": "PG-1",
+  "id": "pg-infra",
+  "modifiedBy": "seed",
+  "modifiedAt": "2026-11-12T12:20:28.9967676Z",
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T12:20:28.9967676Z",
+  "name": "Infrastructure Software",
+  "objectState": "Active",
+  "parentGroupId": "",
+  "capabilityId": "cap-it",
+  "description": ""
+ },
+ {
+  "levelId": "PG-1.1",
+  "id": "pg-db",
+  "modifiedBy": "seed",
+  "modifiedAt": "2026-11-12T12:20:28.9969502Z",
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T12:20:28.9969502Z",
+  "name": "Database Systems",
+  "objectState": "Active",
+  "parentGroupId": "pg-infra",
+  "capabilityId": "cap-it-data",
+  "description": ""
+ },
+ {
+  "levelId": "PG-1.2",
+  "id": "pg-runtime",
+  "modifiedBy": "seed",
+  "modifiedAt": "2026-11-12T12:20:28.9971475Z",
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T12:20:28.9971475Z",
+  "name": "Runtimes & Platforms",
+  "objectState": "Active",
+  "parentGroupId": "pg-infra",
+  "capabilityId": "cap-it-runtime",
+  "description": ""
+ },
+ {
+  "levelId": "PG-2",
+  "id": "pg-tools",
+  "modifiedBy": "seed",
+  "modifiedAt": "2026-11-12T12:20:28.9973233Z",
+  "createdBy": "seed",
+  "createdAt": "2026-11-12T12:20:28.9973233Z",
+  "name": "Desktop Tools",
+  "objectState": "Inactive",
+  "parentGroupId": "",
+  "capabilityId": "",
+  "description": ""
+ }
+]
