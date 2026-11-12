@@ -3,6 +3,7 @@ module neko.eam.ports.repositories;
 
 import neko.eam.domain.entities.tenant : Tenant;
 import neko.eam.domain.entities.comment : Comment;
+import neko.eam.domain.entities.credential : Credential;
 
 /// Kind independent repository operations (used for referential integrity checks).
 interface IElementRepositoryBase {
@@ -48,5 +49,15 @@ interface ICommentRepository {
 	void remove(string id);
 	/// Removes all comments of an element (when the element is deleted); returns the number removed.
 	size_t removeForElement(string elementSet, string elementId);
+	size_t count();
+}
+
+/// Driven port: the passwords (hashes) of the users of one tenant - local sign-in only.
+interface ICredentialRepository {
+	/// null if the user has no password
+	Credential find(string userId);
+	void save(Credential credential);
+	/// Removes the password of a user (no-op if there is none).
+	void remove(string userId);
 	size_t count();
 }

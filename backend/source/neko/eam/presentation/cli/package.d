@@ -64,6 +64,11 @@ Options:
 
 Access management:
   rights [userName]              effective rights of a user (default: --user or the local operator)
+  password <userName> [--keep]   set the password for the local sign-in (authMode=local); read from the
+                                 terminal (hidden) or one line of stdin. The user must change it after the
+                                 next sign-in unless --keep is given
+  password <userName> --remove   remove the password (the user can no longer sign in locally)
+  password <userName> --check    show whether the user has a password
 
 Comments (running journal of every element):
   comments <Set> <id>            comments of an element, newest first
@@ -197,6 +202,23 @@ private int runLocal(ref CliOptions o, IEamUseCases uc) {
 			return reportCommand(o, uc);
 		case "backup":
 			return backupCommand(o);
+		case "password":
+			needArgs(p, 2, cmd);
+			auto access = uc.access;
+			if ("check" in o.options) {
+				writefln("%s: %s", p[1], access.hasPassword(p[1]) ? "password set" : "no password");
+				return 0;
+			}
+			if ("remove" in o.options) {
+				access.removePassword(p[1], s_subject);
+				writefln("Password of %s removed", p[1]);
+				return 0;
+			}
+			auto pw = readSecret("New password for " ~ p[1] ~ ": ");
+			if (isTerminal && readSecret("Repeat the password: ") != pw) throw new Exception("The passwords do not match");
+			access.setPassword(p[1], pw, s_subject, !("keep" in o.options));
+			writefln("Password of %s set%s", p[1], "keep" in o.options ? "" : " (must be changed at the next sign-in)");
+			return 0;
 		case "rights":
 			auto who = p.length > 1 ? p[1] : o.opt("user");
 			auto subject = who.length ? AccessSubjectDto(who, "", false) : AccessSubjectDto(localUserName(), "", true);
@@ -653,4 +675,33 @@ private int reportCommand(ref CliOptions o, IEamUseCases uc) {
 		default:
 			throw new Exception("Unknown " ~ p[0] ~ " command '" ~ p[1] ~ "'");
 	}
+}
+
+/// stdin is an interactive terminal.
+private bool isTerminal() {
+	version (Posix) {
+		import core.sys.posix.unistd : isatty;
+		return isatty(0) == 1;
+	} else return false;
+}
+
+/// Reads one line from stdin; on a terminal the input is not echoed.
+private string readSecret(string prompt) {
+	import std.stdio : stdin, stdout, write;
+	import std.string : chomp;
+	version (Posix) {
+		import core.sys.posix.termios;
+		termios saved;
+		bool hidden = isTerminal && tcgetattr(0, &saved) == 0;
+		if (hidden) {
+			auto t = saved;
+			t.c_lflag &= ~ECHO;
+			tcsetattr(0, TCSANOW, &t);
+		}
+		scope (exit) if (hidden) { tcsetattr(0, TCSANOW, &saved); writeln(); }
+	}
+	if (isTerminal) { write(prompt); stdout.flush(); }
+	auto line = stdin.readln();
+	if (line is null) throw new Exception("No password given on stdin");
+	return line.chomp;
 }

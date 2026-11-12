@@ -13,6 +13,13 @@ struct XsuaaConfig {
 	string verificationkey; /// PEM public key used to verify RS256 tokens
 }
 
+/// Values of `AppConfig.authMode`.
+enum AuthMode : string {
+	none = "none",   /// no authentication (local development)
+	local = "local", /// sign-in form with repository users and passwords
+	xsuaa = "xsuaa", /// SAP XSUAA bearer tokens (behind the approuter)
+}
+
 struct AppConfig {
 	string bindAddress = "127.0.0.1";
 	ushort port = 8080;
@@ -26,7 +33,11 @@ struct AppConfig {
 	uint backupIntervalHours = 24;                    /// scheduled backups of all tenants (0 = off)
 	string frontendPath = "../frontend";
 	string odataBasePath = "/odata/v4/eam";
-	string authMode = "none"; /// none | xsuaa
+	string authMode = "none"; /// none | local | xsuaa (see AuthMode)
+	uint sessionTimeoutMinutes = 60; /// idle timeout of local sign-in sessions
+	string localAdminUser = "admin";  /// built-in administrator of the local sign-in
+	/// Password (or pbkdf2-sha256 hash) of the built-in administrator; empty = none. Prefer EAM_ADMIN_PASSWORD.
+	string localAdminPassword;
 	XsuaaConfig xsuaa;
 	string tlsCertificateFile;
 	string tlsPrivateKeyFile;
@@ -44,7 +55,19 @@ AppConfig loadConfiguration(string file = null) {
 		cfg.configFile = file;
 	}
 	applyEnvironment(cfg, environment.toAA());
+	validate(cfg);
 	return cfg;
+}
+
+/// Rejects settings that would silently weaken security (e.g. a misspelt auth mode running without login).
+void validate(const ref AppConfig cfg) {
+	import std.algorithm : canFind;
+	if (![AuthMode.none, AuthMode.local, AuthMode.xsuaa].canFind(cfg.authMode))
+		throw new Exception("authMode must be 'none', 'local' or 'xsuaa', not '" ~ cfg.authMode ~ "'");
+	if (cfg.authMode == AuthMode.local && (cfg.sessionTimeoutMinutes < 1 || cfg.sessionTimeoutMinutes > 24 * 60))
+		throw new Exception("sessionTimeoutMinutes must be between 1 and 1440");
+	if ((cfg.tlsCertificateFile.length == 0) != (cfg.tlsPrivateKeyFile.length == 0))
+		throw new Exception("tlsCertificateFile and tlsPrivateKeyFile must be set together");
 }
 
 /// Applies a JSON object onto the configuration (only present keys).
@@ -73,6 +96,9 @@ void applyEnvironment(ref AppConfig cfg, string[string] env) {
 	if (auto v = "EAM_SEED_ON_EMPTY" in env) cfg.seedOnEmpty = (*v).to!bool;
 	if (auto v = "EAM_FRONTEND_PATH" in env) cfg.frontendPath = *v;
 	if (auto v = "EAM_AUTH_MODE" in env) cfg.authMode = *v;
+	if (auto v = "EAM_SESSION_TIMEOUT_MINUTES" in env) cfg.sessionTimeoutMinutes = (*v).to!uint;
+	if (auto v = "EAM_ADMIN_USER" in env) cfg.localAdminUser = *v;
+	if (auto v = "EAM_ADMIN_PASSWORD" in env) cfg.localAdminPassword = *v;
 	if (auto v = "EAM_TLS_CERT" in env) cfg.tlsCertificateFile = *v;
 	if (auto v = "EAM_TLS_KEY" in env) cfg.tlsPrivateKeyFile = *v;
 	if (auto v = "EAM_WEBVIEW_URL" in env) cfg.webviewUrl = *v;
@@ -103,4 +129,15 @@ unittest {
 	assert(cfg.port == 9100 && cfg.authMode == "xsuaa" && cfg.xsuaa.clientid == "sb-eam");
 	applyEnvironment(cfg, ["PORT": "8443"]);
 	assert(cfg.port == 8443 && cfg.bindAddress == "0.0.0.0");
+	validate(cfg);
+	foreach (bad; ["XSUAA", "", "password"]) {
+		auto c = cfg;
+		c.authMode = bad;
+		bool failed;
+		try validate(c); catch (Exception) failed = true;
+		assert(failed, bad);
+	}
+	applyEnvironment(cfg, ["EAM_AUTH_MODE": "local", "EAM_ADMIN_PASSWORD": "pw", "EAM_SESSION_TIMEOUT_MINUTES": "15"]);
+	assert(cfg.authMode == AuthMode.local && cfg.localAdminPassword == "pw" && cfg.sessionTimeoutMinutes == 15);
+	validate(cfg);
 }

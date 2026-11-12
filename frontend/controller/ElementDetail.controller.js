@@ -21,10 +21,11 @@ sap.ui.define([
 	"uim/eam/model/formatter",
 	"sap/m/FeedInput",
 	"sap/m/FeedListItem",
-	"sap/m/FeedListItemAction"
+	"sap/m/FeedListItemAction",
+	"uim/eam/controller/PasswordHelper"
 ], function (Controller, History, JSONModel, Filter, FilterOperator, SimpleForm, ObjectPageSection, ObjectPageSubSection,
 	Label, Text, VBox, List, StandardListItem, ObjectStatus, ObjectAttribute, MessageBox, MessageToast, models, fieldFactory, formatter,
-	FeedInput, FeedListItem, FeedListItemAction) {
+	FeedInput, FeedListItem, FeedListItemAction, PasswordHelper) {
 	"use strict";
 
 	/** Section order; groups not listed here follow in meta model order. */
@@ -72,6 +73,8 @@ sap.ui.define([
 				var oView = this.getView().getModel("view");
 				oView.setProperty("/setLabel", this._i18n("set" + sSet));
 				oView.setProperty("/runnable", (sSet === "Reports" || sSet === "ReportBooks") && sId !== "new");
+				// local sign-in: user administrators set the passwords of the repository users
+				oView.setProperty("/passwordSettable", sSet === "Users" && sId !== "new");
 				oView.setProperty("/error", "");
 				this._clearValueStates();
 				this.byId("objectPage").setSelectedSection(null);
@@ -110,6 +113,13 @@ sap.ui.define([
 		},
 
 		// ------------------------------------------------------------------ page construction
+
+		/** Users (local sign-in): set or remove the password of the user shown. */
+		onSetPassword: function () {
+			var oObj = this.getView().getModel("obj");
+			this._oPassword = this._oPassword || new PasswordHelper(this.getView());
+			this._oPassword.openForUser(oObj.getProperty("/userName"), oObj.getProperty("/name"));
+		},
 
 		/** Reports and report books: show the result page. */
 		onRunReport: function () {

@@ -42,7 +42,7 @@ class ODataService {
 	void handle(HTTPServerRequest req, HTTPServerResponse res) {
 		res.headers["OData-Version"] = "4.0";
 		try {
-			auto subject = establishSubject(req, _auth);
+			auto subject = establishSubject(req, res, _auth);
 			dispatch(req, res, resourcePath(req), subject.userName);
 		} catch (Exception e) {
 			writeError(res, e);

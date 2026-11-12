@@ -7,6 +7,8 @@
 	"frontendPath": "../frontend",
 	"odataBasePath": "/odata/v4/eam",
 	"authMode": "none",
+	"sessionTimeoutMinutes": 60,
+	"localAdminUser": "admin",
 	"xsuaa": {
 		"xsappname": "neko-eam",
 		"clientid": "",

@@ -1,0 +1,30 @@
+<mvc:View controllerName="uim.eam.controller.Logout"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:core="sap.ui.core"
+	xmlns:f="sap.f"
+	xmlns="sap.m"
+	displayBlock="true"
+	height="100%">
+	<Page id="logoutPage" showHeader="false" enableScrolling="true">
+		<FlexBox height="100%" justifyContent="Center" alignItems="Center" class="eamAuthCenter">
+			<f:Card class="eamAuthCard" width="100%">
+				<f:content>
+					<VBox id="logoutCard" class="eamAuthCardBody" alignItems="Center" width="100%">
+						<HBox alignItems="Center" class="sapUiMediumMarginBottom">
+							<Image src="img/logo.svg" width="2.5rem" height="2.5rem" alt="" decorative="true" class="sapUiSmallMarginEnd" />
+							<VBox>
+								<Title text="{i18n>appTitle}" level="H1" titleStyle="H4" />
+								<Text text="{i18n>appDescription}" />
+							</VBox>
+						</HBox>
+						<core:Icon src="sap-icon://sys-enter-2" size="3rem" color="Positive" class="sapUiSmallMarginBottom" decorative="true" />
+						<Title id="logoutHeading" text="{i18n>logoutHeading}" level="H2" titleStyle="H3" textAlign="Center" wrapping="true" />
+						<Text text="{i18n>logoutText}" textAlign="Center" class="sapUiSmallMarginTop" />
+						<Button id="signInAgainButton" text="{i18n>logoutSignInAgain}" type="Emphasized" width="100%" press=".onSignInAgain"
+							class="sapUiMediumMarginTop" />
+					</VBox>
+				</f:content>
+			</f:Card>
+		</FlexBox>
+	</Page>
+</mvc:View>

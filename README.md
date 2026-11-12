@@ -219,22 +219,25 @@ neko/
 │   ├── build/                   binaries (eam, eam-headless, eam-test)
 │   └── source/
 │       ├── app.d                entry point: serve | gui | webview | <cli>
-│       └── uim/myfiori/
+│       └── neko/eam/
 │           ├── composition.d    composition root (manual dependency injection)
 │           ├── domain/          entities, types (UDAs, value objects), enumerations, services, exceptions
 │           ├── application/     usecases (interactors), services (integrity, ArchiMate, facade), dtos (+ registry)
 │           ├── ports/           usecases, services, repositories, storages, messaging, gateways
-│           ├── infrastructure/  configuration, logging, security (XSUAA/JWT), workers, clients (OData client),
+│           ├── infrastructure/  configuration, logging, security (XSUAA/JWT, PBKDF2 passwords, sign-in sessions),
+│           │                    workers, clients (OData client),
 │           │                    formats (CSV / XLSX codecs)
 │           ├── persistence/     records, mappers, storages (JSON file / memory), repositories
 │           └── presentation/    odata, rest, http, web, cli, gui (GtkD + WebView), unix (reserved)
 ├── frontend/                    SAP Fiori 3 / OpenUI5 1.120 LTS (OData V4)
 │   ├── index.html  Component.js  manifest.json  img/logo.svg
+│   ├── login.html  logout.html  standalone.js   sign-in / sign-out pages (Login, Logout views, no app shell)
 │   ├── view/                    App (ToolPage: ShellBar + SideNavigation), Overview, Analysis,
 │   │                            ElementList, ElementDetail, Search (result page), UserProfile.fragment,
-│   │                            ImportDialog.fragment (+ controller/TransferHelper.js)
+│   │                            ImportDialog.fragment (+ controller/TransferHelper.js), Login, Logout,
+│   │                            PasswordDialog.fragment (+ controller/PasswordHelper.js)
 │   ├── controller/  i18n/ (en, de)  css/
-│   ├── model/                   models (REST/OData helpers), formatter, fieldFactory (meta-model driven controls)
+│   ├── model/                   models (REST/OData helpers), auth (sign-in calls), formatter, fieldFactory
 │   ├── localService/            metadata.xml + mockdata (generated from the backend)
 │   └── test/                    QUnit (unit) + OPA5 (integration)
 └── approuter/                   @sap/approuter: xs-app.json, xs-security.json, default-env.json (local only, git-ignored)
@@ -287,6 +290,10 @@ dub test  -c unittest     # unit tests of all layers + integration test
 | `/api/v1/model` | meta model: sets, field labels, groups, types, references, enumeration values, defaults |
 | `/api/v1/search?q=…&top=…` | central search over all sets (best hits first, `top` 1–200) |
 | `/api/v1/me` | signed-in user (name, initials, e-mail, roles) for the shell bar profile |
+| `/login.html`, `/logout.html` | sign-in and sign-out views (local sign-in, see [Sign-in](#sign-in-login--logout)) |
+| `/auth/info`, `POST /auth/login`, `POST /auth/logout` | local sign-in: mode, session start / end |
+| `POST /api/v1/me/password` | change the own password `{currentPassword, newPassword}` |
+| `GET` / `PUT` / `DELETE /api/v1/users/{userName}/password` | password state / set `{password, mustChange}` / remove (user administration) |
 | `/api/v1/export/archimate` | ArchiMate 3.1 XML |
 | `/web` | server-side web cockpit (daisyUI) |
 | `/health` | health check |
@@ -415,6 +422,7 @@ use cases), so OData, REST, import/export, search, web cockpit, CLI and desktop 
   Applications, the ArchiMate export read access to all architecture sets, `seed` administrator rights.
 * The Fiori app shows only readable sets in the side navigation and enables *Create*, *Edit*, *Delete* and
   *Import* per set; the profile shows the roles and the effective rights (e.g. `All: R; Applications: RCUD`).
+* **Signing in with a password** (`authMode=local`): see [Sign-in](#sign-in-login--logout).
 * **Trying it locally** (`authMode=none`): the profile popover offers *Act as* with the repository users (sets
   the cookie `eam-dev-user`, ignored with XSUAA). CLI: `--user <userName>`, desktop: `EAM_USER=<userName>`.
 
@@ -427,6 +435,46 @@ EAM_USER=a.krueger ./build/eam gui                            # desktop client w
 Demo roles: *EAM Administrator* (everything incl. access management), *Enterprise Architect* (maintain all),
 *Viewer* (read all), *Application Owner*, *Product Manager*, *IT Planner*, *Project Manager* (read all + maintain
 their sets), *Project Team Member* (only sees and updates work packages) and the inactive *Legacy Editor*.
+
+### Sign-in (login & logout)
+
+How users sign in depends on `authMode`:
+
+| `authMode` | Sign-in | Sign-out |
+|---|---|---|
+| `none` (default, development) | none – the OS user is administrator (*Act as* for testing rights) | – |
+| `local` | **login view** (`login.html`): user name + password of a repository user (*Access Management → Users*) | profile → *Sign Out* → **logout view** (`logout.html`) |
+| `xsuaa` | SAP approuter / identity provider | profile → *Sign Out* → approuter `/do/logout` → logout view |
+
+With `authMode=local`:
+
+* Users sign in to **one tenant** (field *Tenant*, shown when there are several); users, roles and passwords are
+  per tenant. Only enabled users (active, not past *valid until*) can sign in.
+* The built-in **administrator** (`EAM_ADMIN_USER`, default `admin`, password `EAM_ADMIN_PASSWORD`) is
+  system administrator: initial set-up, tenants, break-glass. Without `EAM_ADMIN_PASSWORD` there is none.
+* **Passwords**: at least 10 characters with letters and digits or special characters, not containing the user
+  name. Stored only as salted **PBKDF2-HMAC-SHA256** hash (120,000 iterations) in the tenant's data file
+  (collection `Credentials`, part of backups) – never in OData, the workbook export, reports or the search.
+* **Setting passwords**: users with update permission on *Users* use *Set Password* on the user's object page
+  (or `eam password <userName>`). The user then has to choose an own password after signing in (the profile
+  opens *Change Password*); `--keep` / unchecking the box skips that. Users change their password in the profile.
+  Deleting a user removes the password; setting or removing it signs the user out everywhere.
+* **Sessions**: server-side, cookie `eam-session` (HttpOnly, SameSite=Strict, Secure with TLS), new id on every
+  sign-in, idle timeout `sessionTimeoutMinutes` (default 60) and at most 12 hours. Kept in memory – a restart
+  signs everybody out. Modifying requests need the session's **CSRF token** (`X-CSRF-Token`, fetched with
+  `X-CSRF-Token: Fetch`, same protocol as the approuter – the Fiori app handles it).
+* **Brute force**: after 5 failed attempts for a user name (20 per client address) further attempts are refused
+  with HTTP 429 for 30 s, doubling up to 15 min. The error never tells whether a user exists.
+* Signed-out browsers are sent to the login view (also from `/web`), and back to the page they came from
+  afterwards (only targets of this app – no open redirect). An expired session shows a hint on the login view.
+
+```bash
+EAM_AUTH_MODE=local EAM_ADMIN_PASSWORD='choose a long one' ./build/eam serve
+./build/eam password m.weber            # set a password (asked twice, hidden); must be changed at first sign-in
+echo 'Archi tect 2026' | ./build/eam password m.weber --keep   # from stdin, no forced change
+./build/eam password m.weber --check    # has the user a password?
+./build/eam password m.weber --remove   # sign-in no longer possible
+```
 
 ### Comments (journal)
 
@@ -557,13 +605,17 @@ user, the profile popover, sidebar navigation to Products, running a report, to 
   matched field) open the object page directly; *Enter* opens the result page `#/search/<query>` with a
   filter by element type and the matched text per hit.
 * **User profile** (avatar): name, e-mail, roles and effective rights (from the access management), language
-  (EN/DE), theme (Fiori 3, Fiori 3 Dark, High Contrast Black/White, remembered in the browser), sign-out
-  (approuter) and – locally only – *Act as* another repository user. Navigation entries and the *Create*,
+  (EN/DE), theme (Fiori 3, Fiori 3 Dark, High Contrast Black/White, remembered in the browser), *Change
+  Password* (local sign-in), *Sign Out* (local sign-in and approuter) and – with `authMode=none` only – *Act as*
+  another repository user. Navigation entries and the *Create*,
   *Edit*, *Delete* and *Import* buttons follow the user's permissions per set.
 * **Generic pages** (`ElementList`, `ElementDetail`) for all thirty-five sets: list columns from `@ListColumn`,
   object page sections from `@Group`, display mode with links to referenced elements, **Edit → Save/Cancel**
   (one PATCH with the changed fields), create via the same page (`#/sets/<Set>/new`), and a **Where Used**
   section with all elements that reference the current one. Applications also show the impact analysis.
+* **Login / logout views** (`login.html`, `logout.html`): Fiori 3 sign-in card (user name, password, tenant
+  when there are several, messages for wrong credentials, lock-out and expired sessions) and the sign-out
+  confirmation – both outside the app shell, in the theme chosen in the app.
 * Runs on **OpenUI5 1.120 LTS** from `sdk.openui5.org`, the last line that still ships the SAP Fiori 3 themes.
 
 ---
@@ -581,7 +633,10 @@ environment variables → `VCAP_SERVICES`.
 | `dataFile` | `EAM_DATA_FILE` | `data/eam.json` |
 | `seedOnEmpty` | `EAM_SEED_ON_EMPTY` | `true` |
 | `frontendPath` | `EAM_FRONTEND_PATH` | `../frontend` |
-| `authMode` (`none`/`xsuaa`) | `EAM_AUTH_MODE`; set to `xsuaa` automatically when an XSUAA binding exists | `none` |
+| `authMode` (`none`/`local`/`xsuaa`) | `EAM_AUTH_MODE`; set to `xsuaa` automatically when an XSUAA binding exists. Other values are rejected at start-up | `none` |
+| `sessionTimeoutMinutes` | `EAM_SESSION_TIMEOUT_MINUTES` | `60` (idle timeout of local sign-in sessions, 1–1440) |
+| `localAdminUser` | `EAM_ADMIN_USER` | `admin` (built-in administrator of the local sign-in) |
+| `localAdminPassword` | `EAM_ADMIN_PASSWORD` (prefer the environment; a `pbkdf2-sha256$…` hash is accepted too) | – (no built-in administrator) |
 | `xsuaa.{xsappname,clientid,url,verificationkey}` | `VCAP_SERVICES.xsuaa[0].credentials` | – |
 | `tlsCertificateFile`, `tlsPrivateKeyFile` | `EAM_TLS_CERT`, `EAM_TLS_KEY` | – (HTTPS when both are set) |
 | `healthCheckIntervalSeconds` | – | `300` (background architecture health worker, 0 = off) |
@@ -595,7 +650,10 @@ environment variables → `VCAP_SERVICES`.
 ### Security
 
 * `authMode=none` (local development): every request runs as the OS user (`$USER`) with full rights, unless a
-  repository user is selected with *Act as* (cookie `eam-dev-user`).
+  repository user is selected with *Act as* (cookie `eam-dev-user`). **Never expose it to a network.**
+* `authMode=local`: login view with repository users and passwords, server-side sessions, CSRF tokens and
+  sign-in throttling (see [Sign-in](#sign-in-login--logout)). Use TLS (`tlsCertificateFile`/`tlsPrivateKeyFile`
+  or a reverse proxy) so that passwords and session cookies are not sent in clear text.
 * **Authorization** is defined by the EAM users, roles and permissions (see
   [Users, roles & permissions](#users-roles--permissions)), enforced in the application layer for every channel.
 * `authMode=xsuaa`: OData, REST and web routes require a bearer JWT. The backend checks the
@@ -604,7 +662,7 @@ environment variables → `VCAP_SERVICES`.
   permissions. `<xsappname>.Admin` makes the user an administrator who bypasses them. The user's
   `given_name`, `family_name` and `email` claims feed the shell bar profile (`/api/v1/me`). The approuter
   additionally requires `Display` per route (`xs-app.json`, for all methods – write access is decided by the
-  backend) and handles CSRF.
+  backend) and handles CSRF. Only the logout view and its resources are public (`logoutPage: /logout.html`).
 * Role collections: `EAM_Viewer` (EAM user – rights from the access management), `EAM_Architect` (administrator
   of the tenant), `EAM_SystemAdministrator` (scope `SystemAdmin`: tenants, backup / restore of every tenant)
   (`approuter/xs-security.json`).

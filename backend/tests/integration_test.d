@@ -752,3 +752,62 @@ unittest {
 	platform.restoreBackup("default", b.id, false, sys);
 	assert(platform.tenantUseCases("default").comments.count("Applications", "app-crm") == 0);
 }
+
+// local sign-in: passwords of the repository users, kept out of the element data
+unittest {
+	import std.algorithm : canFind;
+	auto c = EamContainer.inMemory();
+	auto uc = c.useCases;
+	uc.seeder.seed();
+	auto ac = uc.access;
+	auto operator = AccessSubjectDto("operator", "", true, true, "");
+	bool fails(E)(scope void delegate() fn) {
+		try fn(); catch (E) return true;
+		return false;
+	}
+
+	// nobody can sign in before a password was set; unknown users get the same error
+	assert(!ac.hasPassword("m.weber"));
+	assert(fails!InvalidCredentialsException({ ac.signIn("m.weber", "whatever 123"); }));
+	assert(fails!InvalidCredentialsException({ ac.signIn("nobody", "whatever 123"); }));
+
+	// only user administrators set passwords; the policy applies
+	assert(fails!AccessDeniedException({ ac.setPassword("m.weber", "Archi tect 2026", AccessSubjectDto("s.yilmaz")); }));
+	assert(fails!ValidationException({ ac.setPassword("m.weber", "short", operator); }));
+	assert(fails!EntityNotFoundException({ ac.setPassword("nobody", "Archi tect 2026", operator); }));
+	ac.setPassword("m.weber", "Archi tect 2026", AccessSubjectDto("eam.admin"));
+	assert(ac.hasPassword("M.Weber"));
+
+	// sign-in is case-insensitive on the user name, exact on the password; must change after an admin reset
+	auto s = ac.signIn(" M.WEBER ", "Archi tect 2026");
+	assert(s.subject.userName == "m.weber" && s.displayName == "Markus Weber" && s.mustChangePassword && !s.subject.administrator);
+	assert(fails!InvalidCredentialsException({ ac.signIn("m.weber", "archi tect 2026"); }));
+
+	// own change: current password checked, flag cleared
+	assert(fails!ValidationException({ ac.changePassword("m.weber", "wrong", "New pass word 9"); }));
+	assert(fails!ValidationException({ ac.changePassword("m.weber", "Archi tect 2026", "Archi tect 2026"); }));
+	ac.changePassword("m.weber", "Archi tect 2026", "New pass word 9");
+	assert(!ac.signIn("m.weber", "New pass word 9").mustChangePassword);
+	assert(fails!InvalidCredentialsException({ ac.signIn("m.weber", "Archi tect 2026"); }));
+
+	// disabled users cannot sign in even with the right password
+	ac.setPassword("f.employee", "Gone but 4gotten", operator);
+	assert(fails!InvalidCredentialsException({ ac.signIn("f.employee", "Gone but 4gotten"); }));
+
+	// passwords never appear in the element data, the workbook export or the search
+	foreach (sheet; uc.transfer.exportAll()) assert(sheet.name != "Credentials");
+	foreach (u; uc.users.list) foreach (v; u.tupleof) static if (is(typeof(v) == string)) assert(!v.canFind("pbkdf2"));
+	assert(c.storage.load("Credentials").length == 2, "stored in the tenant storage (part of backups)");
+
+	// deleting a user removes the password; removing a password ends local sign-in
+	ac.removePassword("m.weber", operator);
+	assert(!ac.hasPassword("m.weber"));
+	UserDto temp;
+	temp.name = "Temporary";
+	temp.userName = "t.emp";
+	auto created = uc.users.create(temp);
+	ac.setPassword("t.emp", "Temporary 2026", operator);
+	assert(c.storage.load("Credentials").length == 2);
+	uc.users.remove(created.id);
+	assert(c.storage.load("Credentials").length == 1);
+}

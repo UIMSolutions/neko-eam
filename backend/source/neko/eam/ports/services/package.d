@@ -38,3 +38,13 @@ interface IReportRenderer {
 	string mimeType();
 	immutable(ubyte)[] render(string title, ReportResultDto[] results);
 }
+
+/// Driven port: one-way password hashing with salt (implemented with OpenSSL in the infrastructure).
+interface IPasswordHasher {
+	/// Encoded hash of `password` with a fresh random salt.
+	string hash(string password);
+	/// Constant-time check of `password` against an encoded hash; false for malformed hashes.
+	bool verify(string password, string encoded);
+	/// The hash was made with weaker parameters than the current ones (re-hash after a successful sign-in).
+	bool needsRehash(string encoded);
+}

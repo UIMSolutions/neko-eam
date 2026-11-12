@@ -36,3 +36,12 @@ struct AccessRightsDto {
 	string summary;       /// e.g. "All: R; Applications: RCUD"
 	SetRightsDto[] sets;
 }
+
+/// Result of a successful local sign-in.
+struct SignInDto {
+	AccessSubjectDto subject;
+	string userId;
+	string displayName;
+	/// The password was set by an administrator: the user should choose a new one.
+	bool mustChangePassword;
+}

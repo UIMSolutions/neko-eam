@@ -55,6 +55,21 @@ interface IAccessControl {
 	IEamUseCases useCasesFor(AccessSubjectDto subject);
 	/// The subject matches an enabled user of this repository (needed to enter a non-default tenant).
 	bool isKnownUser(AccessSubjectDto subject);
+
+	// ---- local sign-in (authMode=local): passwords of the repository users
+
+	/// Checks user name (case-insensitive) and password of an enabled user. Throws InvalidCredentialsException
+	/// with the same message for unknown users, wrong passwords and disabled users.
+	SignInDto signIn(string userName, string password);
+	/// Sets the password of a user. Requires update permission on Users (user administration);
+	/// with `mustChange` the user is asked to choose a new password after signing in.
+	void setPassword(string userName, string newPassword, AccessSubjectDto by, bool mustChange = true);
+	/// The user changes the own password (the current one is checked first).
+	void changePassword(string userName, string currentPassword, string newPassword);
+	/// The user has a password, i.e. can sign in locally.
+	bool hasPassword(string userName);
+	/// Removes the password of a user (sign-in no longer possible). Same permission as `setPassword`.
+	void removePassword(string userName, AccessSubjectDto by);
 }
 
 /// Loads a demo architecture if the repository is empty.

@@ -22,6 +22,8 @@
 				<uxap:actions>
 					<Button id="runReportButton" text="{i18n>reportRun}" icon="sap-icon://media-play" press=".onRunReport"
 						visible="{= ${view>/runnable} &amp;&amp; !${ui>/editable} }" />
+					<Button id="setPasswordButton" text="{i18n>passwordSetAction}" icon="sap-icon://key" press=".onSetPassword"
+						visible="{= ${view>/passwordSettable} &amp;&amp; ${ui>/canUpdate} &amp;&amp; ${user>/authMode} === 'local' &amp;&amp; !${ui>/editable} }" />
 					<Button id="editButton" text="{i18n>edit}" type="Emphasized" press=".onEdit" visible="{= !${ui>/editable} &amp;&amp; ${ui>/canUpdate} }" />
 					<Button id="detailDeleteButton" text="{i18n>delete}" press=".onDelete" visible="{= !${ui>/editable} &amp;&amp; ${ui>/canDelete} }" />
 				</uxap:actions>

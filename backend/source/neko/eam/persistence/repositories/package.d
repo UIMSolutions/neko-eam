@@ -97,3 +97,4 @@ class RepositoryRegistry : IRepositoryRegistry {
 }
 public import neko.eam.persistence.repositories.tenantregistry;
 public import neko.eam.persistence.repositories.commentrepository;
+public import neko.eam.persistence.repositories.credentialrepository;

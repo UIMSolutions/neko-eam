@@ -24,25 +24,25 @@ import neko.eam.presentation.http.jsoncodec;
 
 void registerReportRoutes(URLRouter router, IEamUseCases uc) {
 	router.get("/api/v1/reports/:id/run", (HTTPServerRequest req, HTTPServerResponse res) {
-		run(res, () => json(res, serializeToJson(callerUseCases(uc).reporting.run(req.params["id"], currentSubject().userName))));
+		respond(res, () => sendJson(res, serializeToJson(callerUseCases(uc).reporting.run(req.params["id"], currentSubject().userName))));
 	});
 	router.post("/api/v1/reports/run", (HTTPServerRequest req, HTTPServerResponse res) {
-		run(res, () {
+		respond(res, () {
 			auto d = dtoFromJson!ReportDto(req.json);
-			json(res, serializeToJson(callerUseCases(uc).reporting.runDefinition(d, currentSubject().userName)));
+			sendJson(res, serializeToJson(callerUseCases(uc).reporting.runDefinition(d, currentSubject().userName)));
 		});
 	});
 	router.get("/api/v1/reports/:id/export", (HTTPServerRequest req, HTTPServerResponse res) {
-		run(res, () {
+		respond(res, () {
 			auto r = callerUseCases(uc).reporting.run(req.params["id"], currentSubject().userName);
 			send(req, res, r.name, [r]);
 		});
 	});
 	router.get("/api/v1/reportbooks/:id/run", (HTTPServerRequest req, HTTPServerResponse res) {
-		run(res, () => json(res, serializeToJson(callerUseCases(uc).reporting.runBook(req.params["id"], currentSubject().userName))));
+		respond(res, () => sendJson(res, serializeToJson(callerUseCases(uc).reporting.runBook(req.params["id"], currentSubject().userName))));
 	});
 	router.get("/api/v1/reportbooks/:id/export", (HTTPServerRequest req, HTTPServerResponse res) {
-		run(res, () {
+		respond(res, () {
 			auto ucs = callerUseCases(uc);
 			auto book = ucs.reportBooks.get(req.params["id"]);
 			send(req, res, book.name, ucs.reporting.runBook(book.id, currentSubject().userName));
@@ -80,20 +80,4 @@ string safeName(string s) {
 	string r;
 	foreach (char c; s) r ~= isAlphaNum(c) ? c : '-';
 	return r.length ? r : "report";
-}
-
-private void json(HTTPServerResponse res, Json body) {
-	res.writeBody(body.toString, "application/json; charset=utf-8");
-}
-
-private void run(HTTPServerResponse res, scope void delegate() fn) {
-	try fn();
-	catch (HTTPStatusException e) throw e;
-	catch (Exception e) {
-		auto info = classify(e);
-		auto err = Json(["code": Json(info.code), "message": Json(info.status >= 500 ? "Internal server error" : e.msg)]);
-		if (auto v = cast(ValidationException) e) err["target"] = v.field;
-		res.statusCode = info.status;
-		res.writeBody(Json(["error": err]).toString, "application/json; charset=utf-8");
-	}
 }

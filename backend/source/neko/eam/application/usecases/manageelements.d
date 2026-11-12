@@ -18,7 +18,7 @@ class ManageElementsInteractor(TEntity, TDto) : IManageElements!TDto {
 		IEventPublisher _events;
 		void delegate(TEntity) _enricher;
 		void delegate(TEntity) _validator;
-		void delegate(string) _onRemoved;
+		void delegate(string)[] _onRemoved;
 	}
 
 	this(IElementRepository!TEntity repo, IntegrityService integrity, IEventPublisher events) {
@@ -35,8 +35,8 @@ class ManageElementsInteractor(TEntity, TDto) : IManageElements!TDto {
 	/// Registers an additional rule that needs other elements (e.g. uniqueness); runs after `validate()`.
 	void validateWith(void delegate(TEntity) validator) { _validator = validator; }
 
-	/// Called after an element was deleted (e.g. to remove its comments).
-	void onRemoved(void delegate(string id) callback) { _onRemoved = callback; }
+	/// Called after an element was deleted (e.g. to remove its comments); callbacks run in registration order.
+	void onRemoved(void delegate(string id) callback) { _onRemoved ~= callback; }
 
 	TDto[] list() {
 		TDto[] result;
@@ -89,7 +89,7 @@ class ManageElementsInteractor(TEntity, TDto) : IManageElements!TDto {
 		auto existing = require(id);
 		_integrity.checkNotReferenced(kind, id);
 		_repo.remove(id);
-		if (_onRemoved !is null) _onRemoved(id);
+		foreach (callback; _onRemoved) callback(id);
 		publish("Deleted", existing);
 	}
 

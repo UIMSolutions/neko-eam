@@ -49,3 +49,11 @@ class AccessDeniedException : DomainException {
 		super(msg, file, line);
 	}
 }
+
+/// Sign-in failed: unknown user, wrong password, disabled user or temporarily locked account.
+/// The message never tells which of these applied (no user enumeration).
+class InvalidCredentialsException : DomainException {
+	this(string msg = "Invalid user name or password", string file = __FILE__, size_t line = __LINE__) @safe pure nothrow {
+		super(msg, file, line);
+	}
+}

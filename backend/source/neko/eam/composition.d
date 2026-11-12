@@ -8,6 +8,13 @@ import neko.eam.ports;
 import neko.eam.persistence;
 import neko.eam.infrastructure;
 
+/// One hasher for all tenants (stateless).
+private IPasswordHasher passwordHasher() {
+	static IPasswordHasher hasher;
+	if (hasher is null) hasher = new Pbkdf2PasswordHasher;
+	return hasher;
+}
+
 /// Fully wired application core.
 final class EamContainer {
 	AppConfig config;
@@ -268,8 +275,10 @@ final class EamContainer {
 			return cast(IEamUseCases) new EamContainer(AppConfig.init, copy).useCases;
 		};
 		f._transfer = new TransferElementsInteractor(useCases, sandbox);
-		accessControl = new AccessControlInteractor(useCases, users, roles, permissions, sandbox);
+		accessControl = new AccessControlInteractor(useCases, users, roles, permissions, sandbox,
+			new CredentialRepository(storage), passwordHasher);
 		f._access = accessControl;
+		userUc.onRemoved((string id) { accessControl.userRemoved(id); });
 		f._analysis = new AnalyzePortfolioInteractor(apps, caps, comps, flows, projects, products, registry);
 		f._archimate = new ArchiMateExporter(apps, caps, comps, flows, orgs, projects, products, productGroups, appGroups,
 			processes, data, catalogs, guidelines, serviceCaps, measureGroups, measures,

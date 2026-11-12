@@ -51,8 +51,13 @@
 				</HBox>
 			</CustomListItem>
 			<StandardListItem title="{i18n>profileRights}" description="{user>/access/summary}" icon="sap-icon://locked" wrapping="true" />
-			<StandardListItem title="{i18n>profileAuth}" info="{= ${user>/authMode} === 'xsuaa' ? 'SAP XSUAA' : ${i18n>profileLocal} }" icon="sap-icon://shield" />
-			<StandardListItem id="signOutItem" title="{i18n>profileSignOut}" icon="sap-icon://log" type="Active" press=".onSignOut" visible="{= ${user>/authMode} === 'xsuaa' }" />
+			<StandardListItem title="{i18n>profileAuth}" icon="sap-icon://shield"
+				info="{= ${user>/authMode} === 'xsuaa' ? 'SAP XSUAA' : ${user>/authMode} === 'local' ? ${i18n>profileLocalSignIn} : ${i18n>profileLocal} }" />
+			<StandardListItem id="changePasswordItem" title="{i18n>profileChangePassword}" icon="sap-icon://key" type="Active"
+				press=".onChangePassword" visible="{= !!${user>/passwordChangeable} }"
+				info="{= ${user>/mustChangePassword} ? ${i18n>profilePasswordDue} : '' }" infoState="Warning" />
+			<StandardListItem id="signOutItem" title="{i18n>profileSignOut}" icon="sap-icon://log" type="Active" press=".onSignOut"
+				visible="{= ${user>/authMode} === 'xsuaa' || ${user>/authMode} === 'local' }" />
 		</List>
 	</ResponsivePopover>
 </core:FragmentDefinition>

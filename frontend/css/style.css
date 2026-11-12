@@ -1,3 +1,11 @@
 .eamKpiTile { margin: 0 1rem 1rem 0; }
 .eamSetTile { margin: 0 1rem 1rem 0; }
 .eamSection { margin-top: 1rem; }
+
+/* sign-in / sign-out views (login.html, logout.html) - the themed sap.f.Card provides background, border and shadow */
+.eamAuthCenter { min-height: 100%; padding: 1rem; box-sizing: border-box; }
+.eamAuthCard { max-width: 24rem; }
+.eamAuthCardBody { padding: 2rem; box-sizing: border-box; }
+@media (max-width: 30rem) {
+	.eamAuthCardBody { padding: 1.25rem; }
+}

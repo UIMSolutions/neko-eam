@@ -1,0 +1,40 @@
+<mvc:View controllerName="uim.eam.controller.Login"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:core="sap.ui.core"
+	xmlns:f="sap.f"
+	xmlns="sap.m"
+	displayBlock="true"
+	height="100%">
+	<Page id="loginPage" showHeader="false" enableScrolling="true">
+		<FlexBox height="100%" justifyContent="Center" alignItems="Center" class="eamAuthCenter">
+			<f:Card class="eamAuthCard" width="100%">
+				<f:content>
+					<VBox id="loginCard" class="eamAuthCardBody" busy="{login>/busy}" busyIndicatorDelay="0" width="100%">
+						<HBox alignItems="Center" class="sapUiSmallMarginBottom">
+							<Image src="img/logo.svg" width="2.5rem" height="2.5rem" alt="" decorative="true" class="sapUiSmallMarginEnd" />
+							<VBox>
+								<Title text="{i18n>appTitle}" level="H1" titleStyle="H4" />
+								<Text text="{i18n>appDescription}" />
+							</VBox>
+						</HBox>
+						<Title id="loginHeading" text="{i18n>loginHeading}" level="H2" titleStyle="H3" class="sapUiSmallMarginTopBottom" />
+						<MessageStrip id="loginMessage" text="{login>/message}" type="{login>/messageType}" showIcon="true"
+							visible="{= !!${login>/message} }" class="sapUiSmallMarginBottom" />
+						<Label text="{i18n>loginUserName}" labelFor="userName" required="true" />
+						<Input id="userName" value="{login>/userName}" showValueStateMessage="false" submit=".onSignIn" liveChange=".onInputChange"
+							valueState="{login>/userNameState}" width="100%" ariaLabelledBy="loginHeading" />
+						<Label text="{i18n>loginPassword}" labelFor="password" required="true" class="sapUiSmallMarginTop" />
+						<Input id="password" type="Password" value="{login>/password}" showValueStateMessage="false" submit=".onSignIn" liveChange=".onInputChange"
+							valueState="{login>/passwordState}" width="100%" />
+						<Label text="{i18n>loginTenant}" labelFor="tenant" visible="{login>/multiTenant}" class="sapUiSmallMarginTop" />
+						<Input id="tenant" value="{login>/tenant}" submit=".onSignIn" placeholder="{i18n>loginTenantPlaceholder}"
+							visible="{login>/multiTenant}" width="100%" />
+						<Button id="signInButton" text="{i18n>loginSubmit}" type="Emphasized" width="100%" press=".onSignIn"
+							enabled="{= !${login>/busy} }" class="sapUiMediumMarginTop" />
+						<Text text="{i18n>loginHint}" class="sapUiSmallMarginTop" textAlign="Center" width="100%" />
+					</VBox>
+				</f:content>
+			</f:Card>
+		</FlexBox>
+	</Page>
+</mvc:View>

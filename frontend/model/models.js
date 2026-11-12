@@ -1,13 +1,24 @@
 sap.ui.define([
 	"sap/ui/model/json/JSONModel",
-	"sap/ui/Device"
-], function (JSONModel, Device) {
+	"sap/ui/Device",
+	"uim/eam/model/auth"
+], function (JSONModel, Device, auth) {
 	"use strict";
 
 	var API = "api/v1/";
 	var sCsrfToken = null;
+	var bRedirecting = false;
+
+	/** Local sign-in: the session is missing or expired - continue on the login view (once). */
+	function redirectToLogin(oResponse) {
+		var sPage = oResponse.headers.get("X-EAM-Login");
+		if (oResponse.status !== 401 || !sPage || bRedirecting) { return; }
+		bRedirecting = true;
+		window.location.replace(auth.loginUrl(sPage, window.location.hash) + (window.location.hash ? "&" : "?") + "reason=expired");
+	}
 
 	function json(oResponse) {
+		redirectToLogin(oResponse);
 		if (oResponse.status === 204) { return null; }
 		return oResponse.json().catch(function () { return {}; }).then(function (oBody) {
 			if (!oResponse.ok) {
@@ -86,6 +97,31 @@ sap.ui.define([
 				oModel.setProperty("/displayName", "Unknown user");
 				oModel.setProperty("/initials", "?");
 			});
+		},
+
+		// ---- local sign-in (authMode=local): sign out, own password, passwords of other users
+
+		signOut: function () {
+			sCsrfToken = null;
+			return auth.signOut();
+		},
+
+		changePassword: function (sServiceUrl, sCurrent, sNew) {
+			return modify(sServiceUrl, "POST", API + "me/password", { currentPassword: sCurrent, newPassword: sNew });
+		},
+
+		/** { hasPassword, localSignIn } of a repository user (read permission on Users). */
+		getUserPassword: function (sUserName) {
+			return fetch(API + "users/" + encodeURIComponent(sUserName) + "/password").then(json);
+		},
+
+		setUserPassword: function (sServiceUrl, sUserName, sPassword, bMustChange) {
+			return modify(sServiceUrl, "PUT", API + "users/" + encodeURIComponent(sUserName) + "/password",
+				{ password: sPassword, mustChange: !!bMustChange });
+		},
+
+		removeUserPassword: function (sServiceUrl, sUserName) {
+			return modify(sServiceUrl, "DELETE", API + "users/" + encodeURIComponent(sUserName) + "/password");
 		},
 
 		// ---- running comments of an element (REST)

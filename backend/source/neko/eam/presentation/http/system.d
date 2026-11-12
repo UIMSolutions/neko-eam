@@ -30,10 +30,10 @@ enum maxBackupUploadBytes = 256 * 1024 * 1024;
 
 void registerSystemRoutes(URLRouter router, IEamPlatform platform) {
 	router.get("/api/v1/tenants", (HTTPServerRequest req, HTTPServerResponse res) {
-		run(res, () => json(res, serializeToJson(platform.listTenants(currentSubject()))));
+		respond(res, () => sendJson(res, serializeToJson(platform.listTenants(currentSubject()))));
 	});
 	router.post("/api/v1/tenants", (HTTPServerRequest req, HTTPServerResponse res) {
-		run(res, () {
+		respond(res, () {
 			auto body = req.json;
 			TenantCreateDto request;
 			auto t = body["tenant"].type == Json.Type.object ? body["tenant"] : body;
@@ -43,43 +43,43 @@ void registerSystemRoutes(URLRouter router, IEamPlatform platform) {
 			request.adminUserName = body["adminUserName"].opt!string("");
 			request.adminEmail = body["adminEmail"].opt!string("");
 			res.statusCode = HTTPStatus.created;
-			json(res, serializeToJson(platform.createTenant(request, currentSubject())));
+			sendJson(res, serializeToJson(platform.createTenant(request, currentSubject())));
 		});
 	});
 	router.patch("/api/v1/tenants/:id", (HTTPServerRequest req, HTTPServerResponse res) {
-		run(res, () {
+		respond(res, () {
 			auto current = platform.getTenant(req.params["id"], currentSubject());
 			auto body = req.json;
 			static foreach (f; ["name", "description", "status", "zoneId"])
 				if (body[f].type == Json.Type.string) __traits(getMember, current, f) = body[f].get!string;
-			json(res, serializeToJson(platform.updateTenant(req.params["id"], current, currentSubject())));
+			sendJson(res, serializeToJson(platform.updateTenant(req.params["id"], current, currentSubject())));
 		});
 	});
 	router.delete_("/api/v1/tenants/:id", (HTTPServerRequest req, HTTPServerResponse res) {
-		run(res, () { platform.deleteTenant(req.params["id"], currentSubject()); res.writeVoidBody(); });
+		respond(res, () { platform.deleteTenant(req.params["id"], currentSubject()); res.writeVoidBody(); });
 	});
 
 	router.get("/api/v1/backups", (HTTPServerRequest req, HTTPServerResponse res) {
-		run(res, () => json(res, serializeToJson(platform.listBackups(currentTenant(), currentSubject()))));
+		respond(res, () => sendJson(res, serializeToJson(platform.listBackups(currentTenant(), currentSubject()))));
 	});
 	router.post("/api/v1/backups/restore", (HTTPServerRequest req, HTTPServerResponse res) {
-		run(res, () {
+		respond(res, () {
 			auto data = req.bodyReader.readAll(maxBackupUploadBytes);
 			if (data.length == 0) throw new ValidationException("file", "No backup file uploaded (send it as request body)");
-			json(res, serializeToJson(platform.restoreUpload(currentTenant(), data, flag(req, "check"),
+			sendJson(res, serializeToJson(platform.restoreUpload(currentTenant(), data, flag(req, "check"),
 				req.query.get("keep", "true") != "false", currentSubject())));
 		});
 	});
 	router.post("/api/v1/backups", (HTTPServerRequest req, HTTPServerResponse res) {
-		run(res, () {
+		respond(res, () {
 			string comment;
 			try comment = req.json["comment"].opt!string(""); catch (Exception) {}
 			res.statusCode = HTTPStatus.created;
-			json(res, serializeToJson(platform.createBackup(currentTenant(), comment, currentSubject())));
+			sendJson(res, serializeToJson(platform.createBackup(currentTenant(), comment, currentSubject())));
 		});
 	});
 	router.get("/api/v1/backups/:id", (HTTPServerRequest req, HTTPServerResponse res) {
-		run(res, () {
+		respond(res, () {
 			auto file = platform.backupFile(currentTenant(), req.params["id"], currentSubject());
 			res.headers["Content-Disposition"] = `attachment; filename="eam-` ~ currentTenant() ~ "-" ~ req.params["id"] ~ `.eambackup"`;
 			res.headers["Cache-Control"] = "no-store";
@@ -87,10 +87,10 @@ void registerSystemRoutes(URLRouter router, IEamPlatform platform) {
 		});
 	});
 	router.delete_("/api/v1/backups/:id", (HTTPServerRequest req, HTTPServerResponse res) {
-		run(res, () { platform.deleteBackup(currentTenant(), req.params["id"], currentSubject()); res.writeVoidBody(); });
+		respond(res, () { platform.deleteBackup(currentTenant(), req.params["id"], currentSubject()); res.writeVoidBody(); });
 	});
 	router.post("/api/v1/backups/:id/restore", (HTTPServerRequest req, HTTPServerResponse res) {
-		run(res, () => json(res, serializeToJson(platform.restoreBackup(currentTenant(), req.params["id"],
+		respond(res, () => sendJson(res, serializeToJson(platform.restoreBackup(currentTenant(), req.params["id"],
 			flag(req, "check"), currentSubject()))));
 	});
 }
@@ -98,25 +98,4 @@ void registerSystemRoutes(URLRouter router, IEamPlatform platform) {
 private bool flag(HTTPServerRequest req, string name) {
 	auto v = req.query.get(name, "false");
 	return v == "true" || v == "1";
-}
-
-private void json(HTTPServerResponse res, Json body) {
-	res.writeBody(body.toString, "application/json; charset=utf-8");
-}
-
-/// Business errors as OData style JSON (`{"error": {code, message, target}}`).
-private void run(HTTPServerResponse res, scope void delegate() fn) {
-	try fn();
-	catch (HTTPStatusException e) throw e;
-	catch (Exception e) {
-		auto info = classify(e);
-		if (info.status >= 500) {
-			import neko.eam.infrastructure.logging : logError;
-			logError("%s", e.toString());
-		}
-		auto err = Json(["code": Json(info.code), "message": Json(info.status >= 500 ? "Internal server error" : e.msg)]);
-		if (auto v = cast(ValidationException) e) err["target"] = v.field;
-		res.statusCode = info.status;
-		res.writeBody(Json(["error": err]).toString, "application/json; charset=utf-8");
-	}
 }

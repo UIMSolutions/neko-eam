@@ -27,6 +27,7 @@ public import neko.eam.domain.entities.workpackage;
 public import neko.eam.domain.entities.permission;
 public import neko.eam.domain.entities.role;
 public import neko.eam.domain.entities.user;
+public import neko.eam.domain.entities.credential;
 public import neko.eam.domain.entities.enterprise;
 public import neko.eam.domain.entities.member;
 public import neko.eam.domain.entities.tenant;

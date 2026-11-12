@@ -3,8 +3,10 @@ sap.ui.define([
 	"sap/ui/core/Fragment",
 	"sap/ui/core/Theming",
 	"sap/base/i18n/Localization",
-	"uim/eam/model/models"
-], function (Controller, Fragment, Theming, Localization, models) {
+	"uim/eam/model/models",
+	"uim/eam/model/auth",
+	"uim/eam/controller/PasswordHelper"
+], function (Controller, Fragment, Theming, Localization, models, auth, PasswordHelper) {
 	"use strict";
 
 	var STORAGE_THEME = "uim.eam.theme";
@@ -32,6 +34,14 @@ sap.ui.define([
 				}
 			}.bind(this));
 			oComponent.whenUserReady().then(this._applyPermissions.bind(this));
+			this._oPassword = new PasswordHelper(this.getView());
+			// the password was set by an administrator: ask for a new one right after signing in
+			oComponent.whenUserReady().then(function () {
+				var oUser = oComponent.getModel("user");
+				if (oUser.getProperty("/mustChangePassword") && oUser.getProperty("/passwordChangeable")) {
+					this._oPassword.openOwn(true);
+				}
+			}.bind(this));
 		},
 
 		/** Only entity sets the user may read are offered in the side navigation (empty groups are hidden). */
@@ -136,8 +146,26 @@ sap.ui.define([
 			window.location.href = oUrl.toString();
 		},
 
+		onChangePassword: function () {
+			this._closeProfile();
+			this._oPassword.openOwn(!!this.getOwnerComponent().getModel("user").getProperty("/mustChangePassword"));
+		},
+
+		/** Local sign-in: end the session, then the logout view. XSUAA: the approuter's logout endpoint. */
 		onSignOut: function () {
-			window.location.href = "do/logout";
+			this._closeProfile();
+			if (this.getOwnerComponent().getModel("user").getProperty("/authMode") !== "local") {
+				window.location.href = "do/logout";
+				return;
+			}
+			this.getView().setBusy(true);
+			models.signOut().catch(function () { /* the session ends with its timeout anyway */ }).then(function () {
+				window.location.replace(auth.LOGOUT_PAGE);
+			});
+		},
+
+		_closeProfile: function () {
+			if (this._pProfile) { this._pProfile.then(function (oPopover) { oPopover.close(); }); }
 		},
 
 		// ---- central search (shell bar)

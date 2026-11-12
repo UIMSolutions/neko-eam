@@ -1,12 +1,13 @@
 {
 	"welcomeFile": "/index.html",
 	"authenticationMethod": "route",
-	"logout": { "logoutEndpoint": "/do/logout", "logoutPage": "/index.html" },
+	"logout": { "logoutEndpoint": "/do/logout", "logoutPage": "/logout.html" },
 	"routes": [
 		{ "source": "^/health$", "destination": "eam-backend", "authenticationType": "none" },
 		{ "source": "^/odata/v4/eam/(.*)$", "target": "/odata/v4/eam/$1", "destination": "eam-backend", "authenticationType": "xsuaa", "csrfProtection": true, "scope": "$XSAPPNAME.Display" },
 		{ "source": "^/api/(.*)$", "target": "/api/$1", "destination": "eam-backend", "authenticationType": "xsuaa", "csrfProtection": true, "scope": "$XSAPPNAME.Display" },
 		{ "source": "^/web(.*)$", "target": "/web$1", "destination": "eam-backend", "authenticationType": "xsuaa", "scope": "$XSAPPNAME.Display" },
+		{ "source": "^/(logout\\.html|standalone\\.js|view/Logout\\.view\\.xml|controller/Logout\\.controller\\.js|i18n/[\\w-]+\\.properties|css/[\\w-]+\\.css|img/[\\w-]+\\.svg)$", "target": "$1", "localDir": "resources", "authenticationType": "none" },
 		{ "source": "^/(.*)$", "target": "$1", "localDir": "resources", "authenticationType": "xsuaa", "scope": "$XSAPPNAME.Display" }
 	]
 }

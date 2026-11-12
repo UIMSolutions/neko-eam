@@ -6,18 +6,22 @@
 ///   2. repository user with the same user name or e-mail (case-insensitive) -> rights of its active roles
 ///   3. no users defined yet (fresh installation) -> read access to everything except access management
 ///   4. otherwise -> no rights
+///
+/// It also owns the passwords of the local sign-in (`authMode=local`): they are kept in a separate credential
+/// store (never exposed as element data) and checked against a salted hash.
 module neko.eam.application.usecases.accesscontrol;
 
 import std.algorithm : canFind, filter, map;
 import std.array : array;
 import std.conv : to;
 import std.format : format;
-import std.string : toLower;
+import std.string : strip, toLower;
 import neko.eam.domain;
 import neko.eam.application.dtos;
 import neko.eam.application.usecases.searchelements : SearchElementsInteractor;
 import neko.eam.application.usecases.transferelements : TransferElementsInteractor;
 import neko.eam.ports.repositories;
+import neko.eam.ports.services : IPasswordHasher;
 import neko.eam.ports.usecases;
 
 class AccessControlInteractor : IAccessControl {
@@ -27,12 +31,18 @@ class AccessControlInteractor : IAccessControl {
 		IElementRepository!Role _roles;
 		IElementRepository!Permission _permissions;
 		IEamUseCases delegate() _sandbox;
+		ICredentialRepository _credentials;
+		IPasswordHasher _hasher;
+		string _dummyHash; // verified for unknown users, so that they take as long as known ones
 	}
 
 	/// `sandbox` creates the throw-away copy used by dry-run imports (checked with the same rights).
+	/// Without `credentials` / `hasher` the local sign-in is not available.
 	this(IEamUseCases base, IElementRepository!User users, IElementRepository!Role roles,
-			IElementRepository!Permission permissions, IEamUseCases delegate() sandbox) {
+			IElementRepository!Permission permissions, IEamUseCases delegate() sandbox,
+			ICredentialRepository credentials = null, IPasswordHasher hasher = null) {
 		_base = base; _users = users; _roles = roles; _permissions = permissions; _sandbox = sandbox;
+		_credentials = credentials; _hasher = hasher;
 	}
 
 	AccessRightsDto rightsFor(AccessSubjectDto subject) {
@@ -66,6 +76,101 @@ class AccessControlInteractor : IAccessControl {
 	bool isKnownUser(AccessSubjectDto subject) {
 		auto u = findUser(_users.findAll, subject);
 		return u !is null && u.isEnabled(todayIso());
+	}
+
+	// ---------------------------------------------------------------- local sign-in
+
+	SignInDto signIn(string userName, string password) {
+		requireCredentials();
+		auto user = findUser(_users.findAll, AccessSubjectDto(userName.strip));
+		auto credential = user is null ? null : _credentials.find(user.id);
+		if (credential is null) {
+			_hasher.verify(password, dummyHash); // same cost as a real check
+			throw new InvalidCredentialsException;
+		}
+		if (!_hasher.verify(password, credential.passwordHash) || !user.isEnabled(todayIso()))
+			throw new InvalidCredentialsException;
+		if (_hasher.needsRehash(credential.passwordHash)) {
+			credential.passwordHash = _hasher.hash(password);
+			_credentials.save(credential);
+		}
+		return SignInDto(AccessSubjectDto(user.userName, user.email), user.id, user.name, credential.mustChange);
+	}
+
+	void setPassword(string userName, string newPassword, AccessSubjectDto by, bool mustChange = true) {
+		requireCredentials();
+		requireUserAdministration(by);
+		auto user = requireUser(userName);
+		PasswordPolicy.check(newPassword, user.userName);
+		store(user, newPassword, by.userName, mustChange);
+	}
+
+	void changePassword(string userName, string currentPassword, string newPassword) {
+		requireCredentials();
+		auto user = findUser(_users.findAll, AccessSubjectDto(userName));
+		auto credential = user is null ? null : _credentials.find(user.id);
+		if (credential is null || !_hasher.verify(currentPassword, credential.passwordHash))
+			throw new ValidationException("currentPassword", "The current password is not correct");
+		if (newPassword == currentPassword)
+			throw new ValidationException("password", "The new password must differ from the current one");
+		PasswordPolicy.check(newPassword, user.userName);
+		store(user, newPassword, user.userName, false);
+	}
+
+	bool hasPassword(string userName) {
+		if (_credentials is null) return false;
+		auto user = findUser(_users.findAll, AccessSubjectDto(userName));
+		return user !is null && _credentials.find(user.id) !is null;
+	}
+
+	void removePassword(string userName, AccessSubjectDto by) {
+		requireCredentials();
+		requireUserAdministration(by);
+		_credentials.remove(requireUser(userName).id);
+	}
+
+	/// Removes the password of a deleted user (called by the user use cases).
+	void userRemoved(string userId) {
+		if (_credentials !is null) _credentials.remove(userId);
+	}
+
+	private void store(User user, string password, string by, bool mustChange) {
+		auto c = new Credential;
+		c.userId = user.id;
+		c.passwordHash = _hasher.hash(password);
+		import std.datetime : Clock;
+		c.changedAt = Clock.currTime().toUTC().toISOExtString();
+		c.changedBy = by;
+		c.mustChange = mustChange;
+		_credentials.save(c);
+	}
+
+	private User requireUser(string userName) {
+		auto user = findUser(_users.findAll, AccessSubjectDto(userName));
+		if (user is null || user.userName.toLower != userName.toLower) throw new EntityNotFoundException("Users", userName);
+		return user;
+	}
+
+	private void requireUserAdministration(AccessSubjectDto by) {
+		if (!resolve(by).rights.can("Users", AccessAction.Update))
+			throw new AccessDeniedException("Users", "Setting passwords requires the permission to update Users");
+	}
+
+	private void requireCredentials() {
+		if (_credentials is null || _hasher is null)
+			throw new ValidationException("authMode", "Passwords are not available in this configuration");
+	}
+
+	private string dummyHash() {
+		if (!_dummyHash.length) _dummyHash = _hasher.hash(randomDummy());
+		return _dummyHash;
+	}
+
+	private static string randomDummy() {
+		import std.random : uniform;
+		char[24] buf;
+		foreach (ref c; buf) c = cast(char) uniform!"[]"('!', '~');
+		return buf.idup;
 	}
 
 	/// Effective rights of a stored user (shown on the user's object page).
