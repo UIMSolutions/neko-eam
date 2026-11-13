@@ -91,8 +91,10 @@ fun ConnectScreen(session: Session, expired: Boolean, onReady: () -> Unit) {
     // first start with a stored server: reconnect silently
     LaunchedEffect(Unit) {
         if (info == null && session.hasServer) {
-            if (expired) error = expiredText
-            run { connect() }
+            run {
+                connect()
+                if (expired && info?.local == true && info?.signedIn == false) error = expiredText
+            }
         }
     }
 

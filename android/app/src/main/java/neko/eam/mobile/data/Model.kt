@@ -192,8 +192,19 @@ fun JsonObject.display(field: FieldDef, yes: String, no: String): String {
             null -> ""
         }
         field.type == "Double" -> v.text()?.let { s -> s.toDoubleOrNull()?.let { formatNumber(it) } ?: s }.orEmpty()
-        else -> v.text().orEmpty()
+        else -> v.text().orEmpty().let(::formatTimestamp)
     }
+}
+
+private val timestampPattern = Regex("""^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}.*""")
+private val timestampFormat = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+
+/** ISO timestamps (`createdAt`, `modifiedAt`, …) in local time; other text unchanged. */
+internal fun formatTimestamp(s: String): String {
+    if (!timestampPattern.matches(s)) return s
+    return runCatching {
+        java.time.OffsetDateTime.parse(s).atZoneSameInstant(java.time.ZoneId.systemDefault()).format(timestampFormat)
+    }.getOrDefault(s)
 }
 
 internal fun formatNumber(d: Double): String =

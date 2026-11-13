@@ -23,8 +23,9 @@ One D/vibe.d core, six ways to use it:
 | **CLI** | `eam list Applications` | Scripting, administration, CI, remote access via OData |
 | **Android** | [`android/`](android/README.md) | Native Kotlin/Compose app: browse, search, edit any set, notifications (OData + REST) |
 
-In addition: a vibe.d **REST** interface (`/api/v1/...`) for analyses and a server-side rendered
-**web cockpit** (`/web`, Diet templates + daisyUI).
+In addition: vibe.d **REST** interfaces (`/api/v1/...`: analyses, meta model, search, user, notifications,
+comments, reports, tenants, backups, passwords - typed D interfaces in `presentation/rest`, usable with
+`RestInterfaceClient`) and a server-side rendered **web cockpit** (`/web`, Diet templates + daisyUI).
 
 > See [uml.md](uml.md) for class, component, sequence and deployment diagrams, and
 > [nafv4.md](nafv4.md) for the NATO Architecture Framework v4 description.
@@ -229,7 +230,8 @@ neko/
 │           │                    workers, clients (OData client),
 │           │                    formats (CSV / XLSX codecs)
 │           ├── persistence/     records, mappers, storages (JSON file / memory), repositories
-│           └── presentation/    odata, rest, http, web, cli, gui (GtkD + WebView), unix (reserved)
+│           └── presentation/    odata, rest (vibe.d REST interfaces + services), http (router, guard, files,
+│                                sign-in), web, cli, gui (GtkD + WebView), unix (reserved)
 ├── frontend/                    SAP Fiori 3 / OpenUI5 1.120 LTS (OData V4)
 │   ├── index.html  Component.js  manifest.json  img/logo.svg
 │   ├── login.html  logout.html  standalone.js   sign-in / sign-out pages (Login, Logout views, no app shell)

@@ -1,16 +1,13 @@
-/// HTTP endpoints of the reporting (run / export report definitions and report books):
+/// HTTP endpoints of the report file exports (the JSON results are the REST interface
+/// `presentation.rest.reports`):
 ///
-///   GET  /api/v1/reports/{id}/run                       result as JSON
 ///   GET  /api/v1/reports/{id}/export?format=xlsx|csv|pdf[&sep=;]
-///   POST /api/v1/reports/run                            run an unsaved definition (preview, JSON body)
-///   GET  /api/v1/reportbooks/{id}/run                   all reports of the book (JSON array)
 ///   GET  /api/v1/reportbooks/{id}/export?format=xlsx|pdf
 ///
 /// Reports run with the rights of the caller in the tenant of the request.
 module neko.eam.presentation.http.reports;
 
 import std.datetime : Clock, Date;
-import vibe.data.json;
 import vibe.http.router : URLRouter;
 import vibe.http.server;
 import neko.eam.domain.exceptions : ValidationException;
@@ -20,26 +17,13 @@ import neko.eam.application.usecases.reporting : reportTables;
 import neko.eam.infrastructure.formats;
 import neko.eam.presentation.http.access;
 import neko.eam.presentation.http.errors;
-import neko.eam.presentation.http.jsoncodec;
 
-void registerReportRoutes(URLRouter router, IEamUseCases uc) {
-	router.get("/api/v1/reports/:id/run", (HTTPServerRequest req, HTTPServerResponse res) {
-		respond(res, () => sendJson(res, serializeToJson(callerUseCases(uc).reporting.run(req.params["id"], currentSubject().userName))));
-	});
-	router.post("/api/v1/reports/run", (HTTPServerRequest req, HTTPServerResponse res) {
-		respond(res, () {
-			auto d = dtoFromJson!ReportDto(req.json);
-			sendJson(res, serializeToJson(callerUseCases(uc).reporting.runDefinition(d, currentSubject().userName)));
-		});
-	});
+void registerReportExportRoutes(URLRouter router, IEamUseCases uc) {
 	router.get("/api/v1/reports/:id/export", (HTTPServerRequest req, HTTPServerResponse res) {
 		respond(res, () {
 			auto r = callerUseCases(uc).reporting.run(req.params["id"], currentSubject().userName);
 			send(req, res, r.name, [r]);
 		});
-	});
-	router.get("/api/v1/reportbooks/:id/run", (HTTPServerRequest req, HTTPServerResponse res) {
-		respond(res, () => sendJson(res, serializeToJson(callerUseCases(uc).reporting.runBook(req.params["id"], currentSubject().userName))));
 	});
 	router.get("/api/v1/reportbooks/:id/export", (HTTPServerRequest req, HTTPServerResponse res) {
 		respond(res, () {

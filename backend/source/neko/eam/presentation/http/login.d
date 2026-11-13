@@ -1,13 +1,9 @@
-/// Local sign-in (`authMode=local`): sign-in / sign-out endpoints for the login and logout views, and the
-/// password management of the repository users.
+/// Local sign-in (`authMode=local`): sign-in / sign-out endpoints for the login and logout views (public,
+/// they set the session cookie). The password management is the REST interface `presentation.rest.passwords`.
 ///
 ///   GET    /auth/info                         {authMode, signedIn, multiTenant} - drives the login view
 ///   POST   /auth/login                        {userName, password, tenant?} -> session cookie
 ///   POST   /auth/logout                       ends the session (any auth mode; no-op without a session)
-///   POST   /api/v1/me/password                {currentPassword, newPassword} - change the own password
-///   GET    /api/v1/users/{userName}/password  {hasPassword}             (read permission on Users)
-///   PUT    /api/v1/users/{userName}/password  {password, mustChange?}   (update permission on Users)
-///   DELETE /api/v1/users/{userName}/password  sign-in no longer possible (update permission on Users)
 ///
 /// Failed sign-ins are throttled per user name and per client address; the error never tells whether the
 /// user exists. A new session id is issued on every sign-in (no session fixation).
@@ -117,53 +113,6 @@ void registerLoginRoutes(URLRouter router, IEamPlatform platform, Authenticator 
 		}
 		res.headers["Cache-Control"] = "no-store";
 		res.writeVoidBody();
-	});
-}
-
-/// Password routes behind the `/api/*` guard (session, CSRF token and tenant are established).
-void registerPasswordRoutes(URLRouter router, IEamUseCases uc, Authenticator auth) {
-	router.post("/api/v1/me/password", (HTTPServerRequest req, HTTPServerResponse res) {
-		respond(res, () {
-			auto session = currentSession();
-			if (!auth.local || session is null)
-				throw new ValidationException("authMode", "Passwords are only used with the local sign-in");
-			if (session.administrator)
-				throw new ValidationException("password", "The password of the built-in administrator is set in the server configuration (EAM_ADMIN_PASSWORD)");
-			auto body = req.json;
-			uc.access.changePassword(session.userName, body["currentPassword"].opt!string(""), body["newPassword"].opt!string(""));
-			session.mustChangePassword = false;
-			logInfo("Password of '%s' (tenant %s) changed by the user", session.userName, session.tenant);
-			// other browsers of the user have to sign in with the new password
-			loginSessions.destroyForUser(session.tenant, session.userName, session.id);
-			res.writeVoidBody();
-		});
-	});
-	router.get("/api/v1/users/:userName/password", (HTTPServerRequest req, HTTPServerResponse res) {
-		respond(res, () {
-			callerUseCases(uc).users.count; // read permission on Users
-			res.writeJsonBody(["hasPassword": uc.access.hasPassword(req.params["userName"]),
-				"localSignIn": auth.local]);
-		});
-	});
-	router.put("/api/v1/users/:userName/password", (HTTPServerRequest req, HTTPServerResponse res) {
-		respond(res, () {
-			auto body = req.json;
-			auto userName = req.params["userName"];
-			uc.access.setPassword(userName, body["password"].opt!string(""), currentSubject(), body["mustChange"].opt!bool(true));
-			auto keep = currentSession();
-			loginSessions.destroyForUser(currentTenant(), userName, keep is null ? null : keep.id);
-			logInfo("Password of '%s' (tenant %s) set by '%s'", userName, currentTenant(), currentSubject().userName);
-			res.writeVoidBody();
-		});
-	});
-	router.delete_("/api/v1/users/:userName/password", (HTTPServerRequest req, HTTPServerResponse res) {
-		respond(res, () {
-			auto userName = req.params["userName"];
-			uc.access.removePassword(userName, currentSubject());
-			loginSessions.destroyForUser(currentTenant(), userName);
-			logInfo("Password of '%s' (tenant %s) removed by '%s'", userName, currentTenant(), currentSubject().userName);
-			res.writeVoidBody();
-		});
 	});
 }
 

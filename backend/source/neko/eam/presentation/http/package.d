@@ -7,9 +7,7 @@ public import neko.eam.presentation.http.transfer;
 public import neko.eam.presentation.http.access;
 public import neko.eam.presentation.http.system;
 public import neko.eam.presentation.http.reports;
-public import neko.eam.presentation.http.comments;
 public import neko.eam.presentation.http.login;
-public import neko.eam.presentation.http.notifications;
 
 import std.algorithm : startsWith;
 import std.file : exists;
@@ -19,7 +17,6 @@ import vibe.http.router : URLRouter;
 import vibe.http.server;
 import vibe.stream.tls : createTLSContext, TLSContextKind;
 import vibe.textfilter.urlencode : urlEncode;
-import vibe.web.rest : registerRestInterface, RestInterfaceSettings;
 import neko.eam.ports.usecases;
 import neko.eam.domain.exceptions : AccessDeniedException;
 import neko.eam.application.services.tenantrouting : TenantRoutingUseCases;
@@ -67,13 +64,11 @@ URLRouter buildRouter(AppConfig cfg, IEamPlatform platform, Authenticator auth) 
 		res.headers["Content-Disposition"] = `attachment; filename="eam-archimate.xml"`;
 		res.writeBody(xml, "application/xml");
 	});
+	// raw routes: files (CSV / XLSX / PDF / backups) - JSON endpoints are the REST interfaces below
 	registerTransferRoutes(router, uc, auth);
-	registerSystemRoutes(router, platform);
-	registerReportRoutes(router, uc);
-	registerCommentRoutes(router, uc);
-	registerNotificationRoutes(router, uc);
-	registerPasswordRoutes(router, uc, auth);
-	registerRestInterface(router, new EamRestApi(uc, auth, platform));
+	registerBackupFileRoutes(router, platform);
+	registerReportExportRoutes(router, uc);
+	registerRestApis(router, uc, auth, platform);
 	new WebCockpit(uc).register(router);
 
 	if (exists(cfg.frontendPath)) {

@@ -24,6 +24,9 @@ private val Light = lightColorScheme(
     surface = Color(0xFFF7F7F7),
     surfaceContainer = Color.White,
     surfaceContainerLow = Color.White,
+    surfaceContainerHigh = Color.White,
+    surfaceContainerHighest = Color.White,
+    surfaceVariant = Color(0xFFEFF1F2),
     error = Color(0xFFBB0000),
 )
 
@@ -37,6 +40,9 @@ private val Dark = darkColorScheme(
     background = Color(0xFF12171C),
     surface = Color(0xFF12171C),
     surfaceContainer = Color(0xFF1D232A),
+    surfaceContainerHigh = Color(0xFF232A32),
+    surfaceContainerHighest = Color(0xFF29313A),
+    surfaceVariant = Color(0xFF29313A),
     error = Color(0xFFFF8888),
 )
 

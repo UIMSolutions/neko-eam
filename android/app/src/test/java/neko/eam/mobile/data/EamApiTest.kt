@@ -133,4 +133,16 @@ class EamApiTest {
         assertEquals("a, b", el.display(FieldDef("ids", type = "StringCollection"), "Y", "N"))
         assertEquals("", el.display(FieldDef("missing"), "Y", "N"))
     }
+
+    @Test fun timestampsInLocalTime() {
+        val tz = java.util.TimeZone.getDefault()
+        try {
+            java.util.TimeZone.setDefault(java.util.TimeZone.getTimeZone("Europe/Berlin"))
+            assertEquals("2026-11-12 11:13", formatTimestamp("2026-11-12T10:13:05.831476Z"))
+            assertEquals("2023-04-01", formatTimestamp("2023-04-01"))
+            assertEquals("Active", formatTimestamp("Active"))
+        } finally {
+            java.util.TimeZone.setDefault(tz)
+        }
+    }
 }
