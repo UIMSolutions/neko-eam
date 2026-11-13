@@ -36,7 +36,10 @@
     <string name="no">Nein</string>
     <string name="unsaved_required">Pflichtfelder ausfüllen</string>
     <string name="signed_in_as">Angemeldet als %1$s</string>
-    <string name="elements_count">%1$d Elemente</string>
     <string name="hide_empty">Leere Felder ausblenden</string>
     <string name="session_expired">Ihre Sitzung ist beendet. Bitte erneut anmelden.</string>
+    <plurals name="elements_count">
+        <item quantity="one">%1$d Element</item>
+        <item quantity="other">%1$d Elemente</item>
+    </plurals>
 </resources>

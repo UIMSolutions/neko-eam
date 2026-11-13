@@ -18,8 +18,10 @@
 	],
 	"dependencies": {
 		"vibe-d": "~>0.10.3",
+		"uim-framework": "~>26.11.1",
+		"fluid": "~>0.9.1",
 		"openssl": "~>3.4",
-		"uim-framework": "~>26.11.1"
+		"gtk-d": "~>3.11.0"
 	},
 	"targetType": "executable",
 	"configurations": [

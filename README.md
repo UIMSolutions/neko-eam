@@ -12,7 +12,7 @@ search** across all of it, plus **analyses** (Gartner TIME,
 technology risk, product lifecycle alerts, capability coverage, impact analysis) and an
 **ArchiMate 3.1** export.
 
-One D/vibe.d core, five ways to use it:
+One D/vibe.d core, six ways to use it:
 
 | Channel | How | Purpose |
 |---|---|---|
@@ -21,6 +21,7 @@ One D/vibe.d core, five ways to use it:
 | **WebView** | `eam webview` | The Fiori UI in a native desktop window (WebKit2GTK) |
 | **GtkD GUI** | `eam gui` | Native desktop client that calls the use cases directly (no HTTP) |
 | **CLI** | `eam list Applications` | Scripting, administration, CI, remote access via OData |
+| **Android** | [`android/`](android/README.md) | Native Kotlin/Compose app: browse, search, edit any set, notifications (OData + REST) |
 
 In addition: a vibe.d **REST** interface (`/api/v1/...`) for analyses and a server-side rendered
 **web cockpit** (`/web`, Diet templates + daisyUI).

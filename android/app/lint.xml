@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <!-- the adaptive icon must stay in mipmap-anydpi-v26 for resource linking -->
+    <issue id="ObsoleteSdkInt" severity="ignore" />
+    <!-- cleartext and user CAs are intentional: intranet servers and company CAs (see network_security_config.xml) -->
+    <issue id="InsecureBaseConfiguration" severity="ignore" />
+    <issue id="AcceptsUserCertificates" severity="ignore" />
+    <!-- "…Anmeldung, die die App…" is correct German -->
+    <issue id="Typos" severity="ignore" />
+</lint>

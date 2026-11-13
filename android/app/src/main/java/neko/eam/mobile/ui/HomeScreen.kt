@@ -37,6 +37,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -143,7 +144,7 @@ fun HomeScreen(session: Session, nav: NavHostController) {
                     ListItem(
                         leadingContent = { Avatar(set.label, set.name) },
                         headlineContent = { Text(set.label) },
-                        supportingContent = countMap[set.name]?.let { c -> { Text(stringResource(R.string.elements_count, c)) } },
+                        supportingContent = countMap[set.name]?.let { c -> { Text(pluralStringResource(R.plurals.elements_count, c, c)) } },
                         trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) },
                         modifier = Modifier.clickable { nav.navigate(Routes.list(set.name)) },
                     )
