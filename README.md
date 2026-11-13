@@ -499,6 +499,28 @@ date and author (the signed-in user) are recorded automatically, the text is fre
 REST: `GET /api/v1/comments/{set}/{id}`, `POST /api/v1/comments/{set}/{id}` (`{"text": "..."}`),
 `DELETE /api/v1/comments/{commentId}`.
 
+### Notifications
+
+The bell of the Fiori shell bar shows the unread notifications of the signed-in user, in two groups:
+
+* **Alerts** – due or overdue items computed from the data, for everybody who may read the set: product
+  lifecycle alerts of severity *Medium* or higher (end of support / security updates / life, expired BSI
+  permission, blacklisted product in use, reminders, validations), architecture documents and protection
+  requirements whose review is overdue, delayed work packages, overdue security controls, open security risks
+  past their due date, KPIs off track. They are computed once per change of the repository (and day).
+* **Activity** – changes, deletions and comments of *other* users on elements the user created, last edited
+  or commented on (a user whose account was changed is told as well). Changes list the changed fields.
+  Creating an element concerns nobody yet; nobody is notified about own changes.
+
+Selecting a notification opens the element and marks it as read; the close button (per item or group) or
+*Clear all* removes notifications from the user's list. The app polls every 60 s while the tab is visible;
+these polls do not restart the idle timeout of the local sign-in. Activities (newest 5,000 of the last 90 days)
+and the read / dismissed state per user are stored per tenant (collections `Activities`, `NotificationStates`)
+and are part of every backup. In-app only – no e-mail.
+
+REST: `GET /api/v1/notifications` (`{unread, items}`), `POST /api/v1/notifications/read` and
+`POST /api/v1/notifications/dismiss` (each `{"ids": [...]}` or `{"all": true}`, answer: the updated list).
+
 ### Reports
 
 A **report** is a stored query over one entity set: columns, a filter in OData `$filter` syntax (e.g.
@@ -591,7 +613,7 @@ user, the profile popover, sidebar navigation to Products, running a report, to 
 ### Fiori UI
 
 * **Shell**: `sap.tnt.ToolPage` with a Fiori 3 `sap.f.ShellBar` (menu toggle, logo, **central search**,
-  notifications = critical product alerts, ArchiMate export, **user avatar**) and a `sap.tnt.SideNavigation`
+  **notifications** (see [Notifications](#notifications)), ArchiMate export, **help**, **user avatar**) and a `sap.tnt.SideNavigation`
   grouped into Application Portfolio, Product Catalogue, Business Architecture, Organisation Structure
   (Organisations, Organisation Units, Members), Processes (Business Processes, IT Processes, Process Steps,
   Process KPIs), Security (Protection Requirements, Security Risks, Security Controls), Reporting (Reports,
@@ -599,6 +621,12 @@ user, the profile popover, sidebar navigation to Products, running a report, to 
   IT Landscape Planning (Strategic Guidelines, Service Capabilities, Measure Groups, Measures),
   Specifications (Architecture Principles, Architecture Guidelines, Reference Architectures, Architecture Documents),
   Project Management (Projects, Sub Projects, Work Packages), Integration (Information Flows) and Analysis.
+* **Context help** (shell bar *?* or **F1**): a panel beside the page (full width on phones) with help for
+  the current page – for list and object pages also what the entity set is for – general topics (getting
+  started, navigation, search, notifications, permissions, keyboard) and a searchable list of all fields of the
+  set. Field help combines a curated text (`helpField_<field>` / `helpField_<Set>_<field>` in the i18n files)
+  with type, mandatory flag, allowed values, reference and *calculated* from the meta model; on object pages
+  it is the tooltip of the field label. English and German; the panel stays open across reloads.
 * **Import / export**: *Export* menu and *Import* dialog on every list page, *Export all (Excel)* and
   *Import workbook* on the overview (see [Import & export](#import--export-csv-xlsx)).
 * **Central search** (`sap.f.SearchManager`): type-ahead suggestions (top 8 hits, debounced, with type and
@@ -646,6 +674,7 @@ environment variables → `VCAP_SERVICES`.
 | `backupDirectory` | `EAM_BACKUP_DIR` | `data/backups` |
 | `backupRetention` | `EAM_BACKUP_RETENTION` | `10` (scheduled backups kept per tenant) |
 | `backupIntervalHours` | `EAM_BACKUP_INTERVAL_HOURS` | `24` (scheduled backups of all tenants, 0 = off) |
+| `persistDelayMilliseconds` | `EAM_PERSIST_DELAY_MS` | `500` (changes made in the server are written to the data file at most this late, all changes of that window in one write; pending changes are written on shutdown; 0 = write every change at once) |
 
 ### Security
 

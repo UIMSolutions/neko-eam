@@ -25,7 +25,7 @@
 	"sap.ui5": {
 		"rootView": { "viewName": "uim.eam.view.App", "type": "XML", "id": "app" },
 		"dependencies": {
-			"minUI5Version": "1.120.0",
+			"minUI5Version": "1.154.0",
 			"libs": { "sap.m": {}, "sap.f": {}, "sap.tnt": {}, "sap.uxap": {}, "sap.ui.layout": {}, "sap.ui.unified": {} }
 		},
 		"contentDensities": { "compact": true, "cozy": true },

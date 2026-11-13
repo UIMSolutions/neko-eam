@@ -9,3 +9,15 @@
 @media (max-width: 30rem) {
 	.eamAuthCardBody { padding: 1.25rem; }
 }
+
+/* context help panel beside the page area (shell bar "?" / F1); full width on phones */
+.eamHelpPanelItem { width: 24rem; max-width: 100%; border-left: 1px solid var(--sapGroup_TitleBorderColor, #d9d9d9); }
+.eamHelpPanel { height: 100%; }
+.eamHelpSection { margin-bottom: 0.5rem; }
+.eamHelpSection .sapMFT ul { padding-left: 1.25rem; margin: 0.25rem 0; }
+.eamHelpSection .sapMFT p { margin: 0 0 0.5rem 0; }
+@media (max-width: 600px) {
+	.eamHelpPanelItem { width: 100%; border-left: none; }
+}
+/* notification popover: the list fills the popover */
+.eamNotifications .sapMNLG { margin: 0; }

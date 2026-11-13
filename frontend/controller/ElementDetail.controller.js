@@ -22,10 +22,11 @@ sap.ui.define([
 	"sap/m/FeedInput",
 	"sap/m/FeedListItem",
 	"sap/m/FeedListItemAction",
-	"uim/eam/controller/PasswordHelper"
+	"uim/eam/controller/PasswordHelper",
+	"uim/eam/model/help"
 ], function (Controller, History, JSONModel, Filter, FilterOperator, SimpleForm, ObjectPageSection, ObjectPageSubSection,
 	Label, Text, VBox, List, StandardListItem, ObjectStatus, ObjectAttribute, MessageBox, MessageToast, models, fieldFactory, formatter,
-	FeedInput, FeedListItem, FeedListItemAction, PasswordHelper) {
+	FeedInput, FeedListItem, FeedListItemAction, PasswordHelper, help) {
 	"use strict";
 
 	/** Section order; groups not listed here follow in meta model order. */
@@ -135,6 +136,9 @@ sap.ui.define([
 			var fnNavigate = function (sSet, sId) {
 				oRouter.navTo("detail", { set: sSet, id: encodeURIComponent(sId) });
 			};
+			var oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
+			var fnText = function (sKey, aArgs) { return oBundle.getText(sKey, aArgs, true) || null; };
+			var fnSetLabel = function (s) { return oBundle.getText("set" + s, undefined, true) || s; };
 			var mGroups = {};
 			var aOrder = [];
 			oInfo.fields.forEach(function (f) {
@@ -161,7 +165,9 @@ sap.ui.define([
 					subSections: [new ObjectPageSubSection({ blocks: [oForm] })]
 				});
 				mGroups[sGroup].forEach(function (f) {
-					oForm.addContent(new Label({ text: f.label, required: f.required, wrapping: true, tooltip: f.name }));
+					// tooltip: what the field means and accepts (the help panel lists all fields of the set)
+					var sHelp = help.fieldHelp(f, oInfo.name, fnText, fnSetLabel) + " [" + f.name + "]";
+					oForm.addContent(new Label({ text: f.label, required: f.required, wrapping: true, tooltip: sHelp }));
 					this._mSections[f.name] = oSection;
 					if (f.readOnly) {
 						oForm.addContent(fieldFactory.createDisplay(f, "obj", fnNavigate));

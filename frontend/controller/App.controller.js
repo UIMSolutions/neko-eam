@@ -5,11 +5,16 @@ sap.ui.define([
 	"sap/base/i18n/Localization",
 	"uim/eam/model/models",
 	"uim/eam/model/auth",
-	"uim/eam/controller/PasswordHelper"
-], function (Controller, Fragment, Theming, Localization, models, auth, PasswordHelper) {
+	"uim/eam/model/help",
+	"uim/eam/controller/PasswordHelper",
+	"sap/ui/model/Filter",
+	"sap/ui/model/FilterOperator",
+	"sap/m/MessageToast"
+], function (Controller, Fragment, Theming, Localization, models, auth, help, PasswordHelper, Filter, FilterOperator, MessageToast) {
 	"use strict";
 
 	var STORAGE_THEME = "uim.eam.theme";
+	var STORAGE_HELP = "uim.eam.helpOpen";
 	var SUGGEST_DELAY = 200;
 	var SUGGEST_TOP = 8;
 
@@ -32,7 +37,22 @@ sap.ui.define([
 					// search results belong to no navigation entry
 					this.byId("sideNavigation").setSelectedItem(null);
 				}
+				this._oRoute = { name: sRoute, args: oArgs };
+				this._updateHelp();
 			}.bind(this));
+			// the help panel shows the fields once the meta model is loaded; it stays open across reloads
+			oComponent.whenModelReady().then(this._updateHelp.bind(this));
+			var bHelpOpen = false;
+			try { bHelpOpen = window.localStorage.getItem(STORAGE_HELP) === "true"; } catch (e) { /* storage blocked */ }
+			oComponent.getModel("help").setProperty("/open", bHelpOpen && !oComponent.getModel("device").getProperty("/system/phone"));
+			// F1 opens / closes the context help (instead of the browser's help)
+			this._fnHelpKey = function (oEvent) {
+				if (oEvent.key === "F1") {
+					oEvent.preventDefault();
+					this.onToggleHelp();
+				}
+			}.bind(this);
+			document.addEventListener("keydown", this._fnHelpKey);
 			oComponent.whenUserReady().then(this._applyPermissions.bind(this));
 			this._oPassword = new PasswordHelper(this.getView());
 			// the password was set by an administrator: ask for a new one right after signing in
@@ -42,6 +62,10 @@ sap.ui.define([
 					this._oPassword.openOwn(true);
 				}
 			}.bind(this));
+		},
+
+		onExit: function () {
+			document.removeEventListener("keydown", this._fnHelpKey);
 		},
 
 		/** Only entity sets the user may read are offered in the side navigation (empty groups are hidden). */
@@ -89,8 +113,117 @@ sap.ui.define([
 			this.getOwnerComponent().getRouter().navTo("overview");
 		},
 
-		onNotifications: function () {
-			this.getOwnerComponent().getRouter().navTo("analysis");
+		// ---- notifications (shell bar bell)
+
+		onNotifications: function (oEvent) {
+			var oButton = oEvent.getParameter("button");
+			var oComponent = this.getOwnerComponent();
+			if (!this._pNotifications) {
+				this._pNotifications = Fragment.load({ id: this.getView().getId(), name: "uim.eam.view.Notifications", controller: this })
+					.then(function (oPopover) {
+						this.getView().addDependent(oPopover);
+						return oPopover;
+					}.bind(this));
+			}
+			this._pNotifications.then(function (oPopover) {
+				if (oPopover.isOpen()) { oPopover.close(); return; }
+				oComponent.refreshNotifications(true);
+				oPopover.openBy(oButton || this.byId("shellBar"));
+			}.bind(this));
+		},
+
+		onNotificationsClose: function () {
+			if (this._pNotifications) { this._pNotifications.then(function (oPopover) { oPopover.close(); }); }
+		},
+
+		onNotificationsRefresh: function () {
+			this.getOwnerComponent().refreshNotifications(true);
+		},
+
+		/** Opens the element of a notification (and marks it as read). */
+		onNotificationPress: function (oEvent) {
+			var oItem = oEvent.getSource().getBindingContext("notifications").getObject();
+			if (oItem.unread) { this._changeNotifications("markNotificationsRead", [oItem.id]); }
+			var oRouter = this.getOwnerComponent().getRouter();
+			if (oItem.navigable) {
+				oRouter.navTo("detail", { set: oItem.set, id: encodeURIComponent(oItem.elementId) });
+			} else if (this.getOwnerComponent().canRead(oItem.set)) {
+				oRouter.navTo("list", { set: oItem.set });
+			}
+			this.onNotificationsClose();
+		},
+
+		/** The close button of a notification removes it from the list (dismissed for this user). */
+		onNotificationClose: function (oEvent) {
+			var oItem = oEvent.getSource().getBindingContext("notifications").getObject();
+			this._changeNotifications("dismissNotifications", [oItem.id]);
+		},
+
+		/** The close button of a group dismisses all its notifications. */
+		onNotificationGroupClose: function (oEvent) {
+			var sGroup = oEvent.getSource().data("group");
+			var aIds = (this.getOwnerComponent().getModel("notifications").getProperty("/" + sGroup) || [])
+				.map(function (o) { return o.id; });
+			if (aIds.length) { this._changeNotifications("dismissNotifications", aIds); }
+		},
+
+		onNotificationsMarkAllRead: function () {
+			this._changeNotifications("markNotificationsRead", null, true);
+		},
+
+		onNotificationsDismissAll: function () {
+			this._changeNotifications("dismissNotifications", null, true);
+		},
+
+		_changeNotifications: function (sMethod, aIds, bAll) {
+			var oComponent = this.getOwnerComponent();
+			models[sMethod](oComponent.getServiceUrl(), aIds, bAll).then(oComponent.applyNotifications.bind(oComponent))
+				.catch(function (oError) {
+					MessageToast.show(oError.message);
+				});
+		},
+
+		// ---- context help (shell bar "?" / F1)
+
+		/** Toggle button (oEvent: its new "pressed" state) or F1 (no event: switch). */
+		onToggleHelp: function (oEvent) {
+			var oHelp = this.getOwnerComponent().getModel("help");
+			var bOpen = oEvent ? !!oEvent.getParameter("pressed") : !oHelp.getProperty("/open");
+			oHelp.setProperty("/open", bOpen);
+			try { window.localStorage.setItem(STORAGE_HELP, String(bOpen)); } catch (e) { /* storage blocked */ }
+			if (bOpen) { this._updateHelp(); }
+		},
+
+		onCloseHelp: function () {
+			this.getOwnerComponent().getModel("help").setProperty("/open", false);
+			try { window.localStorage.setItem(STORAGE_HELP, "false"); } catch (e) { /* storage blocked */ }
+		},
+
+		/** Filters the field help by label, technical name or text. */
+		onHelpFieldSearch: function (oEvent) {
+			var sQuery = (oEvent.getParameter("newValue") || "").trim();
+			var aFilters = sQuery ? [new Filter({ filters: ["label", "name", "text"].map(function (p) {
+				return new Filter(p, FilterOperator.Contains, sQuery);
+			}), and: false })] : [];
+			this.byId("helpFieldList").getBinding("items").filter(aFilters);
+		},
+
+		/** Help of the current page (route) for the help panel. */
+		_updateHelp: function () {
+			var oComponent = this.getOwnerComponent();
+			var oBundle = oComponent.getModel("i18n").getResourceBundle();
+			var oRoute = this._oRoute || { name: "overview", args: {} };
+			var sSet = oRoute.args && oRoute.args.set;
+			var oHelp = help.pageHelp(oRoute.name, oRoute.args, sSet ? oComponent.getSetInfo(sSet) : null,
+				function (sKey, aArgs) { return oBundle.getText(sKey, aArgs, true) || null; },
+				function (s) { return oBundle.getText("set" + s, undefined, true) || s; });
+			var oModel = oComponent.getModel("help");
+			["title", "sections", "fields", "fieldsTitle"].forEach(function (k) { oModel.setProperty("/" + k, oHelp[k]); });
+			var oSearch = this.byId("helpFieldSearch");
+			if (oSearch && oSearch.getValue()) {
+				oSearch.setValue("");
+				this.byId("helpFieldList").getBinding("items").filter([]);
+			}
 		},
 
 		onNavItemSelect: function (oEvent) {

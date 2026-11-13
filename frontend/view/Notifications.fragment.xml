@@ -1,0 +1,47 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+	<!-- shell bar notifications: alerts on due / overdue items and activities of other users -->
+	<ResponsivePopover id="notificationsPopover" placement="Bottom" contentWidth="26rem" contentHeight="32rem"
+		title="{i18n>notifTitle}" class="eamNotifications">
+		<customHeader>
+			<Bar>
+				<contentLeft>
+					<Title text="{i18n>notifTitle}" level="H2" />
+				</contentLeft>
+				<contentRight>
+					<Button id="notificationsMarkAllRead" icon="sap-icon://complete" tooltip="{i18n>notifMarkAllRead}" type="Transparent"
+						enabled="{= ${notifications>/unread} > 0 }" press=".onNotificationsMarkAllRead" />
+					<Button id="notificationsRefresh" icon="sap-icon://refresh" tooltip="{i18n>notifRefresh}" type="Transparent"
+						press=".onNotificationsRefresh" />
+					<Button icon="sap-icon://decline" tooltip="{i18n>close}" type="Transparent" press=".onNotificationsClose" />
+				</contentRight>
+			</Bar>
+		</customHeader>
+		<VBox busy="{notifications>/busy}" busyIndicatorDelay="300" width="100%">
+			<IllustratedMessage id="notificationsEmpty" illustrationType="sapIllus-NoNotifications" illustrationSize="Dialog"
+				title="{i18n>notifNone}" description="{i18n>notifNoneText}"
+				visible="{= !${notifications>/alerts}.length &amp;&amp; !${notifications>/activities}.length }" />
+			<NotificationList id="notificationList" width="100%"
+				visible="{= ${notifications>/alerts}.length + ${notifications>/activities}.length > 0 }">
+				<NotificationListGroup id="notificationsAlerts" title="{i18n>notifGroupAlerts}" showCloseButton="true" showEmptyGroup="false"
+					autoPriority="true" collapsed="false" close=".onNotificationGroupClose" items="{path: 'notifications>/alerts', templateShareable: false}">
+					<customData><core:CustomData key="group" value="alerts" /></customData>
+					<NotificationListItem title="{notifications>title}" description="{notifications>description}"
+						priority="{notifications>priority}" unread="{notifications>unread}" showCloseButton="true" truncate="false"
+						press=".onNotificationPress" close=".onNotificationClose" />
+				</NotificationListGroup>
+				<NotificationListGroup id="notificationsActivities" title="{i18n>notifGroupActivity}" showCloseButton="true" showEmptyGroup="false"
+					autoPriority="false" collapsed="false" close=".onNotificationGroupClose" items="{path: 'notifications>/activities', templateShareable: false}">
+					<customData><core:CustomData key="group" value="activities" /></customData>
+					<NotificationListItem title="{notifications>title}" description="{notifications>description}"
+						datetime="{notifications>datetime}" priority="{notifications>priority}" unread="{notifications>unread}"
+						authorInitials="{notifications>authorInitials}" showCloseButton="true" truncate="false"
+						press=".onNotificationPress" close=".onNotificationClose" />
+				</NotificationListGroup>
+			</NotificationList>
+		</VBox>
+		<endButton>
+			<Button id="notificationsDismissAll" text="{i18n>notifDismissAll}" type="Transparent"
+				enabled="{= ${notifications>/alerts}.length + ${notifications>/activities}.length > 0 }" press=".onNotificationsDismissAll" />
+		</endButton>
+	</ResponsivePopover>
+</core:FragmentDefinition>

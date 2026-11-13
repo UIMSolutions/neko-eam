@@ -1,35 +1,53 @@
 {
-	"name": "neko-eam",
-	"description": "Enterprise Architecture Management (Neko-like) - vibe.d backend with OData v4, REST, Web, CLI, GtkD GUI and WebView",
-	"license": "Apache-2.0",
-	"authors": ["UIM 2026"],
 	"targetName": "eam",
-	"targetType": "executable",
+	"authors": [
+		"UIM 2026"
+	],
+	"license": "Apache-2.0",
 	"targetPath": "build",
-	"sourcePaths": ["source"],
-	"importPaths": ["source"],
-	"stringImportPaths": ["views"],
+	"stringImportPaths": [
+		"views"
+	],
+	"name": "neko-eam",
+	"sourcePaths": [
+		"source"
+	],
+	"description": "Enterprise Architecture Management (Neko-like) - vibe.d backend with OData v4, REST, Web, CLI, GtkD GUI and WebView",
+	"importPaths": [
+		"source"
+	],
 	"dependencies": {
 		"vibe-d": "~>0.10.3",
-		"openssl": "~>3.4"
+		"openssl": "~>3.4",
+		"uim-framework": "~>26.11.1"
 	},
+	"targetType": "executable",
 	"configurations": [
 		{
-			"name": "desktop",
-			"versions": ["EamGui"],
 			"dependencies": {
 				"gtk-d:gtkd": "~>3.11.0"
-			}
+			},
+			"targetType": "executable",
+			"versions": [
+				"EamGui"
+			],
+			"name": "desktop"
 		},
 		{
-			"name": "headless",
-			"targetName": "eam-headless"
+			"targetType": "executable",
+			"targetName": "eam-headless",
+			"name": "headless"
 		},
 		{
-			"name": "unittest",
+			"sourcePaths": [
+				"tests"
+			],
+			"targetType": "executable",
 			"targetName": "eam-test",
-			"sourcePaths": ["tests"],
-			"importPaths": ["tests"]
+			"importPaths": [
+				"tests"
+			],
+			"name": "unittest"
 		}
 	]
 }

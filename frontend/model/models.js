@@ -138,6 +138,25 @@ sap.ui.define([
 			return modify(sServiceUrl, "DELETE", API + "comments/" + encodeURIComponent(sCommentId));
 		},
 
+		// ---- notifications of the signed-in user (REST)
+
+		/** { unread, items } - alerts on due / overdue items and activities of other users. */
+		loadNotifications: function () {
+			// background poll: does not count as user activity (the idle timeout of the sign-in keeps running)
+			return fetch(API + "notifications", { credentials: "same-origin",
+				headers: { "Accept": "application/json", "X-EAM-Background": "1" } }).then(json);
+		},
+
+		/** Marks notifications as read (bAll: every current one); resolves with the updated list. */
+		markNotificationsRead: function (sServiceUrl, aIds, bAll) {
+			return modify(sServiceUrl, "POST", API + "notifications/read", bAll ? { all: true } : { ids: aIds });
+		},
+
+		/** Removes notifications from the list (bAll: every current one); resolves with the updated list. */
+		dismissNotifications: function (sServiceUrl, aIds, bAll) {
+			return modify(sServiceUrl, "POST", API + "notifications/dismiss", bAll ? { all: true } : { ids: aIds });
+		},
+
 		// ---- reporting (REST)
 
 		/** Runs a report (sKind "report") or all reports of a report book ("book"); resolves with an array. */

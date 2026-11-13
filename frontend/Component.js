@@ -2,9 +2,14 @@ sap.ui.define([
 	"sap/ui/core/UIComponent",
 	"sap/ui/Device",
 	"sap/ui/model/json/JSONModel",
-	"uim/eam/model/models"
-], function (UIComponent, Device, JSONModel, models) {
+	"uim/eam/model/models",
+	"uim/eam/model/notifications",
+	"uim/eam/model/formatter"
+], function (UIComponent, Device, JSONModel, models, notifications, formatter) {
 	"use strict";
+
+	/** Notifications are polled while the browser tab is visible. */
+	var NOTIFICATION_POLL_MS = 60000;
 
 	return UIComponent.extend("uim.eam.Component", {
 		metadata: {
@@ -22,12 +27,61 @@ sap.ui.define([
 			this.setModel(models.createMetaModel(), "meta");
 			this.setModel(models.createLookupModel(), "lookup");
 			this.setModel(new JSONModel({ suggestions: [] }), "search");
+			this.setModel(new JSONModel({ unread: 0, badge: "", alerts: [], activities: [], busy: false }), "notifications");
+			this.setModel(new JSONModel({ open: false, title: "", sections: [], fields: [], fieldsTitle: "" }), "help");
 			// the meta model (labels, groups, field types) is needed by the generic list / detail pages
 			this._pUserReady = models.loadUser(this.getModel("user"));
 			this._pModelReady = Promise.all([models.loadMeta(this.getModel("meta")), this._pUserReady]).then(function () {
 				return models.loadLookup(this.getModel("lookup"), this.getModel("meta"), this._sServiceUrl, this.canRead.bind(this));
 			}.bind(this));
 			this.getRouter().initialize();
+			this._pModelReady.then(function () { this.refreshNotifications(); }.bind(this));
+			this._iNotificationTimer = setInterval(function () {
+				if (!document.hidden) { this.refreshNotifications(); }
+			}.bind(this), NOTIFICATION_POLL_MS);
+			this._fnVisible = function () { if (!document.hidden) { this.refreshNotifications(); } }.bind(this);
+			document.addEventListener("visibilitychange", this._fnVisible);
+		},
+
+		exit: function () {
+			clearInterval(this._iNotificationTimer);
+			document.removeEventListener("visibilitychange", this._fnVisible);
+		},
+
+		// ---- notifications (shell bar)
+
+		/** Loads the notifications of the signed-in user (bBusy: show the busy indicator). */
+		refreshNotifications: function (bBusy) {
+			var oModel = this.getModel("notifications");
+			if (bBusy) { oModel.setProperty("/busy", true); }
+			return models.loadNotifications().then(this.applyNotifications.bind(this)).catch(function () {
+				/* no notifications for this caller (e.g. signed out) - keep what is shown */
+			}).finally(function () {
+				oModel.setProperty("/busy", false);
+			});
+		},
+
+		/** Shows a notification list of the backend ({unread, items}). */
+		applyNotifications: function (oList) {
+			var oBundle = this.getModel("i18n").getResourceBundle();
+			var that = this;
+			var oTexts = {
+				text: function (sKey, aArgs) { return oBundle.getText(sKey, aArgs, true) || null; },
+				typeLabel: function (sSet) {
+					var oInfo = that.getSetInfo(sSet);
+					return (oInfo && oBundle.getText("type" + oInfo.typeName, undefined, true)) || oBundle.getText("set" + sSet, undefined, true) || sSet;
+				},
+				fieldLabel: function (sSet, sField) {
+					var oInfo = that.getSetInfo(sSet);
+					var oField = oInfo && oInfo.fields.find(function (f) { return f.name === sField; });
+					return oField ? oField.label : sField;
+				},
+				date: formatter.date,
+				timestamp: formatter.timestamp
+			};
+			var oView = notifications.toViewModel(oList, oTexts);
+			var oModel = this.getModel("notifications");
+			["unread", "badge", "alerts", "activities"].forEach(function (k) { oModel.setProperty("/" + k, oView[k]); });
 		},
 
 		/** Reloads the signed-in user (e.g. after a tenant was created: new entry in the tenant selector). */

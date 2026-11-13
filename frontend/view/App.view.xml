@@ -15,7 +15,7 @@
 				homeIconTooltip="{i18n>navOverview}"
 				showMenuButton="true"
 				showNotifications="true"
-				notificationsNumber="{= ${portfolio>/report/criticalProductAlerts} > 0 ? String(${portfolio>/report/criticalProductAlerts}) : '' }"
+				notificationsNumber="{notifications>/badge}"
 				menuButtonPressed=".onToggleSideNavigation"
 				homeIconPressed=".onHome"
 				notificationsPressed=".onNotifications"
@@ -34,6 +34,8 @@
 				</f:searchManager>
 				<f:additionalContent>
 					<OverflowToolbarButton icon="sap-icon://download" text="{i18n>exportArchimate}" tooltip="{i18n>exportArchimate}" press=".onExportArchiMate" />
+					<OverflowToolbarToggleButton id="helpButton" icon="sap-icon://sys-help" text="{i18n>helpTitle}" tooltip="{i18n>helpTooltip}"
+						pressed="{help>/open}" press=".onToggleHelp" />
 				</f:additionalContent>
 				<f:profile>
 					<Avatar id="userAvatar" initials="{user>/initials}" tooltip="{user>/displayName}" />
@@ -120,7 +122,36 @@
 			</tnt:SideNavigation>
 		</tnt:sideContent>
 		<tnt:mainContents>
-			<App id="app" />
+			<!-- the page area and, when opened, the context help panel beside it (over it on phones) -->
+			<FlexBox height="100%" alignItems="Stretch" renderType="Bare">
+				<App id="app" visible="{= !${help>/open} || !${device>/system/phone} }">
+					<layoutData><FlexItemData growFactor="1" baseSize="0" minWidth="0" /></layoutData>
+				</App>
+				<Page id="helpPanel" visible="{help>/open}" title="{i18n>helpTitle}" titleLevel="H2" class="eamHelpPanel"
+					enableScrolling="true" backgroundDesign="List">
+					<layoutData><FlexItemData shrinkFactor="0" styleClass="eamHelpPanelItem" /></layoutData>
+					<headerContent>
+						<Button icon="sap-icon://decline" tooltip="{i18n>close}" type="Transparent" press=".onCloseHelp" />
+					</headerContent>
+					<VBox class="sapUiSmallMargin">
+						<Title id="helpPageTitle" text="{help>/title}" level="H3" wrapping="true" class="sapUiSmallMarginBottom" />
+						<VBox id="helpSections" items="{path: 'help>/sections', templateShareable: false}">
+							<Panel headerText="{help>title}" expandable="true" expanded="{help>expanded}" class="eamHelpSection">
+								<FormattedText htmlText="{help>html}" />
+							</Panel>
+						</VBox>
+						<Panel id="helpFields" headerText="{help>/fieldsTitle}" expandable="true" expanded="false"
+							visible="{= ${help>/fields}.length > 0 }" class="eamHelpSection">
+							<SearchField id="helpFieldSearch" placeholder="{i18n>helpFieldSearch}" liveChange=".onHelpFieldSearch"
+								class="sapUiTinyMarginBottom" />
+							<List id="helpFieldList" items="{path: 'help>/fields', templateShareable: false}" showSeparators="Inner"
+								noDataText="{i18n>helpNoFields}">
+								<StandardListItem title="{help>label}" description="{help>text}" info="{help>name}" wrapping="true" />
+							</List>
+						</Panel>
+					</VBox>
+				</Page>
+			</FlexBox>
 		</tnt:mainContents>
 	</tnt:ToolPage>
 </mvc:View>
