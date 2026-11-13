@@ -28,6 +28,9 @@ enum tenantCookie = "eam-tenant";
 enum sessionCookie = "eam-session";
 /// CSRF token header (same protocol as the SAP approuter: "Fetch" -> token, "Required" on rejection).
 enum csrfHeader = "X-CSRF-Token";
+/// Marks a request the browser app sends on its own (notification polling): with the local sign-in it does not
+/// restart the session's idle timer. Only honoured for GET.
+enum backgroundHeader = "X-EAM-Background";
 /// Set on 401 responses of the local sign-in: page the browser app should open to sign in.
 enum loginHeader = "X-EAM-Login";
 /// The sign-in page (relative to the server root).
@@ -72,7 +75,9 @@ AccessSubjectDto establishSubject(HTTPServerRequest req, HTTPServerResponse res,
 	AccessSubjectDto s;
 	string requested = req.headers.get(tenantHeader, req.cookies.get(tenantCookie, ""));
 	if (auth.local) {
-		auto session = loginSessions.touch(req.cookies.get(sessionCookie, ""));
+		auto sid = req.cookies.get(sessionCookie, "");
+		auto background = req.method == HTTPMethod.GET && req.headers.get(backgroundHeader, "") == "1";
+		auto session = background ? loginSessions.peek(sid) : loginSessions.touch(sid);
 		if (session is null) {
 			if (res !is null) res.headers[loginHeader] = loginPage;
 			throw new AuthenticationException("Not signed in or the session has expired");

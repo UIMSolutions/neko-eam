@@ -64,7 +64,7 @@ class ManageElementsInteractor(TEntity, TDto) : IManageElements!TDto {
 		if (_validator !is null) _validator(entity);
 		_integrity.checkReferences(entity);
 		_repo.save(entity);
-		publish("Created", entity);
+		publish("Created", entity, actor);
 		return toDto(entity);
 	}
 
@@ -81,16 +81,17 @@ class ManageElementsInteractor(TEntity, TDto) : IManageElements!TDto {
 		if (_validator !is null) _validator(entity);
 		_integrity.checkReferences(entity);
 		_repo.save(entity);
-		publish("Updated", entity);
+		publish("Updated", entity, actor, existing, changedFields(existing, entity));
 		return toDto(entity);
 	}
 
-	void remove(string id) {
+	void remove(string id, string actor = "system") {
 		auto existing = require(id);
 		_integrity.checkNotReferenced(kind, id);
 		_repo.remove(id);
+		// published before the clean-up callbacks: listeners still see e.g. the element's comments
+		publish("Deleted", existing, actor, existing);
 		foreach (callback; _onRemoved) callback(id);
-		publish("Deleted", existing);
 	}
 
 	/// Entity-local derived values (e.g. reminder dates, product totals) before validation.
@@ -109,8 +110,25 @@ class ManageElementsInteractor(TEntity, TDto) : IManageElements!TDto {
 		return e;
 	}
 
-	private void publish(string type, TEntity e) {
-		if (_events !is null) _events.publish(DomainEvent(type, kind, e.id, e.name, now()));
+	/// `before`: the stored state before the change (creator and last editor are notified).
+	private void publish(string type, TEntity e, string actor, TEntity before = null, string[] fields = null) {
+		if (_events is null) return;
+		auto ev = DomainEvent(type, kind, e.id, e.name, now(), actor);
+		if (before !is null) { ev.createdBy = before.createdBy; ev.modifiedBy = before.modifiedBy; }
+		ev.fields = fields;
+		_events.publish(ev);
+	}
+
+	/// Maintained fields (not derived, not administrative) whose value differs.
+	private static string[] changedFields(TEntity before, TEntity after) {
+		import std.traits : FieldNameTuple, hasUDA;
+		string[] r;
+		auto a = mapFields!TDto(before), b = mapFields!TDto(after);
+		static foreach (name; FieldNameTuple!TDto) {
+			static if (!hasUDA!(__traits(getMember, TDto, name), ReadOnly) && name != "id")
+				if (__traits(getMember, a, name) != __traits(getMember, b, name)) r ~= name;
+		}
+		return r;
 	}
 
 	private static string now() {

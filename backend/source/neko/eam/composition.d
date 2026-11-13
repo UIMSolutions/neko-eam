@@ -1,6 +1,7 @@
 /// Composition root: wires persistence, application services and use cases (dependency injection by hand).
 module neko.eam.composition;
 
+import core.time : msecs;
 import std.format : format;
 import neko.eam.domain;
 import neko.eam.application;
@@ -70,16 +71,22 @@ final class EamContainer {
 
 		auto integrity = new IntegrityService(registry);
 		auto f = useCases = new EamFacade;
+		// notifications: alerts from the data and activities of other users (listens to all changes of the tenant)
+		auto comments = new CommentRepository(storage);
+		auto notifications = new NotificationsInteractor(useCases, registry, new ActivityRepository(storage),
+			new NotificationStateRepository(storage), comments);
+		f._notifications = notifications;
+		events = new CompositeEventPublisher(events, notifications);
 		f._apps = new ManageElementsInteractor!(Application, ApplicationDto)(apps, integrity, events);
 		auto capUc = new ManageElementsInteractor!(BusinessCapability, BusinessCapabilityDto)(caps, integrity, events);
-		capUc.enrichWith((BusinessCapability c) { c.hierarchyPath = hierarchyPath!"parentId"(c, caps.findAll); });
+		capUc.enrichWith((BusinessCapability c) { c.hierarchyPath = hierarchyPath!"parentId"(c, caps.readMap); });
 		f._caps = capUc;
 		f._comps = new ManageElementsInteractor!(ITComponent, ITComponentDto)(comps, integrity, events);
 		f._flows = new ManageElementsInteractor!(InformationFlow, InformationFlowDto)(flows, integrity, events);
 		auto orgUc = new ManageElementsInteractor!(Organization, OrganizationDto)(orgs, integrity, events);
 		orgUc.enrichWith((Organization o) {
-			o.hierarchyPath = hierarchyPath!"parentId"(o, orgs.findAll);
-			auto s = UnitStaffing.compute(o.id, members.findAll, todayIso());
+			o.hierarchyPath = hierarchyPath!"parentId"(o, orgs.readMap);
+			auto s = UnitStaffing.compute(o.id, members.readAll, todayIso());
 			o.headOfUnit = s.head;
 			o.totalMembers = s.members;
 			o.totalCapacity = s.capacityFte;
@@ -88,7 +95,7 @@ final class EamContainer {
 		// project management: totals and progress are rolled up from sub projects and work packages
 		auto projectUc = new ManageElementsInteractor!(Project, ProjectDto)(projects, integrity, events);
 		projectUc.enrichWith((Project p) {
-			auto r = ProjectRollup.forProject(p.id, subProjects.findAll, workPackages.findAll);
+			auto r = ProjectRollup.forProject(p.id, subProjects.readAll, workPackages.readAll);
 			p.totalSubProjects = r.subProjects;
 			p.totalWorkPackages = r.workPackages;
 			p.plannedEffortDays = r.plannedEffortDays;
@@ -97,11 +104,11 @@ final class EamContainer {
 		f._projects = projectUc;
 		auto subProjectUc = new ManageElementsInteractor!(SubProject, SubProjectDto)(subProjects, integrity, events);
 		subProjectUc.enrichWith((SubProject s) {
-			auto all = subProjects.findAll;
-			auto path = hierarchyPath!"parentSubProjectId"(s, all);
+			auto all = subProjects.readAll;
+			auto path = hierarchyPath!"parentSubProjectId"(s, subProjects.readMap);
 			if (auto prj = projects.findById(s.projectId)) path = prj.name ~ " / " ~ path;
 			s.hierarchyPath = path;
-			auto r = ProjectRollup.forSubProject(s.id, all, workPackages.findAll);
+			auto r = ProjectRollup.forSubProject(s.id, all, workPackages.readAll);
 			s.totalWorkPackages = r.workPackages;
 			s.plannedEffortDays = r.plannedEffortDays;
 			s.progress = r.progress;
@@ -115,33 +122,33 @@ final class EamContainer {
 		auto groupUc = new ManageElementsInteractor!(ApplicationGroup, ApplicationGroupDto)(appGroups, integrity, events);
 		// product totals of a group are rolled up from the applications of its subtree at read time
 		groupUc.enrichWith((ApplicationGroup g) {
-			auto r = ApplicationGroupRollup.compute(g.id, appGroups.findAll, apps.findAll);
+			auto r = ApplicationGroupRollup.compute(g.id, appGroups.readAll, apps.readAll);
 			g.totalUsedProducts = r.used;
 			g.totalAssignedProducts = r.assigned;
 		});
 		f._applicationGroups = groupUc;
 		auto processUc = new ManageElementsInteractor!(BusinessProcess, BusinessProcessDto)(processes, integrity, events);
-		processUc.enrichWith((BusinessProcess p) { p.hierarchyPath = hierarchyPath!"parentProcessId"(p, processes.findAll); });
+		processUc.enrichWith((BusinessProcess p) { p.hierarchyPath = hierarchyPath!"parentProcessId"(p, processes.readMap); });
 		f._businessProcesses = processUc;
 		f._businessData = new ManageElementsInteractor!(BusinessData, BusinessDataDto)(data, integrity, events);
 		auto catalogUc = new ManageElementsInteractor!(ServiceProductGroup, ServiceProductGroupDto)(catalogs, integrity, events);
-		catalogUc.enrichWith((ServiceProductGroup g) { g.hierarchyPath = hierarchyPath!"parentId"(g, catalogs.findAll); });
+		catalogUc.enrichWith((ServiceProductGroup g) { g.hierarchyPath = hierarchyPath!"parentId"(g, catalogs.readMap); });
 		f._serviceProductGroups = catalogUc;
 		// IT landscape planning
 		auto guidelineUc = new ManageElementsInteractor!(StrategicGuideline, StrategicGuidelineDto)(guidelines, integrity, events);
-		guidelineUc.enrichWith((StrategicGuideline g) { g.hierarchyPath = hierarchyPath!"parentId"(g, guidelines.findAll); });
+		guidelineUc.enrichWith((StrategicGuideline g) { g.hierarchyPath = hierarchyPath!"parentId"(g, guidelines.readMap); });
 		f._strategicGuidelines = guidelineUc;
 		auto serviceCapUc = new ManageElementsInteractor!(ServiceCapability, ServiceCapabilityDto)(serviceCaps, integrity, events);
 		serviceCapUc.enrichWith((ServiceCapability c) {
 			c.derive();
-			c.hierarchyPath = hierarchyPath!"parentId"(c, serviceCaps.findAll);
+			c.hierarchyPath = hierarchyPath!"parentId"(c, serviceCaps.readMap);
 		});
 		f._serviceCapabilities = serviceCapUc;
 		auto measureGroupUc = new ManageElementsInteractor!(MeasureGroup, MeasureGroupDto)(measureGroups, integrity, events);
 		measureGroupUc.enrichWith((MeasureGroup g) {
-			auto all = measureGroups.findAll;
-			g.hierarchyPath = hierarchyPath!"parentGroupId"(g, all);
-			auto r = MeasureGroupRollup.compute(g.id, all, measures.findAll);
+			auto all = measureGroups.readAll;
+			g.hierarchyPath = hierarchyPath!"parentGroupId"(g, measureGroups.readMap);
+			auto r = MeasureGroupRollup.compute(g.id, all, measures.readAll);
 			g.totalMeasures = r.measures;
 			g.totalEstimatedCost = r.estimatedCost;
 		});
@@ -153,8 +160,8 @@ final class EamContainer {
 		auto refArchUc = new ManageElementsInteractor!(ReferenceArchitecture, ReferenceArchitectureDto)(refArchs, integrity, events);
 		refArchUc.enrichWith((ReferenceArchitecture r) {
 			import std.algorithm : canFind, count;
-			r.hierarchyPath = hierarchyPath!"parentId"(r, refArchs.findAll);
-			r.totalDocuments = cast(int) documents.findAll.count!(d => d.referenceArchitectureIds.canFind(r.id));
+			r.hierarchyPath = hierarchyPath!"parentId"(r, refArchs.readMap);
+			r.totalDocuments = cast(int) documents.readAll.count!(d => d.referenceArchitectureIds.canFind(r.id));
 		});
 		f._referenceArchitectures = refArchUc;
 		auto documentUc = new ManageElementsInteractor!(ArchitectureDocument, ArchitectureDocumentDto)(documents, integrity, events);
@@ -165,15 +172,15 @@ final class EamContainer {
 		// organisation structure: enterprises (legal entities) and members of the organisational units
 		auto enterpriseUc = new ManageElementsInteractor!(Enterprise, EnterpriseDto)(enterprises, integrity, events);
 		enterpriseUc.enrichWith((Enterprise e) {
-			e.hierarchyPath = hierarchyPath!"parentEnterpriseId"(e, enterprises.findAll);
-			UnitStaffing.forEnterprise(e.id, orgs.findAll, members.findAll, todayIso(), e.totalUnits, e.totalMembers,
+			e.hierarchyPath = hierarchyPath!"parentEnterpriseId"(e, enterprises.readMap);
+			UnitStaffing.forEnterprise(e.id, orgs.readAll, members.readAll, todayIso(), e.totalUnits, e.totalMembers,
 				e.managingDirector);
 		});
 		f._enterprises = enterpriseUc;
 		auto memberUc = new ManageElementsInteractor!(Member, MemberDto)(members, integrity, events);
 		memberUc.validateWith((Member m) {
 			auto today = todayIso();
-			foreach (other; members.findAll) {
+			foreach (other; members.readAll) {
 				if (other.id == m.id) continue;
 				if (m.personnelNumber.length && other.personnelNumber == m.personnelNumber)
 					throw new ValidationException("personnelNumber", "Personnel number '" ~ m.personnelNumber ~ "' is already used by " ~ other.id);
@@ -188,16 +195,17 @@ final class EamContainer {
 		auto itProcessUc = new ManageElementsInteractor!(ITProcess, ITProcessDto)(itProcesses, integrity, events);
 		itProcessUc.enrichWith((ITProcess p) {
 			import std.algorithm : count;
-			p.hierarchyPath = hierarchyPath!"parentProcessId"(p, itProcesses.findAll);
-			p.totalSteps = cast(int) processSteps.findAll.count!(s => s.processId == p.id);
+			p.hierarchyPath = hierarchyPath!"parentProcessId"(p, itProcesses.readMap);
+			p.totalSteps = cast(int) processSteps.readAll.count!(s => s.processId == p.id);
 			KpiStatus[] states;
-			foreach (k; processKpis.findAll) if (k.processId == p.id) { k.derive(); states ~= k.kpiStatus; }
+			foreach (k; processKpis.readAll) // shared snapshot: evaluated without modifying the entity
+				if (k.processId == p.id) states ~= ProcessKpi.evaluate(k.direction, k.targetValue, k.thresholdValue, k.actualValue, k.measured);
 			p.kpiStatus = worstKpiStatus(states);
 		});
 		f._itProcesses = itProcessUc;
 		auto stepUc = new ManageElementsInteractor!(ProcessStep, ProcessStepDto)(processSteps, integrity, events);
 		stepUc.validateWith((ProcessStep s) {
-			foreach (o; processSteps.findAll)
+			foreach (o; processSteps.readAll)
 				if (o.id != s.id && o.processId == s.processId && o.sequenceNo == s.sequenceNo)
 					throw new ValidationException("sequenceNo", format("Sequence no. %s is already used by step '%s'", s.sequenceNo, o.name));
 		});
@@ -208,7 +216,7 @@ final class EamContainer {
 		// security: protection requirements, risks, controls
 		auto protectionUc = new ManageElementsInteractor!(ProtectionRequirement, ProtectionRequirementDto)(protection, integrity, events);
 		protectionUc.validateWith((ProtectionRequirement p) {
-			foreach (o; protection.findAll)
+			foreach (o; protection.readAll)
 				if (o.id != p.id && o.objectKey == p.objectKey)
 					throw new ValidationException("applicationId", "This object already has a protection requirement: " ~ o.id);
 		});
@@ -224,7 +232,7 @@ final class EamContainer {
 		controlUc.enrichWith((SecurityControl c) {
 			import std.algorithm : canFind, count;
 			c.overdue = SecurityControl.isOverdue(c.implementationStatus, c.dueDate, todayIso());
-			c.mitigatedRisks = cast(int) risks.findAll.count!(r => r.controlIds.canFind(c.id));
+			c.mitigatedRisks = cast(int) risks.readAll.count!(r => r.controlIds.canFind(c.id));
 		});
 		f._securityControls = controlUc;
 		// reporting: definitions are checked against the meta model when saved
@@ -234,8 +242,7 @@ final class EamContainer {
 		f._reportBooks = new ManageElementsInteractor!(ReportBook, ReportBookDto)(reportBooks, integrity, events);
 		f._reporting = new ReportingInteractor(useCases);
 		// comment journal of all elements; deleting an element removes its comments
-		auto comments = new CommentRepository(storage);
-		f._comments = new CommentsInteractor(useCases, comments);
+		f._comments = new CommentsInteractor(useCases, comments, (Comment c) { notifications.commentAdded(c); });
 		static foreach (S; EamDtoSets) {{
 			auto interactor = cast(ManageElementsInteractor!(S.Entity, S.Dto)) manage!S(useCases);
 			if (interactor !is null) interactor.onRemoved((string id) { comments.removeForElement(S.setName, id); });
@@ -245,22 +252,22 @@ final class EamContainer {
 		auto userUc = new ManageElementsInteractor!(User, UserDto)(users, integrity, events);
 		userUc.validateWith((User u) {
 			import std.string : toLower;
-			foreach (other; users.findAll)
+			foreach (other; users.readAll)
 				if (other.id != u.id && other.userName.toLower == u.userName.toLower)
 					throw new ValidationException("userName", "User name '" ~ u.userName ~ "' is already used by " ~ other.id);
 		});
-		userUc.enrichWith((User u) { u.effectiveRights = accessControl.rightsOfUser(u).summary; });
+		userUc.enrichWith((User u) { u.effectiveRights = accessControl.rightsSummaryOf(u); });
 		f._users = userUc;
 		auto roleUc = new ManageElementsInteractor!(Role, RoleDto)(roles, integrity, events);
 		roleUc.enrichWith((Role r) {
 			import std.algorithm : canFind, count;
-			r.totalUsers = cast(int) users.findAll.count!(u => u.roleIds.canFind(r.id));
+			r.totalUsers = cast(int) users.readAll.count!(u => u.roleIds.canFind(r.id));
 		});
 		f._roles = roleUc;
 		auto permissionUc = new ManageElementsInteractor!(Permission, PermissionDto)(permissions, integrity, events);
 		permissionUc.enrichWith((Permission p) {
 			import std.algorithm : canFind, count;
-			p.totalRoles = cast(int) roles.findAll.count!(r => r.permissionIds.canFind(p.id));
+			p.totalRoles = cast(int) roles.readAll.count!(r => r.permissionIds.canFind(p.id));
 		});
 		f._permissions = permissionUc;
 		f._search = new SearchElementsInteractor(useCases);
@@ -303,7 +310,7 @@ final class EamContainer {
 	static EamPlatform platformFromConfig(AppConfig config, bool audit = true) {
 		auto events = audit ? new LoggingEventPublisher : null;
 		auto platform = new EamPlatform(new TenantRegistry(new JsonFileStorage(config.tenantRegistryFile)),
-			new FileTenantStorageProvider(config.dataFile, config.tenantDirectory),
+			new FileTenantStorageProvider(config.dataFile, config.tenantDirectory, config.persistDelayMilliseconds.msecs),
 			new BackupFileStore(config.backupDirectory),
 			(IDocumentStorage s) => cast(IEamUseCases) new EamContainer(config, s, events).useCases,
 			config.backupRetention);

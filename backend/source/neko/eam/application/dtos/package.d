@@ -10,3 +10,4 @@ public import neko.eam.application.dtos.modelinfo;
 public import neko.eam.application.dtos.transferdtos;
 public import neko.eam.application.dtos.accessdtos;
 public import neko.eam.application.dtos.platformdtos;
+public import neko.eam.application.dtos.notificationdtos;

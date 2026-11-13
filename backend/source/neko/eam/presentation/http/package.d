@@ -9,6 +9,7 @@ public import neko.eam.presentation.http.system;
 public import neko.eam.presentation.http.reports;
 public import neko.eam.presentation.http.comments;
 public import neko.eam.presentation.http.login;
+public import neko.eam.presentation.http.notifications;
 
 import std.algorithm : startsWith;
 import std.file : exists;
@@ -70,6 +71,7 @@ URLRouter buildRouter(AppConfig cfg, IEamPlatform platform, Authenticator auth) 
 	registerSystemRoutes(router, platform);
 	registerReportRoutes(router, uc);
 	registerCommentRoutes(router, uc);
+	registerNotificationRoutes(router, uc);
 	registerPasswordRoutes(router, uc, auth);
 	registerRestInterface(router, new EamRestApi(uc, auth, platform));
 	new WebCockpit(uc).register(router);
@@ -94,6 +96,7 @@ HTTPListener startHttpServer(AppConfig cfg, IEamPlatform platform, Authenticator
 		res.writeJsonBody(["error": ["code": "HttpError", "message": err.message]]);
 	};
 	settings.serverString = "neko-eam"; // no framework version in the Server header
+	settings.useCompressionIfPossible = true; // OData / JSON lists shrink to a fraction (gzip / deflate)
 	if (cfg.tlsCertificateFile.length && cfg.tlsPrivateKeyFile.length) {
 		settings.tlsContext = createTLSContext(TLSContextKind.server);
 		settings.tlsContext.useCertificateChainFile(cfg.tlsCertificateFile);

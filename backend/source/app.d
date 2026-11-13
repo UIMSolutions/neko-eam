@@ -10,6 +10,7 @@ import std.stdio : stderr, writeln;
 import vibe.core.core : runEventLoop;
 
 import neko.eam.composition;
+import neko.eam.persistence.storages : JsonFileStorage;
 import neko.eam.infrastructure;
 import neko.eam.presentation;
 
@@ -27,6 +28,7 @@ int main(string[] args) {
 			startHttpServer(cfg, platform, new Authenticator(cfg));
 			startArchitectureHealthWorker(platform.tenantUseCases("default").analysis, cfg.healthCheckIntervalSeconds);
 			startBackupWorker(platform, cfg.backupIntervalHours);
+			scope (exit) JsonFileStorage.flushAll(); // changes of the last write delay (SIGINT / SIGTERM)
 			return runEventLoop();
 
 		case "gui":
@@ -61,6 +63,7 @@ int main(string[] args) {
 /// The vibe.d server runs in its own thread with its own event loop; the GTK loop owns the main thread.
 private void startEmbeddedServer(AppConfig cfg) {
 	cfg.bindAddress = "127.0.0.1";
+	cfg.persistDelayMilliseconds = 0; // daemon thread ends with the window: no delayed writes to lose
 	auto t = new Thread({
 		startHttpServer(cfg, EamContainer.platformFromConfig(cfg), new Authenticator(cfg));
 		runEventLoop();

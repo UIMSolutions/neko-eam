@@ -1,7 +1,9 @@
 /// Business objects of the EAM meta model.
 module neko.eam.domain.entities;
 
+public import neko.eam.domain.entities.architectureelement;
 public import neko.eam.domain.entities.validation;
+public import neko.eam.domain.entities.activity;
 public import neko.eam.domain.entities.application;
 public import neko.eam.domain.entities.businesscapability;
 public import neko.eam.domain.entities.itcomponent;

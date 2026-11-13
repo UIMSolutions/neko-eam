@@ -10,18 +10,21 @@ import neko.eam.ports.storages : IDocumentStorage;
 
 class TenantRegistry : ITenantRegistry {
 	private IDocumentStorage _storage;
+	private Tenant[] _cache; // parsed tenants - every request resolves its tenant
+	private bool _cached;
 	enum collection = "Tenants";
 
 	this(IDocumentStorage storage) { _storage = storage; }
 
+	/// Copies (callers may modify them before saving).
 	Tenant[] all() {
 		Tenant[] r;
-		foreach (d; _storage.load(collection)) r ~= fromJson(d);
+		foreach (t; cached) r ~= copy(t);
 		return r;
 	}
 
 	Tenant find(string id) {
-		foreach (t; all) if (t.id == id) return t;
+		foreach (t; cached) if (t.id == id) return copy(t);
 		return null;
 	}
 
@@ -34,12 +37,31 @@ class TenantRegistry : ITenantRegistry {
 		}
 		if (!replaced) docs ~= toJson(t);
 		_storage.store(collection, docs);
+		_cached = false;
 	}
 
 	void remove(string id) {
 		Json[] docs;
 		foreach (d; _storage.load(collection)) if (d["id"].opt!string("") != id) docs ~= d;
 		_storage.store(collection, docs);
+		_cached = false;
+	}
+
+	private Tenant[] cached() {
+		if (!_cached) {
+			Tenant[] r;
+			foreach (d; _storage.load(collection)) r ~= fromJson(d);
+			_cache = r;
+			_cached = true;
+		}
+		return _cache;
+	}
+
+	private static Tenant copy(Tenant t) {
+		auto c = new Tenant;
+		static foreach (f; ["id", "name", "description", "zoneId", "createdAt", "createdBy", "modifiedAt", "modifiedBy", "status"])
+			__traits(getMember, c, f) = __traits(getMember, t, f);
+		return c;
 	}
 
 	private static Json toJson(Tenant t) {

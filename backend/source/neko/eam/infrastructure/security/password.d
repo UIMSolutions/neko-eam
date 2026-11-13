@@ -73,13 +73,24 @@ class Pbkdf2PasswordHasher : IPasswordHasher {
 			~ Base64URLNoPadding.encode(hash).idup;
 	}
 
+	/// Inside a vibe.d task the key is derived on a worker thread: the calling request waits, the others keep
+	/// running (a sign-in costs ~50 ms of CPU - on the event loop a burst of sign-ins would stall the server).
 	private static ubyte[] derive(string password, const(ubyte)[] salt, uint iterations) @trusted {
+		import vibe.core.task : Task;
+		if (Task.getThis() != Task.init) {
+			import vibe.core.concurrency : asyncWork;
+			return asyncWork(&deriveKey, password, salt.idup, iterations).getResult().dup;
+		}
+		return deriveKey(password, salt.idup, iterations).dup;
+	}
+
+	private static immutable(ubyte)[] deriveKey(string password, immutable(ubyte)[] salt, uint iterations) @trusted {
 		import deimos.openssl.evp : EVP_sha256, PKCS5_PBKDF2_HMAC;
 		auto key = new ubyte[hashBytes];
 		if (PKCS5_PBKDF2_HMAC(password.ptr, cast(int) password.length, salt.ptr, cast(int) salt.length,
 				cast(int) iterations, EVP_sha256(), cast(int) key.length, key.ptr) != 1)
 			throw new Exception("Password hashing failed");
-		return key;
+		return cast(immutable) key;
 	}
 }
 

@@ -10,3 +10,4 @@ public import neko.eam.application.usecases.accesscontrol;
 public import neko.eam.application.usecases.platform;
 public import neko.eam.application.usecases.reporting;
 public import neko.eam.application.usecases.comments;
+public import neko.eam.application.usecases.notifications;

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Neko EAM</string>
+    <string name="server_url">Server URL</string>
+    <string name="server_hint">e.g. http://10.0.2.2:8080 (emulator → this computer)</string>
+    <string name="connect">Connect</string>
+    <string name="user_name">User name</string>
+    <string name="password">Password</string>
+    <string name="tenant">Tenant (optional)</string>
+    <string name="sign_in">Sign in</string>
+    <string name="sign_out">Sign out</string>
+    <string name="change_server">Change server</string>
+    <string name="xsuaa_unsupported">This server uses SAP XSUAA sign-in, which the app does not support yet. Use a server with authMode \"local\" or \"none\".</string>
+    <string name="search">Search</string>
+    <string name="search_all">Search the repository</string>
+    <string name="filter_sets">Filter element types</string>
+    <string name="notifications">Notifications</string>
+    <string name="mark_all_read">Mark all as read</string>
+    <string name="no_notifications">No notifications</string>
+    <string name="no_results">Nothing found</string>
+    <string name="load_more">Load more</string>
+    <string name="retry">Retry</string>
+    <string name="refresh">Refresh</string>
+    <string name="back">Back</string>
+    <string name="create">Create</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
+    <string name="clear">Clear</string>
+    <string name="delete_confirm">Delete \"%1$s\"? This cannot be undone.</string>
+    <string name="new_element">New %1$s</string>
+    <string name="select_value">Select…</string>
+    <string name="comma_separated">Separate values with commas</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="unsaved_required">Fill in the required fields</string>
+    <string name="signed_in_as">Signed in as %1$s</string>
+    <string name="elements_count">%1$d elements</string>
+    <string name="hide_empty">Hide empty fields</string>
+    <string name="session_expired">Your session has ended. Sign in again.</string>
+</resources>

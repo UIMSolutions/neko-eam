@@ -86,6 +86,8 @@ class EamFacade : IEamUseCases {
 	IReporting reporting() { return _reporting; }
 	IComments _comments;
 	IComments comments() { return _comments; }
+	INotifications _notifications;
+	INotifications notifications() { return _notifications; }
 	ISearchElements search() { return _search; }
 	ITransferElements transfer() { return _transfer; }
 	IAnalyzePortfolio analysis() { return _analysis; }

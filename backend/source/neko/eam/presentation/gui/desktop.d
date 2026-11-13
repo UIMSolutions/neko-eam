@@ -285,7 +285,7 @@ class EamDesktopWindow : MainWindow {
 			auto id = selectedId();
 			if (id is null) return info("Select an element first.");
 			if (!confirm(format("Delete %s '%s'?", S.typeName, id))) return;
-			guarded(() { m.remove(id); refreshAll(); });
+			guarded(() { m.remove(id, _user ~ "@gui"); refreshAll(); });
 		};
 		page.select = (string id) {
 			TreeIter it;

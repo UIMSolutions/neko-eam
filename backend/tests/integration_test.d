@@ -811,3 +811,55 @@ unittest {
 	uc.users.remove(created.id);
 	assert(c.storage.load("Credentials").length == 1);
 }
+
+// notifications: activities of other users on "my" elements, alerts filtered by rights, read / dismissed state
+unittest {
+	import std.algorithm : canFind, count, filter;
+	import std.array : array;
+	auto uc = EamContainer.inMemory().useCases;
+	uc.seeder.seed();
+	auto anna = AccessSubjectDto("anna"), bob = AccessSubjectDto("bob"), admin = AccessSubjectDto("root", "", true, true);
+	foreach (n; ["anna", "bob"]) {
+		UserDto u = { id: "usr-t-" ~ n, name: n, userName: n, roleIds: ["role-architect"] };
+		uc.users.create(u, "root");
+	}
+
+	ApplicationDto app = { name: "Notified App", ownerOrganizationId: "org-it" };
+	auto created = uc.applications.create(app, "anna");
+	assert(!uc.notifications.forUser(anna).items.canFind!(n => n.elementId == created.id), "creating concerns nobody");
+	created.description = "changed by bob";
+	uc.applications.update(created.id, created, "bob");
+	auto mine = uc.notifications.forUser(anna).items.filter!(n => n.category == "activity").array;
+	assert(mine.length == 1 && mine[0].kind == "Updated" && mine[0].actor == "bob" && mine[0].fields == ["description"] && mine[0].unread);
+	assert(!uc.notifications.forUser(bob).items.canFind!(n => n.category == "activity"), "own changes are not notified");
+
+	// bob now participates (last editor): anna's comment reaches him
+	uc.comments.add("Applications", created.id, "Please check the owner", "anna");
+	auto bobs = uc.notifications.forUser(bob).items.filter!(n => n.category == "activity").array;
+	assert(bobs.length == 1 && bobs[0].kind == "Commented" && bobs[0].text == "Please check the owner");
+
+	// read and dismissed state per user
+	auto before = uc.notifications.forUser(anna).unread;
+	auto afterRead = uc.notifications.markRead(anna, [mine[0].id]);
+	assert(afterRead.unread == before - 1 && !afterRead.items.filter!(n => n.id == mine[0].id).front.unread);
+	assert(uc.notifications.forUser(bob).items.canFind!(n => n.unread), "state is per user");
+	auto afterDismiss = uc.notifications.dismiss(anna, null, true);
+	assert(afterDismiss.items.length == 0 && afterDismiss.unread == 0);
+
+	// alerts: the demo data has due items; a user without read access to a set does not see its alerts
+	auto alerts = uc.notifications.forUser(admin).items.filter!(n => n.category == "alert").array;
+	assert(alerts.length > 0);
+	PermissionDto onlyApps = { id: "perm-t-apps", name: "Apps only", entitySet: "Applications" };
+	uc.permissions.create(onlyApps, "root");
+	RoleDto appsRole = { id: "role-t-apps", name: "Apps only", roleKey: "T_APPS", permissionIds: ["perm-t-apps"] };
+	uc.roles.create(appsRole, "root");
+	UserDto carl = { id: "usr-t-carl", name: "carl", userName: "carl", roleIds: ["role-t-apps"] };
+	uc.users.create(carl, "root");
+	auto carls = uc.notifications.forUser(AccessSubjectDto("carl")).items;
+	assert(carls.count!(n => n.elementSet != "Applications") == 0);
+
+	// deleting an element notifies its creator and the commenters
+	uc.comments.add("Applications", created.id, "ok", "bob");
+	uc.applications.remove(created.id, "bob");
+	assert(uc.notifications.forUser(anna).items.canFind!(n => n.kind == "Deleted" && n.elementId == created.id));
+}

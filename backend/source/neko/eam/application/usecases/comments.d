@@ -20,11 +20,12 @@ class CommentsInteractor : IComments {
 		ICommentRepository _repo;       // set on the unrestricted instance
 		IComments _inner;               // set on a checked instance
 		bool delegate(string set) _mayDeleteAny;
+		void delegate(Comment) _onAdded;  // unrestricted instance: notifications
 	}
 
-	/// Unrestricted instance on the plain use cases.
-	this(IEamUseCases uc, ICommentRepository repo) {
-		_uc = uc; _repo = repo; _mayDeleteAny = (string) => true;
+	/// Unrestricted instance on the plain use cases; `onAdded` is called after a comment was stored.
+	this(IEamUseCases uc, ICommentRepository repo, void delegate(Comment) onAdded = null) {
+		_uc = uc; _repo = repo; _mayDeleteAny = (string) => true; _onAdded = onAdded;
 	}
 
 	/// Checked instance: `uc` are the caller's use cases, `inner` the unrestricted instance.
@@ -56,6 +57,7 @@ class CommentsInteractor : IComments {
 		c.createdBy = actor.length ? actor : "system";
 		c.validate();
 		_repo.save(c);
+		if (_onAdded !is null) _onAdded(c);
 		return toDto(c, true);
 	}
 

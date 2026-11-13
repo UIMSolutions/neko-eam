@@ -136,7 +136,7 @@ class ODataService {
 				S.Dto fresh;
 				return writeEntity(res, HTTPStatus.ok, ctx, uc.update(key, dtoFromJson!(S.Dto)(req.json, fresh), actor));
 			case HTTPMethod.DELETE:
-				uc.remove(key);
+				uc.remove(key, actor);
 				res.statusCode = HTTPStatus.noContent;
 				return res.writeVoidBody();
 			default:

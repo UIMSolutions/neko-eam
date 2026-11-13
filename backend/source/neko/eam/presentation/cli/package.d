@@ -351,7 +351,7 @@ private int elementCommand(alias S)(ref CliOptions o, IEamUseCases uc) {
 			else writefln("Updated %s('%s')", S.setName, updated.id);
 			return 0;
 		case "delete":
-			m.remove(p[2]);
+			m.remove(p[2], cliActor);
 			writefln("Deleted %s('%s')", S.setName, p[2]);
 			return 0;
 		default: assert(0);

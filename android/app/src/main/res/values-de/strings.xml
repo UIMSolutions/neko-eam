@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_url">Server-URL</string>
+    <string name="server_hint">z. B. http://10.0.2.2:8080 (Emulator → dieser Rechner)</string>
+    <string name="connect">Verbinden</string>
+    <string name="user_name">Benutzername</string>
+    <string name="password">Passwort</string>
+    <string name="tenant">Mandant (optional)</string>
+    <string name="sign_in">Anmelden</string>
+    <string name="sign_out">Abmelden</string>
+    <string name="change_server">Server wechseln</string>
+    <string name="xsuaa_unsupported">Dieser Server nutzt die SAP-XSUAA-Anmeldung, die die App noch nicht unterstützt. Verwenden Sie einen Server mit authMode \"local\" oder \"none\".</string>
+    <string name="search">Suchen</string>
+    <string name="search_all">Repository durchsuchen</string>
+    <string name="filter_sets">Elementtypen filtern</string>
+    <string name="notifications">Benachrichtigungen</string>
+    <string name="mark_all_read">Alle als gelesen markieren</string>
+    <string name="no_notifications">Keine Benachrichtigungen</string>
+    <string name="no_results">Nichts gefunden</string>
+    <string name="load_more">Mehr laden</string>
+    <string name="retry">Erneut versuchen</string>
+    <string name="refresh">Aktualisieren</string>
+    <string name="back">Zurück</string>
+    <string name="create">Anlegen</string>
+    <string name="edit">Bearbeiten</string>
+    <string name="delete">Löschen</string>
+    <string name="save">Sichern</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="ok">OK</string>
+    <string name="clear">Leeren</string>
+    <string name="delete_confirm">\"%1$s\" löschen? Dies kann nicht rückgängig gemacht werden.</string>
+    <string name="new_element">Neu: %1$s</string>
+    <string name="select_value">Auswählen…</string>
+    <string name="comma_separated">Werte durch Kommas trennen</string>
+    <string name="yes">Ja</string>
+    <string name="no">Nein</string>
+    <string name="unsaved_required">Pflichtfelder ausfüllen</string>
+    <string name="signed_in_as">Angemeldet als %1$s</string>
+    <string name="elements_count">%1$d Elemente</string>
+    <string name="hide_empty">Leere Felder ausblenden</string>
+    <string name="session_expired">Ihre Sitzung ist beendet. Bitte erneut anmelden.</string>
+</resources>

@@ -8,6 +8,11 @@ import std.array : join;
 string hierarchyPath(string parentField, T)(T element, T[] all, string separator = " / ") {
 	T[string] byId;
 	foreach (e; all) byId[e.id] = e;
+	return hierarchyPath!parentField(element, byId, separator);
+}
+
+/// ditto, with the elements already indexed by id (no per-call index - for lists of many elements).
+string hierarchyPath(string parentField, T)(T element, T[string] byId, string separator = " / ") {
 	string[] names = [element.name];
 	bool[string] seen = [element.id: true];
 	string parent = __traits(getMember, element, parentField);

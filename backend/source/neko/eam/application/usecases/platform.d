@@ -232,7 +232,8 @@ class EamPlatform : IEamPlatform {
 					snapshot.info.tenant, tenantId));
 			r.warnings ~= format("Backup of tenant '%s' is restored into tenant '%s'", snapshot.info.tenant, tenantId);
 		}
-		auto known = allSetNames();
+		// entity sets plus the tenant's internal collections (journal, passwords, notifications)
+		auto known = allSetNames() ~ ["Comments", "Credentials", "Activities", "NotificationStates"];
 		foreach (name; snapshot.collections.keys)
 			if (!known.canFind(name)) r.warnings ~= "Unknown collection '" ~ name ~ "' (from a newer version?) is kept but not used";
 

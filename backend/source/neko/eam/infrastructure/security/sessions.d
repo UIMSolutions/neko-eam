@@ -2,7 +2,8 @@
 ///
 /// Sessions live in memory: a restart signs everybody out (like the single-process JSON storage, run one
 /// instance). Each session expires after an idle time and after an absolute lifetime; expired sessions are
-/// swept whenever a new one is created, so the store cannot grow without bound.
+/// swept when a new one is created (at most once a minute - a full scan per sign-in would be quadratic with
+/// thousands of sessions), so the store cannot grow without bound.
 module neko.eam.infrastructure.security.sessions;
 
 import core.time : Duration, minutes, hours, seconds;
@@ -30,7 +31,9 @@ class LoginSessionStore {
 	private {
 		LoginSession[string] _sessions;
 		Duration _idle, _lifetime;
+		SysTime _lastSweep;
 	}
+	enum sweepInterval = 1.minutes;
 
 	this(Duration idleTimeout = 60.minutes, Duration lifetime = 12.hours) {
 		_idle = idleTimeout;
@@ -41,7 +44,7 @@ class LoginSessionStore {
 
 	/// Starts a new session (new id and CSRF token - never reuses an id offered by the client).
 	LoginSession create(LoginSession data, SysTime now = Clock.currTime) {
-		sweep(now);
+		if (now - _lastSweep >= sweepInterval || now < _lastSweep) sweep(now);
 		data.id = randomToken(32);
 		data.csrfToken = randomToken(24);
 		data.createdAt = data.lastSeen = now;
@@ -62,6 +65,18 @@ class LoginSessionStore {
 		return s;
 	}
 
+	/// The live session with `id` without restarting its idle timer (background polling); null if unknown or expired.
+	LoginSession* peek(string id, SysTime now = Clock.currTime) {
+		if (!id.length) return null;
+		auto s = id in _sessions;
+		if (s is null) return null;
+		if (expired(*s, now)) {
+			_sessions.remove(id);
+			return null;
+		}
+		return s;
+	}
+
 	void destroy(string id) { _sessions.remove(id); }
 
 	/// Signs a user out everywhere (e.g. after an administrator reset the password), except `keepId`.
@@ -75,6 +90,7 @@ class LoginSessionStore {
 
 	/// Removes expired sessions; returns the number removed.
 	size_t sweep(SysTime now = Clock.currTime) {
+		_lastSweep = now;
 		string[] ids;
 		foreach (id, s; _sessions) if (expired(s, now)) ids ~= id;
 		foreach (id; ids) _sessions.remove(id);
@@ -149,6 +165,9 @@ unittest {
 	auto a = store.create(data, t0), b = store.create(data, t0);
 	assert(store.destroyForUser("default", "anna", a.id) == 1 && store.touch(a.id, t0) !is null);
 	assert(store.touch("", t0) is null && store.touch("unknown", t0) is null);
+	auto p = store.create(data, t0);
+	assert(store.peek(p.id, t0 + 9.minutes) !is null);
+	assert(store.peek(p.id, t0 + 11.minutes) is null, "peeking does not restart the idle timer");
 
 	auto throttle = new LoginThrottle(3, 10.seconds, 60.seconds);
 	foreach (_; 0 .. 2) throttle.failure("u", t0);

@@ -31,6 +31,9 @@ struct AppConfig {
 	string backupDirectory = "data/backups";          /// backups (<tenant>/<id>.eambackup)
 	uint backupRetention = 10;                        /// scheduled backups kept per tenant
 	uint backupIntervalHours = 24;                    /// scheduled backups of all tenants (0 = off)
+	/// Changes made in the server are written to the data file at most this long after they happened, all
+	/// changes of that window in one write (0 = write every change at once - slow with large repositories).
+	uint persistDelayMilliseconds = 500;
 	string frontendPath = "../frontend";
 	string odataBasePath = "/odata/v4/eam";
 	string authMode = "none"; /// none | local | xsuaa (see AuthMode)
@@ -68,6 +71,8 @@ void validate(const ref AppConfig cfg) {
 		throw new Exception("sessionTimeoutMinutes must be between 1 and 1440");
 	if ((cfg.tlsCertificateFile.length == 0) != (cfg.tlsPrivateKeyFile.length == 0))
 		throw new Exception("tlsCertificateFile and tlsPrivateKeyFile must be set together");
+	if (cfg.persistDelayMilliseconds > 10_000)
+		throw new Exception("persistDelayMilliseconds must not exceed 10000 (changes would stay unsaved too long)");
 }
 
 /// Applies a JSON object onto the configuration (only present keys).
@@ -107,6 +112,7 @@ void applyEnvironment(ref AppConfig cfg, string[string] env) {
 	if (auto v = "EAM_BACKUP_DIR" in env) cfg.backupDirectory = *v;
 	if (auto v = "EAM_BACKUP_RETENTION" in env) cfg.backupRetention = (*v).to!uint;
 	if (auto v = "EAM_BACKUP_INTERVAL_HOURS" in env) cfg.backupIntervalHours = (*v).to!uint;
+	if (auto v = "EAM_PERSIST_DELAY_MS" in env) cfg.persistDelayMilliseconds = (*v).to!uint;
 	if (auto v = "PORT" in env) { // Cloud Foundry assigns the port and expects 0.0.0.0
 		cfg.port = (*v).to!ushort;
 		cfg.bindAddress = "0.0.0.0";

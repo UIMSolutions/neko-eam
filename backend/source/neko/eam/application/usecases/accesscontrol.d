@@ -34,7 +34,15 @@ class AccessControlInteractor : IAccessControl {
 		ICredentialRepository _credentials;
 		IPasswordHasher _hasher;
 		string _dummyHash; // verified for unknown users, so that they take as long as known ones
+		// Resolution cache: every request resolves its caller, so users are indexed and rights are cached.
+		// Both are dropped when users, roles or permissions change, or at midnight (validity dates).
+		User[string] _byName, _byMail; // lower-case user name / e-mail -> first matching user
+		Resolution[string] _resolved;
+		string[string] _summaries; // role ids -> rights summary (users with the same roles share it)
+		ulong _stamp = ulong.max;
+		string _day;
 	}
+	enum maxCachedResolutions = 50_000;
 
 	/// `sandbox` creates the throw-away copy used by dry-run imports (checked with the same rights).
 	/// Without `credentials` / `hasher` the local sign-in is not available.
@@ -57,7 +65,7 @@ class AccessControlInteractor : IAccessControl {
 		if (r.user !is null) {
 			dto.userId = r.user.id;
 			dto.displayName = r.user.name;
-			foreach (role; _roles.findAll)
+			foreach (role; _roles.readAll)
 				if (r.user.roleIds.canFind(role.id) && role.status == ObjectState.Active) dto.roles ~= role.name;
 		}
 		static foreach (S; EamDtoSets) {{
@@ -74,7 +82,7 @@ class AccessControlInteractor : IAccessControl {
 	}
 
 	bool isKnownUser(AccessSubjectDto subject) {
-		auto u = findUser(_users.findAll, subject);
+		auto u = lookupUser(subject);
 		return u !is null && u.isEnabled(todayIso());
 	}
 
@@ -82,7 +90,7 @@ class AccessControlInteractor : IAccessControl {
 
 	SignInDto signIn(string userName, string password) {
 		requireCredentials();
-		auto user = findUser(_users.findAll, AccessSubjectDto(userName.strip));
+		auto user = lookupUser(AccessSubjectDto(userName.strip));
 		auto credential = user is null ? null : _credentials.find(user.id);
 		if (credential is null) {
 			_hasher.verify(password, dummyHash); // same cost as a real check
@@ -107,7 +115,7 @@ class AccessControlInteractor : IAccessControl {
 
 	void changePassword(string userName, string currentPassword, string newPassword) {
 		requireCredentials();
-		auto user = findUser(_users.findAll, AccessSubjectDto(userName));
+		auto user = lookupUser(AccessSubjectDto(userName));
 		auto credential = user is null ? null : _credentials.find(user.id);
 		if (credential is null || !_hasher.verify(currentPassword, credential.passwordHash))
 			throw new ValidationException("currentPassword", "The current password is not correct");
@@ -119,7 +127,7 @@ class AccessControlInteractor : IAccessControl {
 
 	bool hasPassword(string userName) {
 		if (_credentials is null) return false;
-		auto user = findUser(_users.findAll, AccessSubjectDto(userName));
+		auto user = lookupUser(AccessSubjectDto(userName));
 		return user !is null && _credentials.find(user.id) !is null;
 	}
 
@@ -146,7 +154,7 @@ class AccessControlInteractor : IAccessControl {
 	}
 
 	private User requireUser(string userName) {
-		auto user = findUser(_users.findAll, AccessSubjectDto(userName));
+		auto user = lookupUser(AccessSubjectDto(userName));
 		if (user is null || user.userName.toLower != userName.toLower) throw new EntityNotFoundException("Users", userName);
 		return user;
 	}
@@ -173,19 +181,37 @@ class AccessControlInteractor : IAccessControl {
 		return buf.idup;
 	}
 
+	/// Summary of `rightsOfUser` (the derived field of every row of the user list - cached per role set).
+	string rightsSummaryOf(User u) {
+		import std.array : join;
+		if (!u.isEnabled(todayIso())) return EffectiveRights.init.summary;
+		refresh();
+		auto key = u.roleIds.join("\n");
+		if (auto s = key in _summaries) return *s;
+		return _summaries[key] = rightsOfUser(u).summary;
+	}
+
 	/// Effective rights of a stored user (shown on the user's object page).
 	EffectiveRights rightsOfUser(User u) {
-		return EffectiveRights.resolve(u, _roles.findAll, _permissions.findAll, todayIso());
+		return EffectiveRights.resolve(u, _roles.readAll, _permissions.readAll, todayIso());
 	}
 
 	private struct Resolution { EffectiveRights rights; string source; User user; }
 
+	/// Cached per subject; the result is shared and must not be modified.
 	private Resolution resolve(AccessSubjectDto subject) {
 		if (subject.administrator) return Resolution(EffectiveRights(true), "administrator");
-		auto users = _users.findAll;
-		auto user = findUser(users, subject);
+		refresh();
+		auto key = subject.userName.toLower ~ "\n" ~ subject.email.toLower;
+		if (auto cached = key in _resolved) return *cached;
+		if (_resolved.length >= maxCachedResolutions) _resolved = null;
+		return _resolved[key] = resolveUncached(subject);
+	}
+
+	private Resolution resolveUncached(AccessSubjectDto subject) {
+		auto user = lookupUser(subject);
 		if (user is null) {
-			if (users.length == 0) {
+			if (_users.count == 0) {
 				// fresh installation: everybody may look around until the first user is created
 				EffectiveRights r;
 				r.allSets.read = true;
@@ -197,11 +223,33 @@ class AccessControlInteractor : IAccessControl {
 		return Resolution(rightsOfUser(user), "user", user);
 	}
 
-	private static User findUser(User[] users, AccessSubjectDto s) {
+	/// The user with the subject's user name, else with its e-mail (case-insensitive); null if none.
+	/// The result is the shared snapshot entity - read only.
+	private User lookupUser(AccessSubjectDto s) {
+		refresh();
 		auto name = s.userName.toLower, mail = s.email.toLower;
-		foreach (u; users) if (name.length && u.userName.toLower == name) return u;
-		foreach (u; users) if (mail.length && u.email.length && u.email.toLower == mail) return u;
+		if (name.length) if (auto u = name in _byName) return *u;
+		if (mail.length) if (auto u = mail in _byMail) return *u;
 		return null;
+	}
+
+	/// Rebuilds the user index and drops cached rights after a change of users, roles, permissions or the day.
+	private void refresh() {
+		auto stamp = _users.changeCount + _roles.changeCount + _permissions.changeCount;
+		auto day = todayIso();
+		if (stamp == _stamp && day == _day) return;
+		User[string] byName, byMail;
+		foreach (u; _users.readAll) {
+			auto n = u.userName.toLower, m = u.email.toLower;
+			if (n.length && n !in byName) byName[n] = u;
+			if (m.length && m !in byMail) byMail[m] = u;
+		}
+		_byName = byName;
+		_byMail = byMail;
+		_resolved = null;
+		_summaries = null;
+		_stamp = stamp;
+		_day = day;
 	}
 }
 
@@ -223,7 +271,7 @@ class SecuredManageElements(TDto) : IManageElements!TDto {
 	size_t count() { require(AccessAction.Read); return _inner.count; }
 	TDto create(TDto dto, string actor = "system") { require(AccessAction.Create); return _inner.create(dto, actor); }
 	TDto update(string id, TDto dto, string actor = "system") { require(AccessAction.Update); return _inner.update(id, dto, actor); }
-	void remove(string id) { require(AccessAction.Delete); _inner.remove(id); }
+	void remove(string id, string actor = "system") { require(AccessAction.Delete); _inner.remove(id, actor); }
 
 	private void require(AccessAction action) {
 		if (!_rights.can(_set, action))
@@ -281,6 +329,9 @@ class SecuredEamFacade : IEamUseCases {
 	}
 
 	IAccessControl access() { return _base.access; }
+
+	/// Notifications filter by the subject's rights themselves (every call names the subject).
+	INotifications notifications() { return _base.notifications; }
 
 	/// Comments: reading and writing needs read access to the element, deleting other users' comments
 	/// the delete permission on the element's set.

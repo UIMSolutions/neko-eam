@@ -21,6 +21,6 @@ void configureLogging(string level) {
 /// Event publisher writing domain events to the audit log.
 class LoggingEventPublisher : IEventPublisher {
 	void publish(DomainEvent e) {
-		logInfo("[audit] %s %s('%s') \"%s\" at %s", e.type, e.kind, e.id, e.name, e.timestamp);
+		logInfo("[audit] %s %s('%s') \"%s\" by %s at %s", e.type, e.kind, e.id, e.name, e.actor.length ? e.actor : "system", e.timestamp);
 	}
 }

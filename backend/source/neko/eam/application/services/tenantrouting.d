@@ -22,4 +22,5 @@ class TenantRoutingUseCases : IEamUseCases {
 	IAccessControl access() { return _current().access; }
 	IReporting reporting() { return _current().reporting; }
 	IComments comments() { return _current().comments; }
+	INotifications notifications() { return _current().notifications; }
 }

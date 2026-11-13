@@ -13,7 +13,7 @@ interface IManageElements(TDto) {
 	/// `actor` is recorded as `modifiedBy`.
 	TDto create(TDto dto, string actor = "system");
 	TDto update(string id, TDto dto, string actor = "system");
-	void remove(string id);
+	void remove(string id, string actor = "system");
 	size_t count();
 }
 
@@ -123,6 +123,7 @@ interface IEamUseCases {
 	IAccessControl access();
 	IReporting reporting();
 	IComments comments();
+	INotifications notifications();
 }
 
 /// Typed access to the use cases of a DtoSet from the registry.
@@ -181,4 +182,15 @@ interface IComments {
 	/// Deletes a comment: its author, or a user who may delete elements of that set.
 	void remove(string commentId, string actor);
 	size_t count(string elementSet, string elementId);
+}
+
+/// Notifications of a user: alerts on due / overdue items of the sets the user may read, and changes and
+/// comments of other users on elements the user created, last edited or commented on. The read / dismissed
+/// state is kept per user. Every method works for the given subject only.
+interface INotifications {
+	NotificationListDto forUser(AccessSubjectDto subject);
+	/// Marks notifications as read (`all`: every current one); returns the updated list.
+	NotificationListDto markRead(AccessSubjectDto subject, string[] ids, bool all = false);
+	/// Removes notifications from the user's list (`all`: every current one); returns the updated list.
+	NotificationListDto dismiss(AccessSubjectDto subject, string[] ids, bool all = false);
 }
